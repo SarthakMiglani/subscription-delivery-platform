@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import java.util.Collections;
 
 /**
- * Verifies Google ID tokens server-side (BR-AUTH-02).
+ * Verifies Google ID tokens server-side.
  *
  * Validates:
  * - Token signature (against Google's public keys fetched from JWKS endpoint)

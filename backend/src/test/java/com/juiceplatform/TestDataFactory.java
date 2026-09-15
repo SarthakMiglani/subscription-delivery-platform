@@ -102,8 +102,9 @@ public class TestDataFactory {
         sub.setCustomerId(customerId);
         sub.setProductId(productId);
         sub.setQuantity(quantity);
-        // start_date = today so activateEligibleSubscriptions() (start_date <= today) picks it up
-        sub.setStartDate(LocalDate.now());
+        // start_date = tomorrow so activateEligibleSubscriptions() picks it up —
+        // eligibility is evaluated against the next operational delivery date (today + 1).
+        sub.setStartDate(LocalDate.now().plusDays(1));
         sub.setStatus(Subscription.SubscriptionStatus.PENDING_START);
         sub.setCreatedBy(customerId);
         return subscriptionRepository.save(sub);

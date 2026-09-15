@@ -133,7 +133,7 @@ class WalletLedgerLockingTest extends AbstractIntegrationTest {
 
         // Correct DELIVERED → SKIPPED with system error: balance 7500 → 10000
         var request = new com.juiceplatform.dto.delivery.OrderCorrectionRequest(
-                "SKIPPED", "DAMAGED", true, null, null);
+                "SKIPPED", "DAMAGED", true, null, null, null, null);
         correctionService.correctOrder(order.getId(), request, admin.getId());
 
         WalletLedger refund = walletLedgerRepository
@@ -158,7 +158,7 @@ class WalletLedgerLockingTest extends AbstractIntegrationTest {
 
         // Correct SKIPPED → DELIVERED: balance 0 → -2500 (negative permitted per BR-HIS-03)
         var request = new com.juiceplatform.dto.delivery.OrderCorrectionRequest(
-                "DELIVERED", null, null, null, null);
+                "DELIVERED", null, null, null, null, null, null);
         correctionService.correctOrder(order.getId(), request, admin.getId());
 
         WalletLedger debit = walletLedgerRepository

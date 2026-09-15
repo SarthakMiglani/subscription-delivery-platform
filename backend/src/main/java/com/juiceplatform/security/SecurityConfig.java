@@ -52,8 +52,6 @@ public class SecurityConfig {
                                 "/api/v1/health",
                                 "/api/v1/auth/**",
                                 "/api/v1/dev/**",
-                                "/api/v1/products",
-                                "/api/v1/products/**",
                                 "/swagger-ui.html",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
@@ -62,7 +60,11 @@ public class SecurityConfig {
 
                         // Admin endpoints — require ADMIN role
                         .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
-                        // Customer business endpoints — require CUSTOMER role
+                        // Customer business endpoints — require CUSTOMER role.
+                        // Requires onboardingComplete=true, enforced in ProductServiceImpl/
+                        // relevant services (403 ONBOARDING_INCOMPLETE) per BR-ONB-02.
+                        .requestMatchers("/api/v1/products").hasRole("CUSTOMER")
+                        .requestMatchers("/api/v1/products/**").hasRole("CUSTOMER")
                         .requestMatchers("/api/v1/onboarding").hasRole("CUSTOMER")
                         .requestMatchers("/api/v1/onboarding/**").hasRole("CUSTOMER")
                         .requestMatchers("/api/v1/customer/**").hasRole("CUSTOMER")

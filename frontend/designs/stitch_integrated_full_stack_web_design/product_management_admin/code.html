@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FreshFlow Admin | Inventory Management</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;700&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "status-error": "#D32F2F",
+                        "error-container": "#ffdad6",
+                        "on-primary-fixed-variant": "#0c5216",
+                        "on-tertiary-fixed-variant": "#2e4f00",
+                        "surface-tint": "#2a6b2c",
+                        "outline": "#717a6d",
+                        "primary-fixed": "#acf4a4",
+                        "on-tertiary-fixed": "#0f2000",
+                        "inverse-on-surface": "#eff1ef",
+                        "on-tertiary-container": "#9dd65b",
+                        "on-secondary-fixed-variant": "#693c00",
+                        "primary-container": "#1b5e20",
+                        "inverse-surface": "#2e3130",
+                        "surface-container-highest": "#e1e3e1",
+                        "tertiary-fixed-dim": "#9ed75b",
+                        "on-surface": "#191c1b",
+                        "secondary-fixed-dim": "#ffb870",
+                        "on-secondary-fixed": "#2c1600",
+                        "wallet-credit": "#2E7D32",
+                        "on-primary-container": "#90d689",
+                        "tertiary": "#264300",
+                        "status-active": "#2E7D32",
+                        "on-error": "#ffffff",
+                        "wallet-debit": "#D32F2F",
+                        "surface-variant": "#e1e3e1",
+                        "primary-fixed-dim": "#91d78a",
+                        "on-secondary-container": "#653900",
+                        "on-primary": "#ffffff",
+                        "on-surface-variant": "#41493e",
+                        "surface-container-low": "#f2f4f2",
+                        "on-error-container": "#93000a",
+                        "on-background": "#191c1b",
+                        "status-locked": "#455A64",
+                        "status-future": "#0288D1",
+                        "surface-dim": "#d8dad9",
+                        "secondary-fixed": "#ffdcbe",
+                        "surface-container": "#eceeec",
+                        "on-secondary": "#ffffff",
+                        "primary": "#00450d",
+                        "secondary-container": "#ff9800",
+                        "tertiary-fixed": "#b9f474",
+                        "on-primary-fixed": "#002203",
+                        "surface": "#f8faf8",
+                        "error": "#ba1a1a",
+                        "on-tertiary": "#ffffff",
+                        "background": "#f8faf8",
+                        "secondary": "#8b5000",
+                        "tertiary-container": "#365c00",
+                        "surface-container-high": "#e6e9e7",
+                        "surface-bright": "#f8faf8",
+                        "inverse-primary": "#91d78a",
+                        "status-warning": "#ED6C02",
+                        "outline-variant": "#c0c9bb"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "card-inner-padding": "24px",
+                        "section-gap": "40px",
+                        "container-padding-desktop": "32px",
+                        "gutter": "16px",
+                        "base": "8px",
+                        "container-padding-mobile": "16px"
+                    },
+                    "fontFamily": {
+                        "body-sm": ["Hanken Grotesk"],
+                        "label-caps": ["Hanken Grotesk"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "mono-data": ["JetBrains Mono"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "body-md": ["Hanken Grotesk"],
+                        "body-lg": ["Hanken Grotesk"],
+                        "headline-sm": ["Plus Jakarta Sans"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { background-color: #F8FAF8; color: #191C1B; -webkit-font-smoothing: antialiased; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .active-tab-indicator { position: relative; }
+        .active-tab-indicator::after { content: ''; position: absolute; bottom: -18px; left: 0; right: 0; height: 3px; background-color: #00450D; border-radius: 3px 3px 0 0; }
+        .product-card-hover:hover { box-shadow: 0px 4px 20px rgba(0, 40, 0, 0.05); }
+    </style>
+</head>
+<body class="font-body-md text-body-md">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-container-padding-mobile md:px-container-padding-desktop h-16 bg-surface dark:bg-surface-dim shadow-sm dark:shadow-none">
+<div class="flex items-center gap-8">
+<span class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed-dim">FreshFlow</span>
+<nav class="hidden md:flex gap-6 items-center">
+<a class="text-on-surface-variant hover:bg-surface-container-high transition-colors px-2 py-1 rounded" href="#">Dashboard</a>
+<a class="text-primary font-bold active-tab-indicator" href="#">Inventory</a>
+<a class="text-on-surface-variant hover:bg-surface-container-high transition-colors px-2 py-1 rounded" href="#">Customers</a>
+<a class="text-on-surface-variant hover:bg-surface-container-high transition-colors px-2 py-1 rounded" href="#">Ledger</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-primary p-2 hover:bg-surface-container-high transition-colors rounded-full" data-icon="search">search</button>
+<button class="material-symbols-outlined text-primary p-2 hover:bg-surface-container-high transition-colors rounded-full" data-icon="notifications">notifications</button>
+<button class="material-symbols-outlined text-primary p-2 hover:bg-surface-container-high transition-colors rounded-full" data-icon="account_balance_wallet">account_balance_wallet</button>
+<div class="w-8 h-8 rounded-full overflow-hidden bg-outline-variant ml-2">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a high-level administrator in a bright, modern corporate setting. The lighting is soft and natural, emphasizing a trustworthy and transparent brand persona. The aesthetic is clean and minimalist, consistent with a premium health-tech and fintech platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBcaMXKZgSVqUoVXESIwhHC0IoJqfYQJ-TUn0yC5A9lxeVhx07ebQfiwy_7y0yhbatKR9_HPZmM7XI8G9hm1GyFpvfQwmfzw4cdfKbY_ik3Zz_MG6F-zU-Z1YcR5RxHRsCS_Fa7hK5d-fouo1poXpiy7uBvaJ1g-bBmxJ3Vy3PopJ0Eg31WXWbLkt5Tts2Srig1dJnN3YhS9Db2BWhjJmcJZrx-3tXAQOVhU_076xjuJm9_2HbKYw8UFrXcAFdxbWWRjP_E6HlrPTE"/>
+</div>
+</div>
+</header>
+<main class="pt-24 pb-20 px-container-padding-mobile md:px-container-padding-desktop max-w-[1200px] mx-auto">
+<!-- Header Actions -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
+<div>
+<h1 class="font-headline-lg text-headline-lg text-primary mb-1">Product Management</h1>
+<p class="text-on-surface-variant font-body-md">Manage your juice subscriptions and live inventory.</p>
+</div>
+<button class="flex items-center gap-2 bg-primary text-on-primary px-6 py-3 rounded-xl font-bold shadow-sm hover:opacity-90 active:scale-95 transition-all">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+                Add New Product
+            </button>
+</div>
+<!-- Summary Stats Bento -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter mb-10">
+<div class="bg-surface-container-lowest p-card-inner-padding rounded-xl border border-outline-variant flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-primary-fixed flex items-center justify-center text-on-primary-fixed">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+</div>
+<div>
+<p class="text-label-caps font-label-caps text-on-surface-variant uppercase">Total Products</p>
+<p class="text-headline-sm font-headline-sm text-primary">42 Items</p>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-card-inner-padding rounded-xl border border-outline-variant flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-tertiary-fixed flex items-center justify-center text-on-tertiary-fixed">
+<span class="material-symbols-outlined" data-icon="subscriptions">subscriptions</span>
+</div>
+<div>
+<p class="text-label-caps font-label-caps text-on-surface-variant uppercase">Active Subscriptions</p>
+<p class="text-headline-sm font-headline-sm text-primary">1,240 Active</p>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-card-inner-padding rounded-xl border border-outline-variant flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-error-container flex items-center justify-center text-on-error-container">
+<span class="material-symbols-outlined" data-icon="warning">warning</span>
+</div>
+<div>
+<p class="text-label-caps font-label-caps text-on-surface-variant uppercase">Out of Stock</p>
+<p class="text-headline-sm font-headline-sm text-status-error">3 Low Stock</p>
+</div>
+</div>
+</div>
+<!-- Filters & Search -->
+<div class="bg-surface-container-low p-4 rounded-xl mb-6 flex flex-col md:flex-row gap-4 items-center">
+<div class="relative flex-grow w-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" data-icon="search">search</span>
+<input class="w-full bg-white border-none rounded-lg pl-10 pr-4 py-2 text-body-md focus:ring-2 focus:ring-primary outline-none" placeholder="Search by product name..." type="text"/>
+</div>
+<div class="flex gap-4 w-full md:w-auto">
+<select class="bg-white border-none rounded-lg px-4 py-2 text-body-md focus:ring-2 focus:ring-primary outline-none cursor-pointer">
+<option>All Categories</option>
+<option>Cold Pressed</option>
+<option>Smoothies</option>
+<option>Nut Milks</option>
+<option>Wellness Shots</option>
+</select>
+<select class="bg-white border-none rounded-lg px-4 py-2 text-body-md focus:ring-2 focus:ring-primary outline-none cursor-pointer">
+<option>All Status</option>
+<option>Available</option>
+<option>Disabled</option>
+</select>
+</div>
+</div>
+<!-- Product Table -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden shadow-sm">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container border-b border-outline-variant">
+<th class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Product</th>
+<th class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Category</th>
+<th class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Price (₹)</th>
+<th class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Unit</th>
+<th class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Status</th>
+<th class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<!-- Product Row: Active -->
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-lg overflow-hidden bg-surface-container-high border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A high-fidelity, vibrant photograph of a cold-pressed green juice bottle, decorated with fresh kale leaves and crisp apple slices in the background. The lighting is bright and organic, creating a feeling of freshness and vitality against a clean white surface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNoHQZPSf_f1uVhVBtwr2-bbHcA1N3fuUToY4RiscHUsSOUboLNAkUlJYzFSOWykfJsLchdPq6AVdB3tTBoBNy53eYiIWswAATi6wrOsd4auPEJzYf-3XLei7WDfwaN7huRbW5cF4oFQkso5ttqrXHOCLmsG-YpwKXJEtNl-xf3W0OBXmynW5eIzo_04I3Ut-mwnk0iqntfLQ2lM8JbZvRL1EbD14Ltv2vPKhpT7BaxlUTtAuN2WQOO_1J0zrzzcIISve0ORTyacc"/>
+</div>
+<div>
+<p class="font-bold text-primary">Evergreen Glow</p>
+<p class="text-body-sm text-on-surface-variant">Kale, Apple, Lemon, Ginger</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="bg-primary-container/10 text-primary px-2 py-1 rounded-full text-label-caps font-label-caps">COLD PRESSED</span>
+</td>
+<td class="px-6 py-4 font-mono-data text-mono-data">₹185.00</td>
+<td class="px-6 py-4 text-on-surface-variant">500ml</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-1.5 text-status-active">
+<span class="w-2 h-2 rounded-full bg-status-active"></span>
+<span class="text-label-caps font-label-caps uppercase">Available</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex justify-end gap-2">
+<button class="p-2 hover:bg-surface-container-high rounded-lg text-primary transition-colors material-symbols-outlined" data-icon="edit" title="Edit">edit</button>
+<button class="p-2 hover:bg-error-container/20 rounded-lg text-status-error transition-colors material-symbols-outlined" data-icon="block" title="Disable">block</button>
+</div>
+</td>
+</tr>
+<!-- Product Row: Active -->
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-lg overflow-hidden bg-surface-container-high border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="Close-up of a vibrant orange juice bottle with citrus slices and a warm, glowing sunlit background. The aesthetic is energetic and fresh, representing a citrus-based wellness drink. Professional photography style with a shallow depth of field." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBWSRbbqloKLcNA_gA9-kGfKQkzpdTJOkLNL5Qw5QV6Tzilt9JmPHcpAMMU7slzWJeIMjVzzUsJN3FLfJda6SA-SY8-oK79LLuYEG3pw1qmF7fI7d_u5xDLfwxWtLdh7wccepiPf6pjSG2g-wF_cyfiGLqwSku_FjXAjgNgIuRglNwlW-EYNqqKZ0iYZHMzIlxI1Shfc1bFqF548KZ0fKXOOTpeWhNH7SpdKpI-a0YrvDB0azmMd92-wGNITixqDyhaQoILQ0VB4Gw"/>
+</div>
+<div>
+<p class="font-bold text-primary">Citrus Surge</p>
+<p class="text-body-sm text-on-surface-variant">Orange, Carrot, Turmeric</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="bg-primary-container/10 text-primary px-2 py-1 rounded-full text-label-caps font-label-caps">COLD PRESSED</span>
+</td>
+<td class="px-6 py-4 font-mono-data text-mono-data">₹160.00</td>
+<td class="px-6 py-4 text-on-surface-variant">500ml</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-1.5 text-status-active">
+<span class="w-2 h-2 rounded-full bg-status-active"></span>
+<span class="text-label-caps font-label-caps uppercase">Available</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex justify-end gap-2">
+<button class="p-2 hover:bg-surface-container-high rounded-lg text-primary transition-colors material-symbols-outlined" data-icon="edit">edit</button>
+<button class="p-2 hover:bg-error-container/20 rounded-lg text-status-error transition-colors material-symbols-outlined" data-icon="block">block</button>
+</div>
+</td>
+</tr>
+<!-- Product Row: Disabled -->
+<tr class="bg-surface-container/30 opacity-60">
+<td class="px-6 py-4">
+<div class="flex items-center gap-4 grayscale">
+<div class="w-12 h-12 rounded-lg overflow-hidden bg-surface-container-high border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A bottle of creamy almond milk with scattered nuts on a minimalist kitchen counter. The lighting is soft and neutral, with a monochromatic, high-end feel. Minimalist and structured composition for a premium nut milk subscription product." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCqM6ctfrFl86IWlwwVgjS7b8-MxIZPT5M4CmCBufDmpD_gz-nh64_7Eh1WRo6wiJcvgOX8ic5RZtDlnbiGfEMfFgJb4dwiF_OxVixDSAkqYwRxn4oRzltFl4UM3ddmIF1Qzudi7LlNkqca70QLPEw4m9mAw6-fcGj06v4KtOVw7wwmhvVBBTgBFQhyjlRAVn8FyFqFmq2qZlHiMnUanm6CTzFlrOdp43NWndxVWmjL-M6uPx5VNnxPz3VRhgvjG4E0WQ5slClTN9A"/>
+</div>
+<div>
+<p class="font-bold text-primary">Vanilla Almond</p>
+<p class="text-body-sm text-on-surface-variant">Almonds, Dates, Vanilla</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="bg-surface-container-high text-on-surface-variant px-2 py-1 rounded-full text-label-caps font-label-caps">NUT MILK</span>
+</td>
+<td class="px-6 py-4 font-mono-data text-mono-data line-through text-on-surface-variant">₹210.00</td>
+<td class="px-6 py-4 text-on-surface-variant">330ml</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-1.5 text-on-surface-variant">
+<span class="w-2 h-2 rounded-full bg-outline"></span>
+<span class="text-label-caps font-label-caps uppercase">Disabled</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex justify-end gap-2">
+<button class="p-2 hover:bg-surface-container-high rounded-lg text-primary transition-colors material-symbols-outlined" data-icon="edit">edit</button>
+<button class="p-2 hover:bg-primary-container/20 rounded-lg text-status-active transition-colors material-symbols-outlined" data-icon="check_circle" title="Enable">check_circle</button>
+</div>
+</td>
+</tr>
+<!-- Product Row: Active -->
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-lg overflow-hidden bg-surface-container-high border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A small glass wellness shot filled with deep red beet juice and ginger root on a marble surface. The image represents concentrated health and high-precision wellness ingredients. Bright, clean, and professional photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCb_Me41Cm3cT30QQ5dMzHN5MeUZaP7oK8FkxrsLxhdg-B6cx0z8GPmb419Zber6xUkNFFXlQXFwuJTkpum0I7x8jaQPpg5hHtRFJiSeaPyaKGjRXq-ZkUA_oBkq3PMwhTpy_i6Jxenb7UWCvktfdfZLnVpMl60r7_jlfZYb6PqIiCDGWYciJLfkPs4E28mmIBhuRmVs7RGbkpF993GzXZmKg3ErcZz-_6NZNA58N95VzcWgksQ956lrvm8pknH0Asx6PrTLLFMPH4"/>
+</div>
+<div>
+<p class="font-bold text-primary">Beet Burner</p>
+<p class="text-body-sm text-on-surface-variant">Beetroot, Pepper, Lemon</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="bg-primary-container/10 text-primary px-2 py-1 rounded-full text-label-caps font-label-caps">WELLNESS SHOT</span>
+</td>
+<td class="px-6 py-4 font-mono-data text-mono-data">₹85.00</td>
+<td class="px-6 py-4 text-on-surface-variant">60ml</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-1.5 text-status-active">
+<span class="w-2 h-2 rounded-full bg-status-active"></span>
+<span class="text-label-caps font-label-caps uppercase">Available</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex justify-end gap-2">
+<button class="p-2 hover:bg-surface-container-high rounded-lg text-primary transition-colors material-symbols-outlined" data-icon="edit">edit</button>
+<button class="p-2 hover:bg-error-container/20 rounded-lg text-status-error transition-colors material-symbols-outlined" data-icon="block">block</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination-like Footer -->
+<div class="p-4 bg-surface-container-low flex justify-between items-center text-body-sm text-on-surface-variant">
+<span>Showing 4 of 42 products</span>
+<div class="flex gap-2">
+<button class="px-3 py-1 bg-white border border-outline-variant rounded hover:bg-surface-container-high transition-all">Previous</button>
+<button class="px-3 py-1 bg-primary text-white rounded shadow-sm">1</button>
+<button class="px-3 py-1 bg-white border border-outline-variant rounded hover:bg-surface-container-high transition-all">2</button>
+<button class="px-3 py-1 bg-white border border-outline-variant rounded hover:bg-surface-container-high transition-all">Next</button>
+</div>
+</div>
+</div>
+</main>
+<!-- SideNavBar (Hidden on Mobile, used for structure guidance) -->
+<aside class="fixed left-0 top-0 h-full w-64 border-r border-outline-variant bg-surface-container-low hidden lg:flex flex-col z-40 pt-16">
+<div class="p-6">
+<div class="flex items-center gap-3 mb-8">
+<div class="w-10 h-10 rounded-full overflow-hidden bg-primary-container">
+<img class="w-full h-full object-cover" data-alt="A modern, high-tech customer profile avatar for a juice subscription service. Professional lighting and vibrant tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBB5M_yPk4cEyYcjGiQrTkpHk7kSXYhl04sQYmxyr6w8HLI2xTBe-qVEmLH_jgZ8Yc71L9fK1oGmwqS4jtOV_Zrbpq-zqRUhFnF6a8voqdgsdnYeQNdoy4Izwo82nf8tqtecU7wDuVBe-l1xuSneycqrdKX62C1FZIPXvJTXjTHS3LkKx7Z54QOvneoGMqwH0S4mQzbCQ8lzB2KcWvU4UuhiFfE7GNV0iv8A7_87Y023dCRSMpJbPp7VbxsN2QP0dJQkV1-4ErKLmo"/>
+</div>
+<div>
+<p class="font-bold text-primary">Juice Subscriber</p>
+<p class="text-label-caps font-label-caps text-on-surface-variant">Wallet: ₹1,240.00</p>
+</div>
+</div>
+<nav class="space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                    Dashboard
+                </a>
+<a class="flex items-center gap-3 px-4 py-3 bg-primary-container text-on-primary-container rounded-lg font-bold transition-all shadow-sm" href="#">
+<span class="material-symbols-outlined" data-icon="local_shipping">local_shipping</span>
+                    Deliveries
+                </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
+                    Subscriptions
+                </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+                    Wallet
+                </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="support_agent">support_agent</span>
+                    Support
+                </a>
+</nav>
+</div>
+<div class="mt-auto p-6 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+                Settings
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+                Logout
+            </a>
+</div>
+</aside>
+<!-- BottomNavBar (Mobile only) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-safe h-16 bg-surface dark:bg-surface-container-lowest shadow-lg lg:hidden">
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="text-label-caps font-label-caps">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1" href="#">
+<span class="material-symbols-outlined" data-icon="event_repeat">event_repeat</span>
+<span class="text-label-caps font-label-caps">Calendar</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="text-label-caps font-label-caps">Wallet</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+<span class="text-label-caps font-label-caps">Menu</span>
+</a>
+</nav>
+<script>
+        // Simple Micro-interactions
+        document.querySelectorAll('button, a').forEach(el => {
+            el.addEventListener('mousedown', () => {
+                el.classList.add('scale-95');
+            });
+            el.addEventListener('mouseup', () => {
+                el.classList.remove('scale-95');
+            });
+            el.addEventListener('mouseleave', () => {
+                el.classList.remove('scale-95');
+            });
+        });
+
+        // Hover row subtle animation
+        const rows = document.querySelectorAll('tbody tr');
+        rows.forEach(row => {
+            row.addEventListener('mouseenter', () => {
+                row.classList.add('shadow-inner');
+            });
+            row.addEventListener('mouseleave', () => {
+                row.classList.remove('shadow-inner');
+            });
+        });
+    </script>
+</body></html>

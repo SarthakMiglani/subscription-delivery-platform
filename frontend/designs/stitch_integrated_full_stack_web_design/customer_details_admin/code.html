@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Customer Profile | FreshFlow Admin</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Hanken+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@500&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@100..900&family=Plus+Jakarta+Sans:wght@100..900&display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c0c9bb;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #717a6d;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-bright": "#f8faf8",
+                        "on-secondary-fixed": "#2c1600",
+                        "on-secondary": "#ffffff",
+                        "status-locked": "#455A64",
+                        "secondary-fixed": "#ffdcbe",
+                        "primary": "#00450d",
+                        "on-tertiary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "status-error": "#D32F2F",
+                        "error": "#ba1a1a",
+                        "primary-fixed-dim": "#91d78a",
+                        "on-background": "#191c1b",
+                        "outline": "#717a6d",
+                        "on-primary-container": "#90d689",
+                        "surface-dim": "#d8dad9",
+                        "secondary": "#8b5000",
+                        "surface-tint": "#2a6b2c",
+                        "surface-container-high": "#e6e9e7",
+                        "inverse-on-surface": "#eff1ef",
+                        "on-secondary-container": "#653900",
+                        "secondary-container": "#ff9800",
+                        "tertiary-fixed-dim": "#9ed75b",
+                        "status-warning": "#ED6C02",
+                        "surface-container-highest": "#e1e3e1",
+                        "surface": "#f8faf8",
+                        "primary-container": "#1b5e20",
+                        "outline-variant": "#c0c9bb",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-fixed-variant": "#2e4f00",
+                        "surface-container-low": "#f2f4f2",
+                        "status-active": "#2E7D32",
+                        "inverse-primary": "#91d78a",
+                        "on-surface": "#191c1b",
+                        "on-error": "#ffffff",
+                        "wallet-debit": "#D32F2F",
+                        "surface-variant": "#e1e3e1",
+                        "tertiary-container": "#365c00",
+                        "on-tertiary-container": "#9dd65b",
+                        "surface-container": "#eceeec",
+                        "background": "#f8faf8",
+                        "tertiary": "#264300",
+                        "status-future": "#0288D1",
+                        "on-tertiary-fixed": "#0f2000",
+                        "inverse-surface": "#2e3130",
+                        "error-container": "#ffdad6",
+                        "secondary-fixed-dim": "#ffb870",
+                        "on-primary-fixed": "#002203",
+                        "on-primary": "#ffffff",
+                        "on-primary-fixed-variant": "#0c5216",
+                        "wallet-credit": "#2E7D32",
+                        "tertiary-fixed": "#b9f474",
+                        "on-surface-variant": "#41493e",
+                        "primary-fixed": "#acf4a4",
+                        "on-secondary-fixed-variant": "#693c00"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "card-inner-padding": "24px",
+                        "gutter": "16px",
+                        "container-padding-desktop": "32px",
+                        "container-padding-mobile": "16px",
+                        "section-gap": "40px",
+                        "base": "8px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Hanken Grotesk"],
+                        "headline-sm": ["Plus Jakarta Sans"],
+                        "body-sm": ["Hanken Grotesk"],
+                        "mono-data": ["JetBrains Mono"],
+                        "label-caps": ["Hanken Grotesk"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "body-lg": ["Hanken Grotesk"],
+                        "headline-lg": ["Plus Jakarta Sans"]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-surface font-body-md text-on-surface selection:bg-primary/20">
+<!-- Sidebar Navigation Shell -->
+<aside class="fixed left-0 top-0 h-full w-64 border-r border-outline-variant bg-surface-container-low hidden lg:flex flex-col z-40">
+<div class="p-6">
+<h1 class="font-headline-sm text-headline-sm font-bold text-primary">FreshFlow</h1>
+</div>
+<nav class="flex-1 px-4 space-y-2">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-primary-container text-on-primary-container rounded-lg font-bold transition-all" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-body-md">Customers</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">local_shipping</span>
+<span class="font-body-md">Deliveries</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="font-body-md">Ledger</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">support_agent</span>
+<span class="font-body-md">Support</span>
+</a>
+</nav>
+<div class="p-4 mt-auto border-t border-outline-variant">
+<div class="flex items-center gap-3 p-3 bg-surface-container rounded-xl">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="A professional headshot of a female operations manager in a bright, modern office setting. She has a warm smile and is wearing smart-casual attire. High-key lighting emphasizes a clean, corporate atmosphere with soft green and white tones in the background, mirroring the FreshFlow brand's vibrant yet disciplined aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgLDFA0v-o355MTvGQLobO8aojsNqwkjsFL14J_9hvFSVtan7uViPXG6Oe91TWdnitkt5LhFEXy1eBdLLfPGaQn-SOynCin6fVgNe22ZdI3o_5mU4rEVaN0Kg-HeyBdQvpHUgLE72py73XLmy-vtvWvhd9NNnnFjH2yy1MB0MPrjQ67-q7RH4UfpOYpo1k5C_P5DmFWIQ1RR4I62DzRGhCNvtgB9JqUUO_k_he493se5bjJ2WmP7Aqdoa8JBbDyKUejxgR4nJm7rw"/>
+<div class="flex flex-col overflow-hidden">
+<span class="font-bold text-sm truncate">Juice Subscriber</span>
+<span class="text-xs text-on-surface-variant truncate">Wallet: ₹1,240.00</span>
+</div>
+</div>
+<div class="mt-4 space-y-1">
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg text-sm transition-all" href="#">
+<span class="material-symbols-outlined text-lg">settings</span>
+<span>Settings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg text-sm transition-all" href="#">
+<span class="material-symbols-outlined text-lg text-error">logout</span>
+<span>Logout</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- Top AppBar -->
+<header class="fixed top-0 lg:left-64 right-0 h-16 flex items-center justify-between px-container-padding-mobile md:px-container-padding-desktop bg-surface z-30 shadow-sm">
+<div class="flex items-center gap-4">
+<button class="lg:hidden p-2 text-on-surface-variant">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<nav class="hidden md:flex items-center gap-2 text-on-surface-variant text-sm">
+<a class="hover:text-primary" href="#">Dashboard</a>
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+<a class="hover:text-primary" href="#">Customers</a>
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+<span class="text-on-surface font-bold">Rahul Sharma</span>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden sm:flex items-center bg-surface-container-low px-4 py-1.5 rounded-full border border-outline-variant">
+<span class="material-symbols-outlined text-on-surface-variant">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-48" placeholder="Search orders..." type="text"/>
+</div>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border-2 border-surface"></span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+</button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="lg:ml-64 pt-24 pb-20 px-container-padding-mobile md:px-container-padding-desktop min-h-screen">
+<div class="max-w-7xl mx-auto">
+<!-- Customer Header Card -->
+<div class="bg-surface-container-lowest rounded-xl p-card-inner-padding shadow-sm mb-section-gap border border-outline-variant/30 flex flex-col md:flex-row md:items-center justify-between gap-6">
+<div class="flex items-center gap-6">
+<div class="relative">
+<img class="w-20 h-20 md:w-24 md:h-24 rounded-full border-4 border-primary-fixed-dim object-cover" data-alt="A close-up portrait of a mid-30s Indian male professional named Rahul Sharma, smiling confidently. He is set against a brightly lit, organic background with soft greenery, conveying a healthy and vibrant lifestyle. The photo is crisp and high-resolution, with professional studio lighting that avoids harsh shadows, matching a modern fintech-wellness aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPeAo5qgL3AC4dGhqRm6meVBf4hDXW1Gg0ktgw2X3WOcblEpbSfRa0h11USGPwpl7JiU15VQFyZW7HF_SgTEgkCFtvbNjSR3MgRDYr5LAi86FomG1CQzKislaxgD_gh-VWF1FEW66EK-zpvpsBE1PHDCEXxXY9XNAxTICU4CHc9Fc6cXVuBQJg9NDDCnKROTeD4P-xk859xA8F1PfiuO8Q8Iu1R57hbZEZQSYYew0HuUwyDXBekA-dzCWDyZA75AZg-grDetNCWv8"/>
+<span class="absolute bottom-1 right-1 w-5 h-5 bg-status-active border-2 border-surface rounded-full"></span>
+</div>
+<div>
+<div class="flex items-center gap-3 mb-1">
+<h2 class="font-headline-md text-headline-md font-bold text-on-surface">Rahul Sharma</h2>
+<span class="bg-status-active/10 text-status-active px-3 py-0.5 rounded-full text-label-caps font-bold">ACTIVE</span>
+</div>
+<div class="flex flex-col sm:flex-row sm:items-center gap-x-6 gap-y-1 text-on-surface-variant font-body-sm">
+<span class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-sm">phone</span>
+                                +91 98765 43210
+                            </span>
+<span class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-sm">mail</span>
+                                rahul.sharma@example.com
+                            </span>
+<span class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-sm">calendar_month</span>
+                                Member since Mar 2023
+                            </span>
+</div>
+</div>
+</div>
+<div class="flex flex-wrap gap-3">
+<button class="flex items-center gap-2 px-4 py-2 border border-outline text-primary font-bold rounded-lg hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined">call</span>
+                        Contact
+                    </button>
+<button class="flex items-center gap-2 px-4 py-2 bg-error-container text-on-error-container font-bold rounded-lg hover:bg-error/10 transition-colors">
+<span class="material-symbols-outlined">person_off</span>
+                        Deactivate
+                    </button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg border border-outline">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-start">
+<!-- Left Column: Primary Info -->
+<div class="lg:col-span-8 space-y-gutter">
+<!-- Wallet Management Section -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 overflow-hidden shadow-sm">
+<div class="bg-primary/5 p-6 border-b border-outline-variant/20 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-primary-container rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-white">account_balance_wallet</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm font-bold text-primary">Wallet Management</h3>
+</div>
+<span class="text-on-surface-variant text-label-caps bg-surface-container-high px-3 py-1 rounded-full">SYSTEM VERIFIED</span>
+</div>
+<div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+<div>
+<p class="text-on-surface-variant font-label-caps mb-2">CURRENT BALANCE</p>
+<div class="flex items-baseline gap-2">
+<span class="text-headline-lg font-extrabold text-on-surface">₹1,240</span>
+<span class="text-headline-sm font-bold text-on-surface-variant">.50</span>
+</div>
+<p class="text-body-sm text-status-active mt-2 flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">check_circle</span>
+                                    Sufficient for next 14 deliveries
+                                </p>
+</div>
+<div class="flex flex-col gap-3 justify-center">
+<button class="w-full py-3 bg-secondary text-white font-bold rounded-xl flex items-center justify-center gap-2 active:scale-[0.98] transition-transform">
+<span class="material-symbols-outlined">add</span>
+                                    Add Money (Credit)
+                                </button>
+<button class="w-full py-3 border border-outline text-on-surface font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-surface-container-high transition-colors active:scale-[0.98]">
+<span class="material-symbols-outlined">tune</span>
+                                    Set Balance (Adjustment)
+                                </button>
+</div>
+</div>
+</div>
+<!-- Active Subscriptions -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 overflow-hidden shadow-sm">
+<div class="p-6 border-b border-outline-variant/20 flex items-center justify-between">
+<h3 class="font-headline-sm text-headline-sm font-bold text-on-surface">Active Subscriptions</h3>
+<button class="text-primary font-bold flex items-center gap-1 text-sm hover:underline">
+<span class="material-symbols-outlined text-sm">add</span> Add New
+                            </button>
+</div>
+<div class="divide-y divide-outline-variant/20">
+<!-- Sub 1 -->
+<div class="p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+<div class="flex items-center gap-4">
+<div class="w-16 h-16 rounded-lg bg-surface-container overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A macro shot of a fresh Vitamin C cold-pressed juice bottle with vibrant orange hues, featuring real slices of citrus fruits scattered around it. The lighting is clean and bright, emphasizing the organic texture of the juice. Modern, minimalist presentation on a white reflective surface, capturing the premium wellness essence of the FreshFlow brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZ7w4hHH8M3nfHjShdy7tBintlojuQb7eDvCgFRcoCDnou4QI5Krbc8SpKNluXXzcEwlAX8lLxHZZuqlO3xu19-_I1O_ODPhx6NyQ1f5nW2qGaMTT6g57glhrzwBFhpuCPzNhq19fHkbROfOE-aN86yORbHVOlDUNsrRHTQxr-3NSWqskxQSLpkTUjnP5Rl-KLyDEOS5pCuwOn7yHdh63H0XzB2Wu1aRIC4eOQg1A1Zij0WqbYCGnkPl5PloOCuAnT1Etf56jcgA0"/>
+</div>
+<div>
+<h4 class="font-bold text-on-surface">Vitamin C Daily</h4>
+<p class="text-body-sm text-on-surface-variant">Qty: 2 Bottles • Every Morning</p>
+<span class="inline-block mt-1 bg-status-active/10 text-status-active text-[10px] font-bold px-2 py-0.5 rounded uppercase">In Delivery</span>
+</div>
+</div>
+<div class="flex flex-col items-end gap-2">
+<div class="text-right">
+<p class="text-label-caps text-on-surface-variant">NEXT DELIVERY</p>
+<p class="font-bold text-on-surface">Tomorrow, 07:00 AM</p>
+</div>
+<button class="px-4 py-1.5 text-xs font-bold border border-primary text-primary rounded-full hover:bg-primary/5 transition-colors">Admin Override</button>
+</div>
+</div>
+<!-- Sub 2 -->
+<div class="p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+<div class="flex items-center gap-4">
+<div class="w-16 h-16 rounded-lg bg-surface-container overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A deep ruby-red iron booster juice shot in a small, sleek glass bottle. Surrounding it are organic beets and pomegranate seeds, lit with soft, diffused natural light that highlights the rich color and health-focused purity. The background is a clean, minimalist off-white, maintaining a clinical yet vibrant tone suitable for a high-end health platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBadeZPaKROqh9Xhj-Bo9slLa1kzCME5k25ZXlgXEauSz5eFrc0BdNq_2W_4UfNlmhNeNrPhO1klHqbvN2ba1WM9q20RCrkdTUBp_qmLVC1YeV8EWUb6zVWv23ZXAF38_PeKvOc1Mzp-PhViTsZCWlcjN1uTcEXYK3Oy9WG7kI4j3_fT2VApdjRVZiVFvgTMFyLLjQtgHNdqYQujlHNZ6l4AtpS75C4y5yLvRqZOwOPNrtvHnhEs0WD6OFoFAsHIVDsHDAg4oFWBAQ"/>
+</div>
+<div>
+<h4 class="font-bold text-on-surface">Iron Booster Shot</h4>
+<p class="text-body-sm text-on-surface-variant">Qty: 1 Bottle • Wed & Sat</p>
+<span class="inline-block mt-1 bg-status-future/10 text-status-future text-[10px] font-bold px-2 py-0.5 rounded uppercase">Paused</span>
+</div>
+</div>
+<div class="flex flex-col items-end gap-2">
+<div class="text-right">
+<p class="text-label-caps text-on-surface-variant">RESUMES ON</p>
+<p class="font-bold text-on-surface">Oct 24, 2023</p>
+</div>
+<button class="px-4 py-1.5 text-xs font-bold border border-primary text-primary rounded-full hover:bg-primary/5 transition-colors">Admin Override</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Ledger & Order History -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 overflow-hidden shadow-sm">
+<div class="flex border-b border-outline-variant/20">
+<button class="px-8 py-4 border-b-2 border-primary text-primary font-bold text-sm">Wallet Ledger</button>
+<button class="px-8 py-4 text-on-surface-variant font-bold text-sm hover:bg-surface-container-low transition-colors">Order History</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low">
+<th class="px-6 py-4 text-label-caps text-on-surface-variant border-b border-outline-variant/20">Date & Time</th>
+<th class="px-6 py-4 text-label-caps text-on-surface-variant border-b border-outline-variant/20">Type</th>
+<th class="px-6 py-4 text-label-caps text-on-surface-variant border-b border-outline-variant/20">Source / Ref</th>
+<th class="px-6 py-4 text-label-caps text-on-surface-variant border-b border-outline-variant/20 text-right">Amount</th>
+<th class="px-6 py-4 text-label-caps text-on-surface-variant border-b border-outline-variant/20 text-right">Balance After</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/10">
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-6 py-4 font-mono-data text-body-sm">Oct 12, 07:15 AM</td>
+<td class="px-6 py-4">
+<span class="bg-error/10 text-wallet-debit text-[10px] font-bold px-2 py-0.5 rounded uppercase">Debit</span>
+</td>
+<td class="px-6 py-4 text-body-sm font-medium">Daily Subscription • #ORD-7892</td>
+<td class="px-6 py-4 text-body-sm font-bold text-wallet-debit text-right">-₹180.00</td>
+<td class="px-6 py-4 font-mono-data text-body-sm text-right">₹1,240.50</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-6 py-4 font-mono-data text-body-sm">Oct 11, 07:22 AM</td>
+<td class="px-6 py-4">
+<span class="bg-error/10 text-wallet-debit text-[10px] font-bold px-2 py-0.5 rounded uppercase">Debit</span>
+</td>
+<td class="px-6 py-4 text-body-sm font-medium">Daily Subscription • #ORD-7881</td>
+<td class="px-6 py-4 text-body-sm font-bold text-wallet-debit text-right">-₹180.00</td>
+<td class="px-6 py-4 font-mono-data text-body-sm text-right">₹1,420.50</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-6 py-4 font-mono-data text-body-sm">Oct 10, 04:45 PM</td>
+<td class="px-6 py-4">
+<span class="bg-status-active/10 text-wallet-credit text-[10px] font-bold px-2 py-0.5 rounded uppercase">Credit</span>
+</td>
+<td class="px-6 py-4 text-body-sm font-medium">Wallet Recharge • #TXN-4421</td>
+<td class="px-6 py-4 text-body-sm font-bold text-wallet-credit text-right">+₹1,000.00</td>
+<td class="px-6 py-4 font-mono-data text-body-sm text-right">₹1,600.50</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-6 py-4 font-mono-data text-body-sm">Oct 09, 10:15 AM</td>
+<td class="px-6 py-4">
+<span class="bg-secondary-container/20 text-on-secondary-container text-[10px] font-bold px-2 py-0.5 rounded uppercase">Adjustment</span>
+</td>
+<td class="px-6 py-4 text-body-sm font-medium">CS Correction • ADM-991</td>
+<td class="px-6 py-4 text-body-sm font-bold text-on-surface-variant text-right">+₹50.00</td>
+<td class="px-6 py-4 font-mono-data text-body-sm text-right">₹600.50</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-4 bg-surface-container-low border-t border-outline-variant/20 flex items-center justify-between">
+<span class="text-body-sm text-on-surface-variant">Showing 1-10 of 42 entries</span>
+<div class="flex gap-2">
+<button class="w-8 h-8 rounded border border-outline flex items-center justify-center disabled:opacity-30" disabled="">
+<span class="material-symbols-outlined text-sm">chevron_left</span>
+</button>
+<button class="w-8 h-8 rounded border border-outline bg-primary text-white flex items-center justify-center font-bold text-sm">1</button>
+<button class="w-8 h-8 rounded border border-outline flex items-center justify-center font-bold text-sm">2</button>
+<button class="w-8 h-8 rounded border border-outline flex items-center justify-center">
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Sidebar Actions & Details -->
+<div class="lg:col-span-4 space-y-gutter">
+<!-- Delivery Address Card -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 overflow-hidden shadow-sm">
+<div class="p-6 border-b border-outline-variant/20 flex items-center justify-between">
+<h3 class="font-bold text-on-surface">Delivery Address</h3>
+<button class="text-primary font-bold text-sm hover:underline">Edit</button>
+</div>
+<div class="p-6">
+<div class="mb-4">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-primary">location_on</span>
+<span class="font-bold text-on-surface">Home</span>
+</div>
+<p class="text-body-md text-on-surface-variant leading-relaxed">
+                                    Flat 402, Green Meadows Apartment,<br/>
+                                    12th Main Road, HSR Layout, Sector 4,<br/>
+                                    Bangalore, Karnataka - 560102
+                                </p>
+</div>
+<div class="h-32 rounded-lg bg-surface-container-low relative overflow-hidden group">
+<div class="w-full h-full bg-cover bg-center group-hover:scale-105 transition-transform duration-500" data-location="Bangalore" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuClC4gGTmWx7UZClxtVBDVgVaFsD38iZ430yz5pvdaAjajLHiFHHeNyiiwmHYGFAy691oibXFeytY04XDs2tWdfdpj2TSQ24qdFT-JJXx3eG4dQLGiTVA93pUumwQcZ38SGrK_KhA31jwQ4fH19hgoA9ZEgXtQrn6Ifm3cz-kTdNsjrKU_w4kmhGGne8oOajAYDIx7mcmOwFNnOZic1vlSVbJCoxbaL9e6-5eYZ0tlHoHtSBYfpPP2hAyV-Sx4OTCjFS9mS5KWiqVI')"></div>
+<div class="absolute inset-0 bg-primary/10 pointer-events-none"></div>
+<button class="absolute bottom-2 right-2 bg-surface px-3 py-1.5 rounded-md shadow-sm text-[10px] font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">map</span> VIEW MAP
+                                </button>
+</div>
+<div class="mt-4 p-4 bg-surface-container-low rounded-lg">
+<p class="text-label-caps text-on-surface-variant mb-1">DELIVERY INSTRUCTIONS</p>
+<p class="text-body-sm text-on-surface italic">"Leave at the guard room. Contact guard Ramesh at +91 99000 XXXXX."</p>
+</div>
+</div>
+</div>
+<!-- Quick Actions Sidebar -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 overflow-hidden shadow-sm">
+<div class="p-6 border-b border-outline-variant/20">
+<h3 class="font-bold text-on-surface">Quick Actions</h3>
+</div>
+<div class="p-4 space-y-2">
+<button class="w-full text-left px-4 py-3 rounded-lg hover:bg-surface-container-high flex items-center justify-between group transition-all">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary">download</span>
+<span class="font-body-md font-medium">Download Data</span>
+</div>
+<span class="material-symbols-outlined text-sm opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+</button>
+<button class="w-full text-left px-4 py-3 rounded-lg hover:bg-surface-container-high flex items-center justify-between group transition-all">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary">history</span>
+<span class="font-body-md font-medium">Audit Logs</span>
+</div>
+<span class="material-symbols-outlined text-sm opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+</button>
+<button class="w-full text-left px-4 py-3 rounded-lg hover:bg-surface-container-high flex items-center justify-between group transition-all">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary">mail</span>
+<span class="font-body-md font-medium">Email Ledger</span>
+</div>
+<span class="material-symbols-outlined text-sm opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+</button>
+<div class="pt-2 border-t border-outline-variant/20 mt-2">
+<button class="w-full text-left px-4 py-3 rounded-lg hover:bg-status-error/5 text-status-error flex items-center gap-3 group transition-all">
+<span class="material-symbols-outlined">block</span>
+<span class="font-body-md font-bold">Freeze Wallet</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Customer Stats Card -->
+<div class="bg-primary text-white rounded-xl p-6 shadow-lg shadow-primary/20">
+<h4 class="font-bold mb-4 opacity-80 text-label-caps">LIFETIME STATS</h4>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<p class="text-2xl font-bold">₹12.4k</p>
+<p class="text-xs opacity-70">Total Revenue</p>
+</div>
+<div>
+<p class="text-2xl font-bold">142</p>
+<p class="text-xs opacity-70">Deliveries</p>
+</div>
+<div>
+<p class="text-2xl font-bold">0</p>
+<p class="text-xs opacity-70">Cancellations</p>
+</div>
+<div>
+<p class="text-2xl font-bold">4.8</p>
+<p class="text-xs opacity-70">Loyalty Score</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Nav for Mobile Admin Views -->
+<nav class="fixed bottom-0 left-0 w-full z-50 bg-surface border-t border-outline-variant flex justify-around items-center h-16 lg:hidden">
+<button class="flex flex-col items-center justify-center text-on-surface-variant p-2">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-[10px] font-bold mt-1">Dashboard</span>
+</button>
+<button class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1">
+<span class="material-symbols-outlined">group</span>
+<span class="text-[10px] font-bold">Customers</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant p-2">
+<span class="material-symbols-outlined">local_shipping</span>
+<span class="text-[10px] font-bold mt-1">Orders</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant p-2">
+<span class="material-symbols-outlined">menu</span>
+<span class="text-[10px] font-bold mt-1">More</span>
+</button>
+</nav>
+<!-- Micro-interaction Scripts -->
+<script>
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                const ripple = document.createElement('span');
+                ripple.classList.add('ripple');
+                this.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 1000);
+            });
+        });
+    </script>
+</body></html>

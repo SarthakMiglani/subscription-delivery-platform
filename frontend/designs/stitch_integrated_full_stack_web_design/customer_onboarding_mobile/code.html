@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>FreshFlow | Welcome</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&amp;family=Hanken+Grotesk:wght@400;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .step-transition {
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
+        }
+        .progress-bar-fill {
+            transition: width 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+        }
+        input:focus + label, input:not(:placeholder-shown) + label {
+            transform: translateY(-1.5rem) scale(0.85);
+            color: #2a6b2c;
+        }
+        .glow-button {
+            box-shadow: 0 0 20px rgba(42, 107, 44, 0.2);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-dim": "#d8dad9",
+                        "on-secondary-fixed": "#2c1600",
+                        "secondary-fixed": "#ffdcbe",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "tertiary": "#264300",
+                        "error": "#ba1a1a",
+                        "status-locked": "#455A64",
+                        "tertiary-container": "#365c00",
+                        "on-secondary-container": "#653900",
+                        "on-primary-fixed": "#002203",
+                        "on-error": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-highest": "#e1e3e1",
+                        "background": "#f8faf8",
+                        "status-future": "#0288D1",
+                        "surface-variant": "#e1e3e1",
+                        "inverse-on-surface": "#eff1ef",
+                        "secondary-container": "#ff9800",
+                        "secondary": "#8b5000",
+                        "on-surface-variant": "#41493e",
+                        "tertiary-fixed-dim": "#9ed75b",
+                        "wallet-debit": "#D32F2F",
+                        "on-surface": "#191c1b",
+                        "on-secondary-fixed-variant": "#693c00",
+                        "primary-fixed": "#acf4a4",
+                        "inverse-surface": "#2e3130",
+                        "primary-fixed-dim": "#91d78a",
+                        "on-tertiary-container": "#9dd65b",
+                        "inverse-primary": "#91d78a",
+                        "surface-container-low": "#f2f4f2",
+                        "surface-tint": "#2a6b2c",
+                        "status-active": "#2E7D32",
+                        "primary-container": "#1b5e20",
+                        "surface-bright": "#f8faf8",
+                        "on-tertiary-fixed": "#0f2000",
+                        "tertiary-fixed": "#b9f474",
+                        "status-error": "#D32F2F",
+                        "on-primary-container": "#90d689",
+                        "status-warning": "#ED6C02",
+                        "on-tertiary-fixed-variant": "#2e4f00",
+                        "on-primary": "#ffffff",
+                        "outline": "#717a6d",
+                        "secondary-fixed-dim": "#ffb870",
+                        "primary": "#00450d",
+                        "wallet-credit": "#2E7D32",
+                        "outline-variant": "#c0c9bb",
+                        "error-container": "#ffdad6",
+                        "surface-container": "#eceeec",
+                        "on-error-container": "#93000a",
+                        "surface-container-high": "#e6e9e7",
+                        "on-primary-fixed-variant": "#0c5216",
+                        "surface": "#f8faf8",
+                        "on-background": "#191c1b"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "section-gap": "40px",
+                        "container-padding-mobile": "16px",
+                        "gutter": "16px",
+                        "container-padding-desktop": "32px",
+                        "card-inner-padding": "24px",
+                        "base": "8px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Hanken Grotesk"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "label-caps": ["Hanken Grotesk"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "body-sm": ["Hanken Grotesk"],
+                        "headline-sm": ["Plus Jakarta Sans"],
+                        "body-md": ["Hanken Grotesk"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "mono-data": ["JetBrains Mono"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "mono-data": ["13px", {"lineHeight": "18px", "fontWeight": "500"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen font-body-md flex flex-col overflow-hidden">
+<!-- Top AppBar (Simplified for Onboarding) -->
+<nav class="fixed top-0 w-full z-50 flex justify-between items-center px-4 h-16 bg-surface shadow-sm">
+<div class="font-headline-md text-headline-md font-extrabold text-primary">FreshFlow</div>
+<div class="flex items-center gap-2">
+<span class="font-label-caps text-on-surface-variant">Step <span id="current-step-num">1</span> of 2</span>
+</div>
+</nav>
+<!-- Progress Indicator Overlay -->
+<div class="fixed top-16 left-0 w-full h-1 bg-surface-variant overflow-hidden z-40">
+<div class="progress-bar-fill h-full bg-primary-container w-1/2" id="progress-bar"></div>
+</div>
+<!-- Main Content Canvas -->
+<main class="flex-grow pt-24 pb-8 px-4 flex flex-col items-center justify-center relative max-w-lg mx-auto w-full">
+<form class="w-full relative h-[500px]" id="onboarding-form">
+<!-- STEP 1: Phone Entry -->
+<section class="step-transition absolute inset-0 w-full flex flex-col" id="step-1">
+<div class="mb-8">
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-primary mb-2">Welcome to FreshFlow</h1>
+<p class="text-on-surface-variant font-body-md">Start your wellness journey. Please enter your mobile number to get started.</p>
+</div>
+<div class="space-y-6 flex-grow">
+<div class="relative">
+<div class="flex items-center gap-3 bg-white rounded-xl p-4 shadow-sm border border-outline-variant focus-within:border-primary transition-all">
+<span class="text-on-surface-variant font-mono-data font-bold">+91</span>
+<input class="bg-transparent border-none focus:ring-0 w-full font-headline-sm text-headline-sm text-on-surface p-0 placeholder:text-outline-variant" id="phone" placeholder="98765 43210" required="" type="tel"/>
+</div>
+<p class="mt-2 text-body-sm text-on-surface-variant px-1">We'll send a verification code via SMS.</p>
+</div>
+<!-- Visual Accent Card -->
+<div class="bg-primary-fixed bg-opacity-20 p-card-inner-padding rounded-xl flex items-center gap-4">
+<div class="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">bolt</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-primary leading-tight">Instant Setup</h3>
+<p class="text-body-sm text-on-primary-fixed-variant">Connect your wallet and schedule deliveries in under 2 minutes.</p>
+</div>
+</div>
+</div>
+<div class="mt-auto pt-6">
+<button class="w-full py-4 bg-primary text-white font-headline-sm rounded-xl glow-button active:scale-95 transition-all flex items-center justify-center gap-2" onclick="nextStep()" type="button">
+                        Next
+                        <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</section>
+<!-- STEP 2: Address Details -->
+<section class="step-transition absolute inset-0 w-full flex flex-col translate-x-full opacity-0 pointer-events-none" id="step-2">
+<div class="mb-6">
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-primary mb-2">Delivery Details</h1>
+<p class="text-on-surface-variant font-body-md">Where should we deliver your daily dose of health?</p>
+</div>
+<div class="space-y-4 overflow-y-auto pr-2 max-h-[400px]">
+<!-- Address Line 1 -->
+<div class="relative">
+<input class="peer w-full pt-6 pb-2 px-0 bg-transparent border-t-0 border-l-0 border-r-0 border-b-2 border-outline-variant focus:border-primary focus:ring-0 font-body-lg text-on-surface transition-all" id="address" placeholder=" " required="" type="text"/>
+<label class="absolute left-0 top-6 text-on-surface-variant font-body-md transition-all pointer-events-none" for="address">House/Flat No, Apartment Name</label>
+</div>
+<!-- City and Pincode Grid -->
+<div class="grid grid-cols-2 gap-4">
+<div class="relative">
+<input class="peer w-full pt-6 pb-2 px-0 bg-transparent border-t-0 border-l-0 border-r-0 border-b-2 border-outline-variant focus:border-primary focus:ring-0 font-body-lg text-on-surface transition-all" id="city" placeholder=" " required="" type="text"/>
+<label class="absolute left-0 top-6 text-on-surface-variant font-body-md transition-all pointer-events-none" for="city">City</label>
+</div>
+<div class="relative">
+<input class="peer w-full pt-6 pb-2 px-0 bg-transparent border-t-0 border-l-0 border-r-0 border-b-2 border-outline-variant focus:border-primary focus:ring-0 font-body-lg text-on-surface transition-all" id="pincode" placeholder=" " required="" type="number"/>
+<label class="absolute left-0 top-6 text-on-surface-variant font-body-md transition-all pointer-events-none" for="pincode">Pincode</label>
+</div>
+</div>
+<!-- Delivery Notes -->
+<div class="bg-surface-container-low rounded-xl p-4 mt-4">
+<div class="flex items-center gap-2 mb-2 text-primary">
+<span class="material-symbols-outlined text-[20px]">sticky_note_2</span>
+<span class="font-label-caps uppercase">Delivery Notes</span>
+</div>
+<textarea class="w-full bg-transparent border-none focus:ring-0 font-body-md text-on-surface p-0 placeholder:text-outline" id="notes" placeholder="Gate code, drop at door, etc." rows="2"></textarea>
+</div>
+<!-- 10PM Cutoff Reminder -->
+<div class="flex items-start gap-3 p-3 bg-secondary-container bg-opacity-10 border-l-4 border-secondary rounded-r-lg">
+<span class="material-symbols-outlined text-secondary">info</span>
+<p class="text-body-sm text-on-secondary-container">Note: Address changes after 10 PM IST will apply to the day after tomorrow.</p>
+</div>
+</div>
+<div class="mt-auto pt-6 flex gap-3">
+<button class="w-20 h-14 border-2 border-outline-variant text-on-surface-variant rounded-xl flex items-center justify-center active:scale-95 transition-all" onclick="prevStep()" type="button">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<button class="flex-grow py-4 bg-primary text-white font-headline-sm rounded-xl glow-button active:scale-95 transition-all flex items-center justify-center gap-2" type="submit">
+                        Complete Onboarding
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</button>
+</div>
+</section>
+</form>
+</main>
+<!-- Success Modal (Hidden by default) -->
+<div class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-on-background/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300" id="success-modal">
+<div class="bg-surface w-full max-w-sm rounded-3xl p-8 text-center transform scale-90 transition-transform duration-300 shadow-2xl">
+<div class="w-20 h-20 bg-status-active/10 text-status-active rounded-full flex items-center justify-center mx-auto mb-6">
+<span class="material-symbols-outlined text-[48px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<h2 class="font-headline-lg-mobile text-primary mb-2">You're All Set!</h2>
+<p class="text-on-surface-variant font-body-md mb-8">Welcome to the FreshFlow family. Your wallet is ready for its first top-up.</p>
+<button class="w-full py-4 bg-primary text-white font-headline-sm rounded-xl shadow-lg" onclick="window.location.reload()">
+                Go to Dashboard
+            </button>
+</div>
+</div>
+<!-- Atmospheric Background Decoration -->
+<div class="fixed -bottom-32 -left-32 w-80 h-80 bg-primary-fixed-dim/20 blur-[100px] rounded-full -z-10 animate-pulse"></div>
+<div class="fixed -top-32 -right-32 w-80 h-80 bg-secondary-container/10 blur-[100px] rounded-full -z-10 animate-pulse" style="animation-delay: 2s"></div>
+<script>
+        const step1 = document.getElementById('step-1');
+        const step2 = document.getElementById('step-2');
+        const progressBar = document.getElementById('progress-bar');
+        const stepNum = document.getElementById('current-step-num');
+        const successModal = document.getElementById('success-modal');
+        const form = document.getElementById('onboarding-form');
+
+        function nextStep() {
+            // Basic validation for phone
+            const phone = document.getElementById('phone').value;
+            if (phone.length < 10) {
+                alert('Please enter a valid phone number');
+                return;
+            }
+
+            step1.classList.add('-translate-x-full', 'opacity-0', 'pointer-events-none');
+            step2.classList.remove('translate-x-full', 'opacity-0', 'pointer-events-none');
+            progressBar.style.width = '100%';
+            stepNum.innerText = '2';
+        }
+
+        function prevStep() {
+            step1.classList.remove('-translate-x-full', 'opacity-0', 'pointer-events-none');
+            step2.classList.add('translate-x-full', 'opacity-0', 'pointer-events-none');
+            progressBar.style.width = '50%';
+            stepNum.innerText = '1';
+        }
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            // Show Success Animation
+            successModal.classList.remove('opacity-0', 'pointer-events-none');
+            successModal.querySelector('div').classList.remove('scale-90');
+            successModal.querySelector('div').classList.add('scale-100');
+            
+            // Logic for "Freshness" vibe - trigger confetti or similar micro-interaction
+            console.log('Onboarding Complete for: ', {
+                phone: document.getElementById('phone').value,
+                address: document.getElementById('address').value,
+                city: document.getElementById('city').value,
+                pincode: document.getElementById('pincode').value
+            });
+        });
+
+        // Simple haptic-like feedback for buttons
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('touchstart', () => {
+                if ('vibrate' in navigator) navigator.vibrate(5);
+            });
+        });
+    </script>
+</body></html>

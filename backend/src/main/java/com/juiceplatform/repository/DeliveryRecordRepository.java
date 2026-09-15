@@ -4,6 +4,7 @@ import com.juiceplatform.entity.DeliveryRecord;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -13,4 +14,6 @@ public interface DeliveryRecordRepository extends JpaRepository<DeliveryRecord, 
     boolean existsByOrderId(UUID orderId);
 
     Optional<DeliveryRecord> findByOrderId(UUID orderId);
+
+    List<DeliveryRecord> findByOrderIdIn(List<UUID> orderIds);
 }

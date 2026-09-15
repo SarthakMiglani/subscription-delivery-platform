@@ -20,8 +20,7 @@ import java.util.UUID;
 
 /**
  * Admin-only read endpoint for audit log browsing.
- * Audit logs are immutable — no write endpoints exposed (BR-AUD-03).
- * Note: this endpoint is not defined in the API spec but is required for admin operations.
+ * Audit logs are immutable — no write endpoints exposed.
  */
 @RestController
 @RequestMapping("/api/v1/admin/audit-logs")

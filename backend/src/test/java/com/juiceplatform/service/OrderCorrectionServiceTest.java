@@ -62,7 +62,7 @@ class OrderCorrectionServiceTest extends AbstractIntegrationTest {
         assertThat(balanceAfterDelivery).isEqualTo(7000L);
 
         OrderCorrectionRequest request = new OrderCorrectionRequest(
-                "SKIPPED", "DAMAGED", true, null, null);
+                "SKIPPED", "DAMAGED", true, null, null, null, null);
         OrderCorrectionResponse response = correctionService.correctOrder(order.getId(), request, admin.getId());
 
         assertThat(response.isAutoRefundIssued()).isTrue();
@@ -94,7 +94,7 @@ class OrderCorrectionServiceTest extends AbstractIntegrationTest {
         deliveryService.markDelivered(order.getId(), admin.getId());
 
         OrderCorrectionRequest request = new OrderCorrectionRequest(
-                "SKIPPED", "OTHER", false, null, null);
+                "SKIPPED", "OTHER", false, null, null, null, null);
         OrderCorrectionResponse response = correctionService.correctOrder(order.getId(), request, admin.getId());
 
         assertThat(response.isAutoRefundIssued()).isFalse();
@@ -118,7 +118,7 @@ class OrderCorrectionServiceTest extends AbstractIntegrationTest {
         deliveryService.markSkipped(order.getId(), "CUSTOMER_UNAVAILABLE", admin.getId());
 
         OrderCorrectionRequest request = new OrderCorrectionRequest(
-                "DELIVERED", null, null, null, null);
+                "DELIVERED", null, null, null, null, null, null);
         OrderCorrectionResponse response = correctionService.correctOrder(order.getId(), request, admin.getId());
 
         assertThat(response.getStatus()).isEqualTo("DELIVERED");
@@ -147,7 +147,7 @@ class OrderCorrectionServiceTest extends AbstractIntegrationTest {
         deliveryService.markSkipped(order.getId(), "DAMAGED", admin.getId());
 
         OrderCorrectionRequest request = new OrderCorrectionRequest(
-                "DELIVERED", null, null, null, null);
+                "DELIVERED", null, null, null, null, null, null);
         OrderCorrectionResponse response = correctionService.correctOrder(order.getId(), request, admin.getId());
 
         assertThat(response.getStatus()).isEqualTo("DELIVERED");
@@ -168,7 +168,7 @@ class OrderCorrectionServiceTest extends AbstractIntegrationTest {
         factory.createPendingDeliveryRecord(order.getId(), order.getDeliveryDate());
 
         OrderCorrectionRequest request = new OrderCorrectionRequest(
-                "CANCELLED", null, null, null, "Operational cancellation");
+                "CANCELLED", null, null, null, "Operational cancellation", null, null);
         correctionService.correctOrder(order.getId(), request, admin.getId());
 
         Order updatedOrder = orderRepository.findById(order.getId()).orElseThrow();
@@ -191,7 +191,7 @@ class OrderCorrectionServiceTest extends AbstractIntegrationTest {
         orderRepository.save(order);
 
         OrderCorrectionRequest request = new OrderCorrectionRequest(
-                "DELIVERED", null, null, null, null);
+                "DELIVERED", null, null, null, null, null, null);
 
         assertThatThrownBy(() -> correctionService.correctOrder(order.getId(), request, admin.getId()))
                 .isInstanceOf(BusinessException.class)
@@ -207,7 +207,7 @@ class OrderCorrectionServiceTest extends AbstractIntegrationTest {
         orderRepository.save(order);
 
         OrderCorrectionRequest request = new OrderCorrectionRequest(
-                "DELIVERED", null, null, null, null);
+                "DELIVERED", null, null, null, null, null, null);
 
         assertThatThrownBy(() -> correctionService.correctOrder(order.getId(), request, admin.getId()))
                 .isInstanceOf(BusinessException.class)

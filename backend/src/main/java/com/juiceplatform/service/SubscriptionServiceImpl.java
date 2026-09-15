@@ -35,7 +35,9 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -49,6 +51,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private final UserRepository userRepository;
     private final OrderRepository orderRepository;
     private final SubscriptionChangeRequestRepository changeRequestRepository;
+    private final NotificationService notificationService;
 
     @Override
     @Transactional
@@ -66,14 +69,14 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                     "Product is currently disabled", HttpStatus.BAD_REQUEST);
         }
 
-        // 3. Check for duplicate active subscription (BR-SUB-01)
+        // 3. Check for duplicate active subscription
         subscriptionRepository.findActiveByCustomerIdAndProductId(customerId, request.getProductId())
                 .ifPresent(existing -> {
                     throw new BusinessException("SUBSCRIPTION_DUPLICATE",
                             "A subscription for this product already exists.", HttpStatus.CONFLICT);
                 });
 
-        // 4. Compute effective start date using cutoff rule (BR-CUT-03 / BR-CUT-04)
+        // 4. Compute effective start date using cutoff rule
         LocalDate effectiveStartDate = computeEffectiveDate();
 
         // 5. Create subscription
@@ -107,12 +110,16 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             page = subscriptionRepository.findByCustomerId(customerId, pageable);
         }
 
-        return page.map(sub -> {
-            String productName = productRepository.findById(sub.getProductId())
-                    .map(Product::getName)
-                    .orElse("Unknown Product");
-            return toResponse(sub, productName);
-        });
+        Map<UUID, String> productNames = productRepository
+                .findAllById(page.getContent().stream()
+                        .map(Subscription::getProductId)
+                        .distinct()
+                        .collect(Collectors.toList()))
+                .stream()
+                .collect(Collectors.toMap(Product::getId, Product::getName));
+
+        return page.map(sub -> toResponse(sub,
+                productNames.getOrDefault(sub.getProductId(), "Unknown Product")));
     }
 
     @Override
@@ -136,8 +143,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         subscription.setPauseReason(Subscription.PauseReason.USER_PAUSED);
         subscriptionRepository.save(subscription);
 
-        // Cancel future SCHEDULED orders from effectiveDate onward (BR-PAU-01)
-        // LOCKED orders are unaffected
+        // Cancel future SCHEDULED orders from effectiveDate onward (LOCKED orders are unaffected)
         cancelScheduledOrdersFrom(subscription.getId(), effectiveDate);
 
         return PauseSubscriptionResponse.builder()
@@ -176,7 +182,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     public CancelSubscriptionResponse cancelSubscription(UUID customerId, UUID subscriptionId) {
         Subscription subscription = requireOwnedSubscription(customerId, subscriptionId);
 
-        // Validate state transition (BR-SUB-04: CANCELLED is terminal)
+        // Validate state transition (CANCELLED is terminal)
         if (subscription.getStatus() == Subscription.SubscriptionStatus.CANCELLED) {
             throw new BusinessException("SUBSCRIPTION_ALREADY_CANCELLED",
                     "Subscription is already cancelled", HttpStatus.CONFLICT);
@@ -189,9 +195,16 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         subscription.setPauseReason(null);
         subscriptionRepository.save(subscription);
 
-        // Cancel future SCHEDULED orders from effectiveDate onward (BR-CAN-01)
-        // LOCKED orders are unaffected
+        // Cancel future SCHEDULED orders from effectiveDate onward (LOCKED orders are unaffected)
         cancelScheduledOrdersFrom(subscription.getId(), effectiveDate);
+
+        // Best-effort admin notification (BR-NOT-02/03) — never blocks the cancellation itself
+        User customer = userRepository.findById(customerId).orElse(null);
+        String productName = productRepository.findById(subscription.getProductId())
+                .map(Product::getName).orElse(null);
+        notificationService.notifySubscriptionCancelled(
+                customerId, customer != null ? customer.getName() : "Customer",
+                subscription.getId(), productName);
 
         return CancelSubscriptionResponse.builder()
                 .subscriptionId(subscription.getId())
@@ -254,12 +267,15 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     @Transactional
     public QuantityChangeResponse changeQuantity(UUID customerId, UUID subscriptionId,
                                                   ChangeQuantityRequest request) {
-        Subscription subscription = requireOwnedSubscription(customerId, subscriptionId);
+        // Pessimistic lock on the subscription row serializes concurrent supersede+insert
+        // sequences for this subscription (BR-SUB-10), preventing two concurrent requests
+        // from both creating simultaneously-APPROVED requests of the same type.
+        Subscription subscription = requireOwnedSubscriptionForUpdate(customerId, subscriptionId);
         requireModifiableSubscription(subscription);
 
         LocalDate effectiveDate = computeEffectiveDate();
 
-        // Supersede any existing APPROVED QUANTITY request (BR-SUB-08)
+        // Supersede any existing APPROVED QUANTITY request
         List<SubscriptionChangeRequest> existing = changeRequestRepository
                 .findBySubscriptionIdAndChangeTypeAndStatus(
                         subscriptionId,
@@ -270,7 +286,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             changeRequestRepository.save(old);
         }
 
-        // Create new APPROVED request (BR-SUB-09)
+        // Create new APPROVED request
         SubscriptionChangeRequest changeRequest = new SubscriptionChangeRequest();
         changeRequest.setSubscriptionId(subscriptionId);
         changeRequest.setChangeType(SubscriptionChangeRequest.ChangeRequestType.QUANTITY);
@@ -294,7 +310,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     @Transactional
     public ProductChangeResponse changeProduct(UUID customerId, UUID subscriptionId,
                                                 ChangeProductRequest request) {
-        Subscription subscription = requireOwnedSubscription(customerId, subscriptionId);
+        // Pessimistic lock — see changeQuantity for rationale (BR-SUB-10).
+        Subscription subscription = requireOwnedSubscriptionForUpdate(customerId, subscriptionId);
         requireModifiableSubscription(subscription);
 
         // Validate target product exists and is available
@@ -319,7 +336,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
         LocalDate effectiveDate = computeEffectiveDate();
 
-        // Supersede any existing APPROVED PRODUCT request (BR-SUB-08)
+        // Supersede any existing APPROVED PRODUCT request
         List<SubscriptionChangeRequest> existingRequests = changeRequestRepository
                 .findBySubscriptionIdAndChangeTypeAndStatus(
                         subscriptionId,
@@ -330,7 +347,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             changeRequestRepository.save(old);
         }
 
-        // Create new APPROVED request (BR-SUB-09)
+        // Create new APPROVED request
         SubscriptionChangeRequest changeRequest = new SubscriptionChangeRequest();
         changeRequest.setSubscriptionId(subscriptionId);
         changeRequest.setChangeType(SubscriptionChangeRequest.ChangeRequestType.PRODUCT);
@@ -430,8 +447,18 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                         "Subscription not found", HttpStatus.NOT_FOUND));
     }
 
+    /**
+     * Same as {@link #requireOwnedSubscription} but acquires a pessimistic write lock,
+     * serializing concurrent change-request supersedence for this subscription (BR-SUB-10).
+     */
+    private Subscription requireOwnedSubscriptionForUpdate(UUID customerId, UUID subscriptionId) {
+        return subscriptionRepository.findByIdAndCustomerIdForUpdate(subscriptionId, customerId)
+                .orElseThrow(() -> new BusinessException("RESOURCE_NOT_FOUND",
+                        "Subscription not found", HttpStatus.NOT_FOUND));
+    }
+
     private LocalDate computeEffectiveDate() {
-        // BR-CUT-01/03/04: cutoff at 22:00 IST
+        // Cutoff at 22:00 IST
         OffsetDateTime nowIst = OffsetDateTime.now(IST);
         LocalTime currentTime = nowIst.toLocalTime();
 
@@ -479,7 +506,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     /**
-     * Validates that a subscription is in a state that allows change requests (BR-SUB-07).
+     * Validates that a subscription is in a state that allows change requests.
      * Only ACTIVE and PAUSED subscriptions may have change requests.
      */
     private void requireModifiableSubscription(Subscription subscription) {

@@ -15,8 +15,6 @@ import java.time.ZoneId;
  * Scheduled job for subscription activation.
  * Runs at 22:04 IST — before OrderGenerationJob (22:05) to ensure newly activated
  * subscriptions are included in the same night's order generation.
- * BR-SUB-05: PENDING_START → ACTIVE is scheduler-driven only.
- * BR-ORD-07: PENDING_START subscriptions are transitioned to ACTIVE before order generation.
  *
  * Note: activation is also called inline by OrderGenerationScheduler to ensure
  * correct sequencing when both run together (e.g. during startup recovery).
@@ -44,7 +42,7 @@ public class SubscriptionActivationScheduler {
                     result.date(), result.subscriptionsActivated());
         } catch (Exception e) {
             log.error("SubscriptionActivationJob failed for {}: {}", today, e.getMessage(), e);
-            // Best-effort notification — non-blocking (BR-NOT-01, BR-NOT-03, BR-SCH-06)
+            // Best-effort notification — non-blocking
             try {
                 notificationService.notifySchedulerJobFailure(
                         SubscriptionActivationService.JOB_NAME, today, e.getMessage());

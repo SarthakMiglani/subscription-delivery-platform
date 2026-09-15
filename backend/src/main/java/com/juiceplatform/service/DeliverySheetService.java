@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.juiceplatform.dto.deliverysheet.DeliverySheetOrderEntry;
 import com.juiceplatform.dto.deliverysheet.DeliverySheetResponse;
 import com.juiceplatform.dto.deliverysheet.JuiceSummaryEntry;
+import com.juiceplatform.dto.ingredient.IngredientSummaryEntry;
 import com.juiceplatform.entity.DeliveryRecord;
 import com.juiceplatform.entity.DeliverySheetSnapshot;
 import com.juiceplatform.entity.Order;
@@ -31,13 +32,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Generates and retrieves delivery sheet snapshots.
- * Per docs: snapshot is replaced on rerun (not append-only).
- * Per API spec Domain 13: snapshot_json stores delivery list + juiceSummary.
- * Per docs: only LOCKED orders with PENDING delivery_records appear.
- * CANCELLED delivery_records are excluded (BR-HIS-01, API spec Domain 10 note).
+ * Only LOCKED orders with PENDING delivery_records appear.
+ * CANCELLED delivery_records are excluded.
+ * Snapshots are replaced on rerun (not append-only).
  */
 @Service
 @RequiredArgsConstructor
@@ -52,10 +53,11 @@ public class DeliverySheetService {
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
     private final ObjectMapper objectMapper;
+    private final IngredientService ingredientService;
 
     /**
      * Generates (or regenerates) the delivery sheet snapshot for the given date.
-     * On rerun: replaces the existing snapshot (DELETE + INSERT per db-schema §3.13 notes).
+     * On rerun: replaces the existing snapshot (DELETE + INSERT).
      * Idempotent: safe to call multiple times for the same date.
      *
      * @param deliveryDate the target delivery date
@@ -79,7 +81,7 @@ public class DeliverySheetService {
             throw new IllegalStateException("Failed to serialize delivery sheet snapshot", e);
         }
 
-        // Replace existing snapshot if present (per db-schema §3.13: DELETE + INSERT on rerun)
+        // Replace existing snapshot if present (DELETE + INSERT on rerun)
         snapshotRepository.findByDeliveryDate(deliveryDate)
                 .ifPresent(snapshotRepository::delete);
         snapshotRepository.flush();
@@ -108,7 +110,25 @@ public class DeliverySheetService {
                         "No delivery sheet exists for date: " + deliveryDate, HttpStatus.NOT_FOUND));
 
         try {
-            return objectMapper.readValue(snapshot.getSnapshotJson(), DeliverySheetResponse.class);
+            DeliverySheetResponse response = objectMapper.readValue(snapshot.getSnapshotJson(), DeliverySheetResponse.class);
+
+            List<UUID> orderIds = response.getOrders().stream()
+                    .map(com.juiceplatform.dto.deliverysheet.DeliverySheetOrderEntry::getOrderId)
+                    .collect(Collectors.toList());
+
+            if (!orderIds.isEmpty()) {
+                Map<UUID, DeliveryRecord> records = deliveryRecordRepository.findByOrderIdIn(orderIds)
+                        .stream().collect(Collectors.toMap(DeliveryRecord::getOrderId, r -> r));
+
+                response.getOrders().forEach(entry -> {
+                    DeliveryRecord record = records.get(entry.getOrderId());
+                    if (record != null) {
+                        entry.setDeliveryStatus(record.getStatus().name());
+                    }
+                });
+            }
+
+            return response;
         } catch (JsonProcessingException e) {
             throw new IllegalStateException("Failed to deserialize delivery sheet snapshot", e);
         }
@@ -116,36 +136,45 @@ public class DeliverySheetService {
 
     /**
      * Builds the delivery sheet data from LOCKED orders with PENDING delivery_records.
-     * CANCELLED delivery_records are excluded per API spec Domain 10 note and BR-HIS-01.
+     * CANCELLED delivery_records are excluded.
      */
     private DeliverySheetResponse buildSheetData(LocalDate deliveryDate) {
-        // Find all LOCKED orders for this delivery date
-        List<Order> lockedOrders = orderRepository.findByDeliveryDateAndStatus(
-                deliveryDate, Order.OrderStatus.LOCKED);
+        // Find all relevant orders for this delivery date (LOCKED, DELIVERED, SKIPPED)
+        List<Order> lockedOrders = orderRepository.findByDeliveryDateAndStatusIn(
+                deliveryDate, List.of(Order.OrderStatus.LOCKED, Order.OrderStatus.DELIVERED, Order.OrderStatus.SKIPPED));
+
+        // Batch-fetch delivery records, customers, and products to avoid N+1 queries
+        List<UUID> orderIds = lockedOrders.stream().map(Order::getId).collect(Collectors.toList());
+        Map<UUID, DeliveryRecord> recordsByOrderId = deliveryRecordRepository.findByOrderIdIn(orderIds)
+                .stream().collect(Collectors.toMap(DeliveryRecord::getOrderId, r -> r));
+
+        List<UUID> customerIds = lockedOrders.stream().map(Order::getCustomerId).distinct().collect(Collectors.toList());
+        Map<UUID, User> customersById = userRepository.findAllById(customerIds)
+                .stream().collect(Collectors.toMap(User::getId, u -> u));
+
+        List<UUID> productIds = lockedOrders.stream().map(Order::getProductId).distinct().collect(Collectors.toList());
+        Map<UUID, String> productNames = productRepository.findAllById(productIds)
+                .stream().collect(Collectors.toMap(Product::getId, Product::getName));
 
         List<DeliverySheetOrderEntry> orderEntries = new ArrayList<>();
         Map<String, Integer> juiceTotals = new LinkedHashMap<>();
+        List<Order> activeOrders = new ArrayList<>();
 
         for (Order order : lockedOrders) {
             // Only include orders with PENDING delivery_records (exclude CANCELLED)
-            DeliveryRecord record = deliveryRecordRepository.findByOrderId(order.getId())
-                    .orElse(null);
+            DeliveryRecord record = recordsByOrderId.get(order.getId());
             if (record == null || record.getStatus() == DeliveryRecord.DeliveryRecordStatus.CANCELLED) {
                 continue;
             }
 
-            // Load customer for name and phone
-            User customer = userRepository.findById(order.getCustomerId()).orElse(null);
+            activeOrders.add(order);
+
+            User customer = customersById.get(order.getCustomerId());
             String customerName = customer != null ? customer.getName() : "Unknown";
             String phone = customer != null ? customer.getPhone() : "";
 
-            // Format address per API spec: "line1, line2, city pincode"
             String address = formatAddress(order);
-
-            // Load product name
-            String productName = productRepository.findById(order.getProductId())
-                    .map(Product::getName)
-                    .orElse("Unknown Product");
+            String productName = productNames.getOrDefault(order.getProductId(), "Unknown Product");
 
             orderEntries.add(DeliverySheetOrderEntry.builder()
                     .orderId(order.getId())
@@ -155,9 +184,9 @@ public class DeliverySheetService {
                     .deliveryNotes(order.getDeliveryNotes())
                     .productName(productName)
                     .quantity(order.getQuantity())
+                    .deliveryStatus(record.getStatus().name())
                     .build());
 
-            // Aggregate juice summary
             juiceTotals.merge(productName, order.getQuantity(), Integer::sum);
         }
 
@@ -168,17 +197,21 @@ public class DeliverySheetService {
                         .build())
                 .toList();
 
+        IngredientService.IngredientComputeResult ingredientResult =
+                ingredientService.computeIngredientSummary(activeOrders);
+
         return DeliverySheetResponse.builder()
                 .deliveryDate(deliveryDate)
                 .generatedAt(OffsetDateTime.now(IST))
                 .orders(orderEntries)
                 .juiceSummary(juiceSummary)
+                .ingredientSummary(ingredientResult.entries())
+                .productsWithoutRecipe(ingredientResult.productsWithoutRecipe())
                 .build();
     }
 
     /**
-     * Formats address as a display string per API spec Domain 13 notes:
-     * "line1, line2, city pincode"
+     * Formats address as a display string: "line1, line2, city pincode".
      */
     private String formatAddress(Order order) {
         StringBuilder sb = new StringBuilder();

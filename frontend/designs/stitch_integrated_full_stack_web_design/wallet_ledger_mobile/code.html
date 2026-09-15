@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<title>FreshFlow | Wallet &amp; Ledger</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700&amp;family=Hanken+Grotesk:wght@400;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-dim": "#d8dad9",
+                    "on-secondary-fixed": "#2c1600",
+                    "secondary-fixed": "#ffdcbe",
+                    "on-secondary": "#ffffff",
+                    "on-tertiary": "#ffffff",
+                    "tertiary": "#264300",
+                    "error": "#ba1a1a",
+                    "status-locked": "#455A64",
+                    "tertiary-container": "#365c00",
+                    "on-secondary-container": "#653900",
+                    "on-primary-fixed": "#002203",
+                    "on-error": "#ffffff",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container-highest": "#e1e3e1",
+                    "background": "#f8faf8",
+                    "status-future": "#0288D1",
+                    "surface-variant": "#e1e3e1",
+                    "inverse-on-surface": "#eff1ef",
+                    "secondary-container": "#ff9800",
+                    "secondary": "#8b5000",
+                    "on-surface-variant": "#41493e",
+                    "tertiary-fixed-dim": "#9ed75b",
+                    "wallet-debit": "#D32F2F",
+                    "on-surface": "#191c1b",
+                    "on-secondary-fixed-variant": "#693c00",
+                    "primary-fixed": "#acf4a4",
+                    "inverse-surface": "#2e3130",
+                    "primary-fixed-dim": "#91d78a",
+                    "on-tertiary-container": "#9dd65b",
+                    "inverse-primary": "#91d78a",
+                    "surface-container-low": "#f2f4f2",
+                    "surface-tint": "#2a6b2c",
+                    "status-active": "#2E7D32",
+                    "primary-container": "#1b5e20",
+                    "surface-bright": "#f8faf8",
+                    "on-tertiary-fixed": "#0f2000",
+                    "tertiary-fixed": "#b9f474",
+                    "status-error": "#D32F2F",
+                    "on-primary-container": "#90d689",
+                    "status-warning": "#ED6C02",
+                    "on-tertiary-fixed-variant": "#2e4f00",
+                    "on-primary": "#ffffff",
+                    "outline": "#717a6d",
+                    "secondary-fixed-dim": "#ffb870",
+                    "primary": "#00450d",
+                    "wallet-credit": "#2E7D32",
+                    "outline-variant": "#c0c9bb",
+                    "error-container": "#ffdad6",
+                    "surface-container": "#eceeec",
+                    "on-error-container": "#93000a",
+                    "surface-container-high": "#e6e9e7",
+                    "on-primary-fixed-variant": "#0c5216",
+                    "surface": "#f8faf8",
+                    "on-background": "#191c1b"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "section-gap": "40px",
+                    "container-padding-mobile": "16px",
+                    "gutter": "16px",
+                    "container-padding-desktop": "32px",
+                    "card-inner-padding": "24px",
+                    "base": "8px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Hanken Grotesk"],
+                    "headline-lg-mobile": ["Plus Jakarta Sans"],
+                    "label-caps": ["Hanken Grotesk"],
+                    "headline-lg": ["Plus Jakarta Sans"],
+                    "body-sm": ["Hanken Grotesk"],
+                    "headline-sm": ["Plus Jakarta Sans"],
+                    "body-md": ["Hanken Grotesk"],
+                    "headline-md": ["Plus Jakarta Sans"],
+                    "mono-data": ["JetBrains Mono"]
+            },
+            "fontSize": {
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "mono-data": ["13px", {"lineHeight": "18px", "fontWeight": "500"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { background-color: #f8faf8; -webkit-tap-highlight-color: transparent; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .glass-card { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(8px); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="font-body-md text-on-surface">
+<!-- Top Navigation Bar -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-container-padding-mobile md:px-container-padding-desktop h-16 bg-surface dark:bg-surface-dim shadow-sm dark:shadow-none">
+<div class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed-dim">FreshFlow</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high transition-colors active:scale-95 duration-200 rounded-full">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A professional studio portrait of a customer smiling warmly, set against a soft green background that matches the brand's healthy wellness aesthetic. High-key lighting emphasizes clarity and friendliness, reinforcing the trustworthy fintech and logistics personality of the app." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBd1wbqhUqseo_vZAputSnow6CpBn0NQh8X7iDyE8gPSa9DkYpza-K7AJ6FPzKzEDqw9BpQ3HPLdy_9v9zBO8Y8YVhEySrXxPzVPaFjEP1dA4bwKhIZiGq-GYNmzU9uOJQDcPClBExqFV1mYc1QbhzTOsqPHscgBZ_KK8pi9SFfJuI3qU3XG6wA_4nSSmayR1rHtbAQzhoI9KNqNoHw1dDMPFGxmrPmgDgt468sottBYAOeBy5CHPRX4-mIVdg2h0Q3yLwpVdVKVN4"/>
+</div>
+</div>
+</header>
+<main class="pt-20 pb-24 px-container-padding-mobile max-w-lg mx-auto">
+<!-- Low Balance Alert Banner (Sticky) -->
+<div class="sticky top-16 z-40 mb-6 flex items-center gap-3 p-4 bg-error-container text-on-error-container border-l-4 border-status-error rounded-r-lg shadow-md transform transition-all duration-300" id="low-balance-alert">
+<span class="material-symbols-outlined text-status-error">warning</span>
+<div class="flex-1">
+<p class="font-label-caps text-label-caps">Low Balance Alert</p>
+<p class="font-body-sm text-body-sm">Your balance is below ₹200. Please top up to avoid delivery disruptions.</p>
+</div>
+<button class="p-1" onclick="this.parentElement.style.display='none'">
+<span class="material-symbols-outlined text-on-error-container text-sm">close</span>
+</button>
+</div>
+<!-- Wallet Card Section -->
+<section class="mb-8">
+<div class="relative overflow-hidden rounded-xl bg-primary text-on-primary p-card-inner-padding shadow-lg">
+<!-- Decorative Shader Background -->
+
+<div class="relative z-10">
+<div class="flex justify-between items-start mb-4">
+<span class="font-label-caps text-label-caps opacity-80">CURRENT BALANCE</span>
+<span class="material-symbols-outlined opacity-60">account_balance_wallet</span>
+</div>
+<div class="flex items-baseline gap-1 mb-6">
+<span class="font-headline-lg-mobile text-headline-lg-mobile opacity-70">₹</span>
+<h1 class="text-4xl md:text-5xl font-bold tracking-tight font-headline-lg" data-paise="124000" id="balance-paise">1,240.00</h1>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<button class="bg-secondary-container text-on-secondary-container font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 active:scale-95 transition-transform duration-150 shadow-sm">
+<span class="material-symbols-outlined">add_circle</span>
+<span class="font-label-caps">Quick Top-up</span>
+</button>
+<button class="bg-surface-container-highest/20 hover:bg-surface-container-highest/30 backdrop-blur-sm text-on-primary font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 active:scale-95 transition-transform duration-150 border border-on-primary/20">
+<span class="material-symbols-outlined">support_agent</span>
+<span class="font-label-caps">Alert Admin</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Ledger History -->
+<section>
+<div class="flex items-center justify-between mb-4">
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Recent Activity</h2>
+<button class="text-primary font-label-caps text-label-caps flex items-center gap-1">
+                    Filter <span class="material-symbols-outlined text-sm">filter_list</span>
+</button>
+</div>
+<div class="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant divide-y divide-outline-variant">
+<!-- Ledger Entry 1 (Debit) -->
+<div class="p-4 flex items-center justify-between hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-error-container/30 flex items-center justify-center">
+<span class="material-symbols-outlined text-wallet-debit">local_shipping</span>
+</div>
+<div>
+<p class="font-body-md text-body-md font-bold text-on-surface">Daily Milk Subscription</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">24 Oct, 06:15 AM</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-mono-data text-mono-data text-wallet-debit">- ₹78.00</p>
+<p class="font-label-caps text-[10px] text-on-surface-variant uppercase">DEBIT</p>
+</div>
+</div>
+<!-- Ledger Entry 2 (Credit) -->
+<div class="p-4 flex items-center justify-between hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-fixed/30 flex items-center justify-center">
+<span class="material-symbols-outlined text-wallet-credit">payments</span>
+</div>
+<div>
+<p class="font-body-md text-body-md font-bold text-on-surface">Wallet Top-up</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">22 Oct, 11:30 AM</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-mono-data text-mono-data text-wallet-credit">+ ₹2,000.00</p>
+<p class="font-label-caps text-[10px] text-on-surface-variant uppercase">CREDIT</p>
+</div>
+</div>
+<!-- Ledger Entry 3 (Debit) -->
+<div class="p-4 flex items-center justify-between hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-error-container/30 flex items-center justify-center">
+<span class="material-symbols-outlined text-wallet-debit">shopping_basket</span>
+</div>
+<div>
+<p class="font-body-md text-body-md font-bold text-on-surface">Organic Fruit Basket</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">21 Oct, 07:02 AM</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-mono-data text-mono-data text-wallet-debit">- ₹450.00</p>
+<p class="font-label-caps text-[10px] text-on-surface-variant uppercase">DEBIT</p>
+</div>
+</div>
+<!-- Ledger Entry 4 (Debit) -->
+<div class="p-4 flex items-center justify-between hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-error-container/30 flex items-center justify-center">
+<span class="material-symbols-outlined text-wallet-debit">local_shipping</span>
+</div>
+<div>
+<p class="font-body-md text-body-md font-bold text-on-surface">Daily Milk Subscription</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">21 Oct, 06:12 AM</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-mono-data text-mono-data text-wallet-debit">- ₹78.00</p>
+<p class="font-label-caps text-[10px] text-on-surface-variant uppercase">DEBIT</p>
+</div>
+</div>
+</div>
+<button class="w-full mt-6 py-4 text-primary font-bold font-label-caps text-label-caps border border-primary/20 rounded-xl hover:bg-surface-container-high active:scale-95 transition-all">
+                VIEW FULL STATEMENT
+            </button>
+</section>
+<!-- Operational Info -->
+<div class="mt-8 p-4 bg-surface-container-low rounded-xl border border-outline-variant">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-status-active">info</span>
+<div>
+<h3 class="font-label-caps text-label-caps text-on-surface">Operational Insight</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Wallet deductions occur at 10 PM daily for next-day deliveries. Transactions are final once "Locked".</p>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-safe h-16 bg-surface dark:bg-surface-container-lowest shadow-lg dark:shadow-none rounded-t-xl lg:hidden">
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant active:scale-90 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-caps text-label-caps">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant active:scale-90 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined">event_repeat</span>
+<span class="font-label-caps text-label-caps">Calendar</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1 active:scale-90 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">payments</span>
+<span class="font-label-caps text-label-caps">Wallet</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant active:scale-90 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined">menu</span>
+<span class="font-label-caps text-label-caps">Menu</span>
+</a>
+</nav>
+<script>
+        // Micro-interaction: Update balance animation
+        document.addEventListener('DOMContentLoaded', () => {
+            const balanceEl = document.getElementById('balance-paise');
+            const totalPaise = parseInt(balanceEl.dataset.paise);
+            const lowBalanceAlert = document.getElementById('low-balance-alert');
+            
+            // Format paise into INR
+            const formatted = (totalPaise / 100).toLocaleString('en-IN', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+            balanceEl.innerText = formatted;
+
+            // Simple logic to show/hide low balance banner based on threshold
+            if (totalPaise < 20000) { // 200.00 INR = 20000 Paise
+                lowBalanceAlert.classList.remove('hidden');
+            } else {
+                // In a real app we'd hide it, but the prompt asked for it, 
+                // so we simulate the "alert" state.
+                lowBalanceAlert.classList.remove('hidden');
+            }
+
+            // Visual pulse on low balance
+            setInterval(() => {
+                const icon = lowBalanceAlert.querySelector('.material-symbols-outlined');
+                icon.classList.add('scale-125');
+                setTimeout(() => icon.classList.remove('scale-125'), 300);
+            }, 3000);
+        });
+    </script>
+</body></html>

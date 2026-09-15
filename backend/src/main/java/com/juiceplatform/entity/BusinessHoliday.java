@@ -16,8 +16,7 @@ import java.util.UUID;
 
 /**
  * Admin-managed holiday table.
- * Supports hard deletion — the only entity in MVP that does (BR-GEN-01).
- * Schema matches db-schema section 3.7 exactly.
+ * Supports hard deletion — the only entity in MVP that does.
  */
 @Entity
 @Table(name = "business_holidays")

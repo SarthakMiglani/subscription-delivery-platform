@@ -16,6 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,6 +47,22 @@ class CriticalFixesTest extends AbstractIntegrationTest {
         factory.createAddress(customer.getId());
         product = factory.createProduct(2500L);
         admin = factory.createAdmin();
+    }
+
+    /**
+     * Mirrors SubscriptionServiceImpl.computeEffectiveDate(): before 22:00 IST ->
+     * tomorrow, at/after 22:00 IST -> day-after-tomorrow. Tests that assert on
+     * pause/cancel effective dates must use this instead of a bare
+     * LocalDate.now().plusDays(1), otherwise they flake whenever the suite
+     * happens to run at/after 22:00 IST.
+     */
+    private static LocalDate expectedEffectiveDate() {
+        ZoneId ist = ZoneId.of("Asia/Kolkata");
+        OffsetDateTime nowIst = OffsetDateTime.now(ist);
+        LocalTime cutoff = LocalTime.of(22, 0, 0);
+        return nowIst.toLocalTime().isBefore(cutoff)
+                ? nowIst.toLocalDate().plusDays(1)
+                : nowIst.toLocalDate().plusDays(2);
     }
 
     // ─── Fix 1: Deactivated customer blocking ───────────────────────────────
@@ -92,18 +111,20 @@ class CriticalFixesTest extends AbstractIntegrationTest {
     @Test
     void pauseSubscription_cancelsScheduledOrders_fromEffectiveDate() {
         var sub = factory.createActiveSubscription(customer.getId(), product.getId(), 1);
-        LocalDate tomorrow = LocalDate.now().plusDays(1);
-        LocalDate dayAfter = LocalDate.now().plusDays(2);
+        // Use the same cutoff-aware effective date the service itself computes,
+        // so this test doesn't flake when run at/after 22:00 IST.
+        LocalDate effectiveDate = expectedEffectiveDate();
+        LocalDate dayAfter = effectiveDate.plusDays(1);
 
         // Create two SCHEDULED orders
         factory.createLockedOrder(customer.getId(), sub.getId(), product.getId(),
-                2500L, 1, tomorrow);
+                2500L, 1, effectiveDate);
         factory.createLockedOrder(customer.getId(), sub.getId(), product.getId(),
                 2500L, 1, dayAfter);
 
         // Change them to SCHEDULED status
         List<Order> orders = orderRepository.findBySubscriptionIdAndStatusAndDeliveryDateGreaterThanEqual(
-                sub.getId(), Order.OrderStatus.LOCKED, tomorrow);
+                sub.getId(), Order.OrderStatus.LOCKED, effectiveDate);
         orders.forEach(o -> {
             o.setStatus(Order.OrderStatus.SCHEDULED);
             orderRepository.save(o);
@@ -114,23 +135,25 @@ class CriticalFixesTest extends AbstractIntegrationTest {
         // All SCHEDULED orders from effectiveDate onward should be CANCELLED
         List<Order> afterPause = orderRepository
                 .findBySubscriptionIdAndStatusAndDeliveryDateGreaterThanEqual(
-                        sub.getId(), Order.OrderStatus.SCHEDULED, tomorrow);
+                        sub.getId(), Order.OrderStatus.SCHEDULED, effectiveDate);
         assertThat(afterPause).isEmpty();
 
         List<Order> cancelled = orderRepository
                 .findBySubscriptionIdAndStatusAndDeliveryDateGreaterThanEqual(
-                        sub.getId(), Order.OrderStatus.CANCELLED, tomorrow);
+                        sub.getId(), Order.OrderStatus.CANCELLED, effectiveDate);
         assertThat(cancelled).hasSize(2);
     }
 
     @Test
     void cancelSubscription_cancelsScheduledOrders() {
         var sub = factory.createActiveSubscription(customer.getId(), product.getId(), 1);
-        LocalDate tomorrow = LocalDate.now().plusDays(1);
+        // Use the same cutoff-aware effective date the service itself computes,
+        // so this test doesn't flake when run at/after 22:00 IST.
+        LocalDate effectiveDate = expectedEffectiveDate();
 
         // Create a SCHEDULED order
         var order = factory.createLockedOrder(customer.getId(), sub.getId(), product.getId(),
-                2500L, 1, tomorrow);
+                2500L, 1, effectiveDate);
         order.setStatus(Order.OrderStatus.SCHEDULED);
         orderRepository.save(order);
 

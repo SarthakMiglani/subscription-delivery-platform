@@ -20,7 +20,7 @@ import java.util.List;
 /**
  * Implements OrderFreezeJob logic.
  * Transitions SCHEDULED orders → LOCKED and creates delivery_record rows.
- * Wallet deduction does NOT happen here — it happens when admin marks DELIVERED (BR-DEL-04).
+ * Wallet deduction does NOT happen here — it happens when admin marks DELIVERED.
  */
 @Service
 @RequiredArgsConstructor
@@ -43,7 +43,7 @@ public class OrderFreezeService {
     public FreezeResult freezeOrdersForDate(LocalDate deliveryDate) {
         log.info("OrderFreezeJob starting for delivery date: {}", deliveryDate);
 
-        // Scheduler job log idempotency (BR-SCH-02)
+        // Scheduler job log idempotency
         SchedulerJobLog jobLog = acquireJobLog(deliveryDate);
         if (jobLog == null) {
             log.warn("OrderFreezeJob rejected for {} — another instance is RUNNING", deliveryDate);
@@ -54,7 +54,7 @@ public class OrderFreezeService {
         int duplicatesSkipped = 0;
 
         try {
-            // Find all SCHEDULED orders for this delivery date (BR-LCK-01)
+            // Find all SCHEDULED orders for this delivery date
             List<Order> scheduledOrders = orderRepository
                     .findByDeliveryDateAndStatus(deliveryDate, Order.OrderStatus.SCHEDULED);
 
@@ -65,11 +65,11 @@ public class OrderFreezeService {
                     continue;
                 }
 
-                // Transition order: SCHEDULED → LOCKED (BR-LCK-01)
+                // Transition order: SCHEDULED → LOCKED
                 order.setStatus(Order.OrderStatus.LOCKED);
                 orderRepository.save(order);
 
-                // Create delivery_record with status=PENDING (BR-LCK-06)
+                // Create delivery_record with status=PENDING
                 DeliveryRecord record = new DeliveryRecord();
                 record.setOrderId(order.getId());
                 record.setDeliveryDate(order.getDeliveryDate());
@@ -78,16 +78,6 @@ public class OrderFreezeService {
                 deliveryRecordRepository.save(record);
 
                 ordersLocked++;
-            }
-
-            // Count already-LOCKED orders for this date that have delivery records.
-            // These were locked by a previous run — they are idempotent duplicates (BR-SCH-02).
-            List<Order> alreadyLockedOrders = orderRepository
-                    .findByDeliveryDateAndStatus(deliveryDate, Order.OrderStatus.LOCKED);
-            for (Order order : alreadyLockedOrders) {
-                if (deliveryRecordRepository.existsByOrderId(order.getId())) {
-                    duplicatesSkipped++;
-                }
             }
 
             // Mark job COMPLETED
@@ -119,16 +109,21 @@ public class OrderFreezeService {
      * Deletes and recreates if COMPLETED or FAILED (allows rerun).
      */
     private SchedulerJobLog acquireJobLog(LocalDate deliveryDate) {
-        schedulerJobLogRepository.findByJobNameAndJobDate(JOB_NAME, deliveryDate)
-                .ifPresent(existing -> {
-                    if (existing.getStatus() == SchedulerJobLog.JobStatus.RUNNING) {
-                        throw new IllegalStateException(
-                                "OrderFreezeJob is already RUNNING for " + deliveryDate);
-                    }
-                    // COMPLETED or FAILED → delete to allow rerun
-                    schedulerJobLogRepository.delete(existing);
-                    schedulerJobLogRepository.flush();
-                });
+        try {
+            schedulerJobLogRepository.findByJobNameAndJobDate(JOB_NAME, deliveryDate)
+                    .ifPresent(existing -> {
+                        if (existing.getStatus() == SchedulerJobLog.JobStatus.RUNNING) {
+                            throw new IllegalStateException(
+                                    "OrderFreezeJob is already RUNNING for " + deliveryDate);
+                        }
+                        // COMPLETED or FAILED → delete to allow rerun
+                        schedulerJobLogRepository.delete(existing);
+                        schedulerJobLogRepository.flush();
+                    });
+        } catch (IllegalStateException e) {
+            // RUNNING guard — return null to signal rejection (caller logs and returns gracefully)
+            return null;
+        }
 
         SchedulerJobLog jobLog = new SchedulerJobLog();
         jobLog.setJobName(JOB_NAME);

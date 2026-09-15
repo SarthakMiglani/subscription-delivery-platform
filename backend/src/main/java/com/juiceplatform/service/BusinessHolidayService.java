@@ -19,8 +19,8 @@ import java.util.UUID;
 
 /**
  * Business holiday management.
- * BR-HOL-01: Managed by admin manually, one at a time.
- * BR-GEN-01: Only future holidays may be hard deleted; historical records are immutable.
+ * Holidays are managed by admins manually, one at a time.
+ * Only future holidays may be hard deleted; past records are immutable.
  */
 @Service
 @RequiredArgsConstructor
@@ -59,7 +59,7 @@ public class BusinessHolidayService {
                 .orElseThrow(() -> new BusinessException("RESOURCE_NOT_FOUND",
                         "Holiday not found: " + holidayId, HttpStatus.NOT_FOUND));
 
-        // Only future holidays may be hard deleted (BR-GEN-01)
+        // Only future holidays may be hard deleted
         LocalDate today = LocalDate.now(IST);
         if (!holiday.getHolidayDate().isAfter(today)) {
             throw new BusinessException("HOLIDAY_IMMUTABLE",

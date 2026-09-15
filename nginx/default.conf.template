@@ -1,0 +1,82 @@
+# Edge reverse proxy for the juice subscription platform.
+#
+# This is a *template* — the official nginx image renders it to
+# /etc/nginx/conf.d/default.conf on container start, substituting ${APP_DOMAIN}
+# and ${ADMIN_DOMAIN} from the container's environment (see docker-compose.prod.yml).
+# All other "$" tokens below are nginx's own variables and are left untouched by
+# that substitution (only variables that match an actual container env var name
+# get replaced).
+#
+# Two domains are expected:
+#   ${APP_DOMAIN}   — customer-facing PWA (e.g. app.example.com)
+#   ${ADMIN_DOMAIN} — admin dashboard (e.g. admin.example.com)
+# Both proxy /api/* to the backend; each serves its own static SPA build otherwise.
+#
+# TLS certs are expected at the paths Certbot's webroot plugin creates by default
+# (/etc/letsencrypt/live/<domain>/...). Until certificates exist, only the HTTP
+# server blocks below will work — see README.md for the first-run bootstrap order
+# (issue certs before uncommenting/relying on the HTTPS blocks in a fresh deploy).
+
+# ── ACME HTTP-01 challenge + HTTP → HTTPS redirect ─────────────────────────────
+server {
+    listen 80;
+    server_name ${APP_DOMAIN} ${ADMIN_DOMAIN};
+
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
+
+# ── Customer app (HTTPS) ────────────────────────────────────────────────────────
+server {
+    listen 443 ssl;
+    server_name ${APP_DOMAIN};
+
+    ssl_certificate     /etc/letsencrypt/live/${APP_DOMAIN}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/${APP_DOMAIN}/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+
+    client_max_body_size 5m;
+
+    location /api/ {
+        proxy_pass http://app:8080/api/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location / {
+        proxy_pass http://customer:80/;
+        proxy_set_header Host $host;
+    }
+}
+
+# ── Admin dashboard (HTTPS) ─────────────────────────────────────────────────────
+server {
+    listen 443 ssl;
+    server_name ${ADMIN_DOMAIN};
+
+    ssl_certificate     /etc/letsencrypt/live/${ADMIN_DOMAIN}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/${ADMIN_DOMAIN}/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+
+    client_max_body_size 5m;
+
+    location /api/ {
+        proxy_pass http://app:8080/api/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location / {
+        proxy_pass http://admin:80/;
+        proxy_set_header Host $host;
+    }
+}

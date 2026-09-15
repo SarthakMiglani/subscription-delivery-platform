@@ -1,0 +1,48 @@
+name: Keep-Alive Ping
+
+# Pings the deployed backend's health endpoint on a schedule.
+#
+# Two free-tier hosting quirks this exists to work around:
+#   1. Render's free web service spins down after 15 minutes with no inbound
+#      HTTP traffic, and takes ~1 minute to wake back up on the next request.
+#      This app runs its nightly order-generation/freeze/delivery-sheet jobs as
+#      in-process @Scheduled cron (BR-CUT-01 requires an exact 22:00 IST wall-
+#      clock cutoff) — if the instance is asleep at that moment, the job simply
+#      doesn't fire until the next request wakes it up, which could be hours
+#      late or not at all that night.
+#   2. Supabase's free Postgres project pauses after 7 days with no database
+#      activity. /api/v1/health runs a real (trivial) DB query specifically so
+#      this ping also counts as activity there.
+#
+# This is a workaround, not a guarantee — Render does not officially support
+# "always-on free tier via external pinger", and could change spin-down
+# behavior at any time. If nightly jobs are ever found to have not run
+# (check GET /admin/scheduler/history in the admin dashboard), that's a signal
+# to move the backend to a paid Render plan or a persistent-VM alternative
+# (see README.md "Known limitations of the free-tier deployment").
+#
+# Setup: add a repository variable named BACKEND_HEALTH_URL (Settings ->
+# Secrets and variables -> Actions -> Variables) set to your deployed
+# backend's health endpoint, e.g.:
+#   https://juice-platform-backend.onrender.com/api/v1/health
+
+on:
+  schedule:
+    # Every 10 minutes — comfortably under Render's 15-minute spin-down window
+    # even accounting for GitHub Actions' schedule jitter (which can delay a
+    # cron trigger by several minutes, especially at times of high platform load).
+    - cron: '*/10 * * * *'
+  workflow_dispatch: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping backend health endpoint
+        run: |
+          if [ -z "${{ vars.BACKEND_HEALTH_URL }}" ]; then
+            echo "BACKEND_HEALTH_URL repository variable is not set — skipping ping."
+            echo "Set it under Settings > Secrets and variables > Actions > Variables."
+            exit 0
+          fi
+          curl -sf --max-time 30 "${{ vars.BACKEND_HEALTH_URL }}" && echo "" || echo "Ping failed (backend may be cold-starting or down)."

@@ -20,7 +20,7 @@ import java.time.ZoneId;
 import java.util.Optional;
 
 /**
- * Startup recovery for missed scheduler jobs (BR-SCH-04).
+ * Startup recovery for missed scheduler jobs.
  *
  * On application startup, inspects the previous 3 calendar days in Asia/Kolkata timezone.
  * For each missed day, reruns jobs in the required sequence:
@@ -30,7 +30,7 @@ import java.util.Optional;
  *   4. DeliverySheetGenerationJob
  *
  * A job is considered "missed" if no scheduler_job_log entry exists for (job_name, job_date),
- * OR if the existing entry has status = FAILED (BR-SCH-02: FAILED → rerun allowed).
+ * or if the existing entry has status = FAILED (allows rerun).
  * A RUNNING entry is skipped (concurrent guard).
  * A COMPLETED entry is skipped (already done).
  *
@@ -57,7 +57,7 @@ public class SchedulerStartupRecovery implements ApplicationRunner {
         LocalDate today = LocalDate.now(IST);
         log.info("SchedulerStartupRecovery: checking previous {} days for missed jobs", RECOVERY_DAYS);
 
-        // Check days from oldest to newest (chronological order per BR-SCH-04)
+        // Check days from oldest to newest (chronological order)
         for (int daysAgo = RECOVERY_DAYS; daysAgo >= 1; daysAgo--) {
             LocalDate missedDate = today.minusDays(daysAgo);
             // The operational delivery date for a given night is the next day
@@ -73,8 +73,8 @@ public class SchedulerStartupRecovery implements ApplicationRunner {
     }
 
     /**
-     * Recovers all missed jobs for a single operational date in the required sequence.
-     * Sequence per BR-SCH-04: SubscriptionActivation → OrderGeneration → OrderFreeze → DeliverySheet
+     * Recovers all missed jobs for a single operational date in the required sequence:
+     * SubscriptionActivation → OrderGeneration → OrderFreeze → DeliverySheet.
      */
     private void recoverDayInSequence(LocalDate operationalDate, LocalDate deliveryDate) {
         // Step 1: SubscriptionActivation (prerequisite for OrderGeneration)
@@ -136,7 +136,7 @@ public class SchedulerStartupRecovery implements ApplicationRunner {
      * Returns true if the job needs to be recovered for the given date.
      * A job needs recovery if:
      * - No scheduler_job_log entry exists (missed entirely), OR
-     * - The existing entry has status = FAILED (BR-SCH-02: FAILED → rerun allowed)
+     * - The existing entry has status = FAILED (allows rerun)
      *
      * Returns false if:
      * - Status = COMPLETED (already done — skip)
@@ -166,7 +166,7 @@ public class SchedulerStartupRecovery implements ApplicationRunner {
     }
 
     /**
-     * Sends a failure notification without throwing — notifications are best-effort (BR-NOT-01).
+     * Sends a failure notification without throwing — notifications are best-effort.
      */
     private void notifyFailureSafe(String jobName, LocalDate date, String errorMessage) {
         try {

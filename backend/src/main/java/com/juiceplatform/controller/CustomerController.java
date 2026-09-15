@@ -30,7 +30,6 @@ public class CustomerController {
     /**
      * GET /api/v1/customer/me
      * Returns the authenticated customer's profile, address, and wallet summary.
-     * API spec §2.3.
      */
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<CustomerProfileResponse>> getProfile(
@@ -45,8 +44,7 @@ public class CustomerController {
     /**
      * PUT /api/v1/customer/address
      * Updates the customer's delivery address immediately.
-     * No cutoff rule applies (BR-ONB-03, BR-CUT-05).
-     * API spec §2.2.
+     * No cutoff rule applies — address changes take effect immediately.
      */
     @PutMapping("/address")
     public ResponseEntity<ApiResponse<UpdateAddressResponse>> updateAddress(
@@ -54,6 +52,21 @@ public class CustomerController {
             @AuthenticationPrincipal AuthenticatedUser authenticatedUser) {
 
         UpdateAddressResponse response = customerService.updateAddress(
+                authenticatedUser.getUserId(), request);
+
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    /**
+     * PUT /api/v1/customer/profile
+     * Updates the customer's profile (e.g., name).
+     */
+    @PutMapping("/profile")
+    public ResponseEntity<ApiResponse<CustomerProfileResponse>> updateProfile(
+            @RequestBody @Valid com.juiceplatform.dto.customer.UpdateProfileRequest request,
+            @AuthenticationPrincipal AuthenticatedUser authenticatedUser) {
+
+        CustomerProfileResponse response = customerService.updateProfile(
                 authenticatedUser.getUserId(), request);
 
         return ResponseEntity.ok(ApiResponse.success(response));

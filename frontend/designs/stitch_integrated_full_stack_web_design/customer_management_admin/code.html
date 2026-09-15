@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Customer Management | FreshFlow Admin</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Hanken+Grotesk:wght@400;500;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-bright": "#f8faf8",
+                        "status-locked": "#455A64",
+                        "on-secondary-fixed-variant": "#693c00",
+                        "surface-container-high": "#e6e9e7",
+                        "on-error-container": "#93000a",
+                        "error-container": "#ffdad6",
+                        "on-surface": "#191c1b",
+                        "on-primary-container": "#90d689",
+                        "surface-container-low": "#f2f4f2",
+                        "secondary": "#8b5000",
+                        "on-tertiary-container": "#9dd65b",
+                        "surface-variant": "#e1e3e1",
+                        "primary": "#00450d",
+                        "inverse-primary": "#91d78a",
+                        "wallet-debit": "#D32F2F",
+                        "surface": "#f8faf8",
+                        "status-error": "#D32F2F",
+                        "secondary-container": "#ff9800",
+                        "on-background": "#191c1b",
+                        "on-secondary-fixed": "#2c1600",
+                        "tertiary-fixed": "#b9f474",
+                        "tertiary-container": "#365c00",
+                        "surface-container-lowest": "#ffffff",
+                        "on-error": "#ffffff",
+                        "on-tertiary-fixed": "#0f2000",
+                        "primary-fixed-dim": "#91d78a",
+                        "background": "#f8faf8",
+                        "wallet-credit": "#2E7D32",
+                        "surface-container": "#eceeec",
+                        "surface-dim": "#d8dad9",
+                        "on-surface-variant": "#41493e",
+                        "secondary-fixed": "#ffdcbe",
+                        "error": "#ba1a1a",
+                        "secondary-fixed-dim": "#ffb870",
+                        "tertiary-fixed-dim": "#9ed75b",
+                        "status-warning": "#ED6C02",
+                        "outline": "#717a6d",
+                        "primary-fixed": "#acf4a4",
+                        "primary-container": "#1b5e20",
+                        "status-future": "#0288D1",
+                        "on-secondary": "#ffffff",
+                        "surface-tint": "#2a6b2c",
+                        "on-primary": "#ffffff",
+                        "status-active": "#2E7D32",
+                        "tertiary": "#264300",
+                        "on-tertiary-fixed-variant": "#2e4f00",
+                        "on-primary-fixed": "#002203",
+                        "outline-variant": "#c0c9bb",
+                        "inverse-on-surface": "#eff1ef",
+                        "on-tertiary": "#ffffff",
+                        "inverse-surface": "#2e3130",
+                        "surface-container-highest": "#e1e3e1",
+                        "on-secondary-container": "#653900",
+                        "on-primary-fixed-variant": "#0c5216"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-padding-desktop": "32px",
+                        "card-inner-padding": "24px",
+                        "section-gap": "40px",
+                        "base": "8px",
+                        "container-padding-mobile": "16px",
+                        "gutter": "16px"
+                    },
+                    "fontFamily": {
+                        "body-sm": ["Hanken Grotesk"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "body-lg": ["Hanken Grotesk"],
+                        "label-caps": ["Hanken Grotesk"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "mono-data": ["JetBrains Mono"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "body-md": ["Hanken Grotesk"],
+                        "headline-sm": ["Plus Jakarta Sans"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #f8faf8;
+            color: #191c1b;
+            font-family: 'Hanken Grotesk', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 24px;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #c0c9bb;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #717a6d;
+        }
+        /* Elevation & Depth from Style Guidance */
+        .premium-card {
+            background-color: #ffffff;
+            box-shadow: 0px 4px 20px rgba(0, 40, 0, 0.05);
+            transition: all 0.2s ease-in-out;
+        }
+        .premium-card:hover {
+            box-shadow: 0px 8px 30px rgba(0, 40, 0, 0.08);
+        }
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Hanken Grotesk', sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface">
+<!-- Desktop Navigation Shell -->
+<aside class="fixed left-0 top-0 h-full w-64 border-r border-outline-variant bg-surface-container-low hidden lg:flex flex-col z-50">
+<div class="p-6">
+<h1 class="font-headline-sm text-headline-sm font-bold text-primary">FreshFlow</h1>
+</div>
+<nav class="flex-1 px-4 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                Dashboard
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 bg-primary-container text-on-primary-container rounded-lg font-bold transition-all font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined" data-icon="groups">groups</span>
+                Customers
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined" data-icon="local_shipping">local_shipping</span>
+                Deliveries
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+                Wallet Transactions
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+                Inventory
+            </a>
+</nav>
+<div class="mt-auto p-4 border-t border-outline-variant bg-surface-container-lowest">
+<div class="flex items-center gap-3 p-2">
+<div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-primary font-bold">
+                    AD
+                </div>
+<div>
+<p class="font-body-sm text-body-sm font-bold text-on-surface">Admin Portal</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant opacity-70">Logistics HQ</p>
+</div>
+</div>
+<button class="w-full mt-4 flex items-center justify-center gap-2 px-4 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-colors font-body-sm text-body-sm">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+                Logout
+            </button>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="lg:ml-64 min-h-screen">
+<!-- Header Top Bar -->
+<header class="fixed top-0 right-0 left-0 lg:left-64 h-16 bg-surface z-40 flex items-center justify-between px-6 shadow-sm">
+<div class="flex items-center gap-4">
+<button class="lg:hidden p-2 text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<h2 class="font-headline-md text-headline-md font-semibold text-on-surface">Customer Directory</h2>
+</div>
+<div class="flex items-center gap-3">
+<div class="relative hidden md:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm" data-icon="search">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-low border-none rounded-full text-body-sm font-body-sm focus:ring-2 focus:ring-primary w-64" placeholder="Global search..." type="text"/>
+</div>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-secondary rounded-full"></span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+</div>
+</header>
+<!-- View Content -->
+<div class="pt-24 px-container-padding-mobile md:px-container-padding-desktop pb-20">
+<!-- Management Bar -->
+<section class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+<div class="flex flex-wrap items-center gap-3">
+<div class="flex items-center bg-surface-container-lowest border border-outline-variant rounded-lg px-3 py-2">
+<span class="material-symbols-outlined text-on-surface-variant mr-2" data-icon="filter_list">filter_list</span>
+<select class="bg-transparent border-none p-0 text-body-sm font-body-sm focus:ring-0 text-on-surface cursor-pointer">
+<option>All Statuses</option>
+<option>Active</option>
+<option>Deactivated</option>
+</select>
+</div>
+<div class="flex items-center bg-surface-container-lowest border border-outline-variant rounded-lg px-3 py-2">
+<span class="material-symbols-outlined text-on-surface-variant mr-2" data-icon="badge">badge</span>
+<select class="bg-transparent border-none p-0 text-body-sm font-body-sm focus:ring-0 text-on-surface cursor-pointer">
+<option>All Roles</option>
+<option>Customer</option>
+<option>Admin</option>
+</select>
+</div>
+<button class="flex items-center gap-2 px-4 py-2 border border-outline-variant rounded-lg text-on-surface-variant font-body-sm text-body-sm hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined" data-icon="file_download">file_download</span>
+                        Export CSV
+                    </button>
+</div>
+<button class="bg-primary text-on-primary flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-body-md text-body-md font-bold shadow-sm hover:opacity-90 active:scale-95 transition-all">
+<span class="material-symbols-outlined" data-icon="person_add">person_add</span>
+                    Add New Customer
+                </button>
+</section>
+<!-- Main Data Table Container -->
+<div class="premium-card rounded-xl overflow-hidden border border-outline-variant">
+<div class="overflow-x-auto custom-scrollbar">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-container-low border-b border-outline-variant">
+<tr>
+<th class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant">Customer</th>
+<th class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant">Contact Details</th>
+<th class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant">Role</th>
+<th class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant">Status</th>
+<th class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant text-right">Wallet Balance</th>
+<th class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant text-center">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<!-- Customer Row 1 -->
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-high overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A professional portrait of a smiling woman in business attire, clean bright lighting, corporate photography style, against a neutral light grey background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD2w8dXGJ85yJ1LluislEGdNhF3NgFXvfaRpZ5SDFw3uXejxtjrPyGCoo5qROvmObnfV99b-9SRSPfhYQqKWeAuKycAsAY2YQiFc6PVQTMZKqCJyeqTlQVMTou8aPxwsf3JrZz9QkIHdV_8plS_YjeN-GON3Y4VKWLGN8Y3vxj_IsJvI_Ts8h1bz3G5JfAjPelmg9dm4-TaGTFxmOZSm0tBw7IpghhkVlRYmvlThK2tRcuS4l76cCoqMBgxyxXiJ_RIfdagvDobF3Y"/>
+</div>
+<div>
+<p class="font-body-md text-body-md font-bold text-on-surface">Arjun Sharma</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant opacity-70">ID: FF-20941</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<div class="flex items-center gap-1 font-body-sm text-body-sm text-on-surface">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant" data-icon="call">call</span>
+                                            +91 98765 43210
+                                        </div>
+<div class="flex items-center gap-1 font-body-sm text-body-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]" data-icon="mail">mail</span>
+                                            arjun.s@email.com
+                                        </div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="font-body-sm text-body-sm text-on-surface px-2 py-1 bg-surface-container-high rounded">Customer</span>
+</td>
+<td class="px-6 py-4">
+<span class="status-badge bg-status-active/10 text-status-active">Active</span>
+</td>
+<td class="px-6 py-4 text-right">
+<p class="font-mono-data text-mono-data text-wallet-credit font-bold">₹2,450.00</p>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center justify-center gap-2">
+<button class="p-2 text-primary hover:bg-primary/10 rounded-lg transition-colors" title="Credit Wallet">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-colors" title="View Details">
+<span class="material-symbols-outlined" data-icon="visibility">visibility</span>
+</button>
+<button class="p-2 text-error hover:bg-error/10 rounded-lg transition-colors" title="Deactivate">
+<span class="material-symbols-outlined" data-icon="block">block</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Customer Row 2 (Deactivated) -->
+<tr class="hover:bg-surface-container-lowest transition-colors bg-surface-container-low/30">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3 opacity-60">
+<div class="w-10 h-10 rounded-full bg-surface-container-high overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A candid profile photo of a young man with glasses, looking sideways, soft natural lighting, vibrant green blurred background to emphasize health and freshness, modern portrait style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB_aI4m_OQUFL3JNIfkUZt94QLJHOPGO9WSeVJqPUCqekNQn3ETRvP4Lofmxs0KZaNy1dEL5OnktT62yaDsaGyFNcfBifpoL16A4ILT8N24u8SiGvy-B6VpkuiMcdkuKq7nBZkT6FBSw5YQbdzwSLApupoop0UCYpvqHGqCfIP-ORZ0xgrPxXiPAtgDCKyjf8VCHr1wj-QL6muYU-hW_bGHLcXPNaVaLpkbVfljyx_xSY2Sk2GKbDoJJGrsOhtSkoTzlDvB1g0QbLQ"/>
+</div>
+<div>
+<p class="font-body-md text-body-md font-bold text-on-surface">Priya Verma</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">ID: FF-19822</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex flex-col opacity-60">
+<div class="flex items-center gap-1 font-body-sm text-body-sm text-on-surface">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant" data-icon="call">call</span>
+                                            +91 99000 11223
+                                        </div>
+<div class="flex items-center gap-1 font-body-sm text-body-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]" data-icon="mail">mail</span>
+                                            p.verma@domain.org
+                                        </div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="font-body-sm text-body-sm text-on-surface px-2 py-1 bg-surface-container-high rounded opacity-60">Customer</span>
+</td>
+<td class="px-6 py-4">
+<span class="status-badge bg-status-locked/10 text-status-locked">Deactivated</span>
+</td>
+<td class="px-6 py-4 text-right">
+<p class="font-mono-data text-mono-data text-on-surface-variant font-bold opacity-60">₹0.00</p>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center justify-center gap-2">
+<button class="p-2 text-primary hover:bg-primary/10 rounded-lg transition-colors" title="Activate">
+<span class="material-symbols-outlined" data-icon="check_circle">check_circle</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-colors" title="View Details">
+<span class="material-symbols-outlined" data-icon="visibility">visibility</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Customer Row 3 (Low Balance) -->
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-high overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A high-quality image of an older man with a grey beard, wearing a white organic cotton t-shirt, cheerful and healthy expression, bright daylight lighting, soft focus garden background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuARfoHwuG-K0ZkX4zlEjs1914qLtD6LSqFvwcgGXQnvEwGB9NvUedKMVJAqr2MegYIOTLFurDcEeBowlorNgEARJAxKscXrXZBQ1qDejWoSgYi1e9M0wzeTv6O21egl1Gqk3gDQ4ju1CmdppyBF8YoCUL7k5_oL6OGBFY0OhXqvddrmmvkZtcodfaQEyz2GpFzm4rv6PAhweefjd88AApHoEbZPZNrUsOEq5fOw2eBUM43S1pdEv3K74vBj5UgSPMgcl2PkALUFJ1I"/>
+</div>
+<div>
+<p class="font-body-md text-body-md font-bold text-on-surface">Rohan Gupta</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant opacity-70">ID: FF-21550</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<div class="flex items-center gap-1 font-body-sm text-body-sm text-on-surface">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant" data-icon="call">call</span>
+                                            +91 88776 55443
+                                        </div>
+<div class="flex items-center gap-1 font-body-sm text-body-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]" data-icon="mail">mail</span>
+                                            rohan.g@webmail.in
+                                        </div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="font-body-sm text-body-sm text-on-surface px-2 py-1 bg-surface-container-high rounded">Customer</span>
+</td>
+<td class="px-6 py-4">
+<span class="status-badge bg-status-active/10 text-status-active">Active</span>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex flex-col items-end">
+<p class="font-mono-data text-mono-data text-status-error font-bold">₹12.50</p>
+<span class="text-[10px] text-status-error font-bold uppercase tracking-wider">Low Balance</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center justify-center gap-2">
+<button class="px-3 py-1 bg-secondary text-on-secondary rounded-lg font-bold font-label-caps text-label-caps flex items-center gap-1 hover:opacity-90 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-[14px]" data-icon="add">add</span>
+                                            Top-up
+                                        </button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-colors">
+<span class="material-symbols-outlined" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- More rows for visual density -->
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-primary font-bold">
+                                            KM
+                                        </div>
+<div>
+<p class="font-body-md text-body-md font-bold text-on-surface">Kiran Murthy</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant opacity-70">ID: FF-22103</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<div class="flex items-center gap-1 font-body-sm text-body-sm text-on-surface">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant" data-icon="call">call</span>
+                                            +91 76543 21098
+                                        </div>
+<div class="flex items-center gap-1 font-body-sm text-body-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]" data-icon="mail">mail</span>
+                                            kiran.m@service.com
+                                        </div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="font-body-sm text-body-sm text-on-tertiary-container bg-tertiary-fixed-dim px-2 py-1 rounded font-bold">Admin</span>
+</td>
+<td class="px-6 py-4">
+<span class="status-badge bg-status-active/10 text-status-active">Active</span>
+</td>
+<td class="px-6 py-4 text-right">
+<p class="font-mono-data text-mono-data text-wallet-credit font-bold">₹10,240.00</p>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center justify-center gap-2">
+<button class="p-2 text-primary hover:bg-primary/10 rounded-lg transition-colors">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-colors">
+<span class="material-symbols-outlined" data-icon="visibility">visibility</span>
+</button>
+<button class="p-2 text-error hover:bg-error/10 rounded-lg transition-colors">
+<span class="material-symbols-outlined" data-icon="block">block</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination Footer -->
+<div class="px-6 py-4 bg-surface-container-low flex items-center justify-between border-t border-outline-variant">
+<p class="font-body-sm text-body-sm text-on-surface-variant">Showing 1 to 4 of 1,248 customers</p>
+<div class="flex items-center gap-2">
+<button class="p-2 border border-outline-variant rounded-lg disabled:opacity-30" disabled="">
+<span class="material-symbols-outlined" data-icon="chevron_left">chevron_left</span>
+</button>
+<div class="flex items-center gap-1">
+<button class="w-8 h-8 flex items-center justify-center bg-primary text-on-primary rounded-lg font-bold text-body-sm">1</button>
+<button class="w-8 h-8 flex items-center justify-center hover:bg-surface-container-high rounded-lg text-body-sm">2</button>
+<button class="w-8 h-8 flex items-center justify-center hover:bg-surface-container-high rounded-lg text-body-sm">3</button>
+<span class="px-1">...</span>
+<button class="w-8 h-8 flex items-center justify-center hover:bg-surface-container-high rounded-lg text-body-sm">312</button>
+</div>
+<button class="p-2 border border-outline-variant rounded-lg hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Dashboard Stats Summary (Bento-lite) -->
+<section class="mt-12 bento-grid">
+<div class="col-span-12 md:col-span-4 premium-card p-card-inner-padding rounded-xl flex items-center justify-between border-l-4 border-primary">
+<div>
+<p class="font-label-caps text-label-caps text-on-surface-variant mb-1">TOTAL CUSTOMERS</p>
+<h3 class="font-headline-md text-headline-md font-bold text-on-surface">1,248</h3>
+<p class="font-body-sm text-body-sm text-wallet-credit mt-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]" data-icon="trending_up">trending_up</span>
+                            +12% this month
+                        </p>
+</div>
+<div class="bg-primary/10 p-3 rounded-full text-primary">
+<span class="material-symbols-outlined text-3xl" data-icon="group_add">group_add</span>
+</div>
+</div>
+<div class="col-span-12 md:col-span-4 premium-card p-card-inner-padding rounded-xl flex items-center justify-between border-l-4 border-secondary">
+<div>
+<p class="font-label-caps text-label-caps text-on-surface-variant mb-1">CUST. WALLET ESCROW</p>
+<h3 class="font-headline-md text-headline-md font-bold text-on-surface">₹4,82,900</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Managed liquidity pool</p>
+</div>
+<div class="bg-secondary/10 p-3 rounded-full text-secondary">
+<span class="material-symbols-outlined text-3xl" data-icon="account_balance">account_balance</span>
+</div>
+</div>
+<div class="col-span-12 md:col-span-4 premium-card p-card-inner-padding rounded-xl flex items-center justify-between border-l-4 border-status-warning">
+<div>
+<p class="font-label-caps text-label-caps text-on-surface-variant mb-1">PENDING TOP-UPS</p>
+<h3 class="font-headline-md text-headline-md font-bold text-on-surface">24</h3>
+<p class="font-body-sm text-body-sm text-status-warning mt-1">Manual bank verification</p>
+</div>
+<div class="bg-status-warning/10 p-3 rounded-full text-status-warning">
+<span class="material-symbols-outlined text-3xl" data-icon="pending_actions">pending_actions</span>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Floating Top-up Modal (Hidden by Default) -->
+<div class="fixed inset-0 z-[60] bg-on-surface/40 backdrop-blur-sm flex items-center justify-center p-4 hidden" id="topup-modal">
+<div class="bg-surface w-full max-w-md rounded-2xl shadow-2xl overflow-hidden border border-outline-variant">
+<div class="px-6 py-4 bg-primary text-on-primary flex items-center justify-between">
+<h4 class="font-headline-sm text-headline-sm font-bold">Credit Customer Wallet</h4>
+<button class="p-1 hover:bg-white/20 rounded-full transition-colors" onclick="closeModal()">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+</div>
+<div class="p-6">
+<div class="flex items-center gap-3 mb-6 p-3 bg-surface-container-low rounded-xl">
+<div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-primary font-bold">AS</div>
+<div>
+<p class="font-body-md text-body-md font-bold text-on-surface">Arjun Sharma</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Current Balance: ₹2,450.00</p>
+</div>
+</div>
+<div class="space-y-4">
+<div>
+<label class="block font-label-caps text-label-caps text-on-surface-variant mb-2">AMOUNT TO CREDIT (₹)</label>
+<input class="w-full px-4 py-3 bg-surface-container-lowest border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent font-mono-data text-headline-md" placeholder="0.00" type="number"/>
+</div>
+<div>
+<label class="block font-label-caps text-label-caps text-on-surface-variant mb-2">REASON / NOTES</label>
+<textarea class="w-full px-4 py-3 bg-surface-container-lowest border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent font-body-sm text-body-sm" placeholder="e.g., Cash collection, Refund for damaged bottle..." rows="3"></textarea>
+</div>
+</div>
+<div class="mt-8 flex gap-3">
+<button class="flex-1 px-6 py-3 border border-outline rounded-xl font-bold text-body-md text-on-surface hover:bg-surface-container-high transition-all" onclick="closeModal()">Cancel</button>
+<button class="flex-1 px-6 py-3 bg-primary text-on-primary rounded-xl font-bold text-body-md shadow-lg shadow-primary/20 hover:opacity-90 active:scale-95 transition-all">Credit Wallet</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Micro-interaction Scripts -->
+<script>
+        function openModal() {
+            document.getElementById('topup-modal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeModal() {
+            document.getElementById('topup-modal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Add event listeners to the credit buttons
+        document.querySelectorAll('button[title="Credit Wallet"]').forEach(btn => {
+            btn.addEventListener('click', openModal);
+        });
+
+        // Simple row highlight animation
+        const rows = document.querySelectorAll('tbody tr');
+        rows.forEach(row => {
+            row.addEventListener('mouseenter', () => {
+                row.style.transform = 'translateX(4px)';
+            });
+            row.addEventListener('mouseleave', () => {
+                row.style.transform = 'translateX(0)';
+            });
+        });
+    </script>
+</body></html>

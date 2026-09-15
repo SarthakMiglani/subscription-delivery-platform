@@ -45,13 +45,13 @@ public class OrderGenerationService {
 
     /**
      * Generates orders for the given delivery date.
-     * Tracked in scheduler_job_log (BR-SCH-03).
-     * Idempotent: duplicate orders are prevented by idempotency key (BR-ORD-04).
-     * Concurrent RUNNING guard: rejects if a RUNNING entry already exists (BR-SCH-02).
+     * Tracked in scheduler_job_log for idempotency and monitoring.
+     * Duplicate orders are prevented by idempotency key.
+     * Concurrent RUNNING guard: rejects if a RUNNING entry already exists.
      */
     @Transactional
     public OrderGenerationResult generateOrdersForDate(LocalDate deliveryDate) {
-        // Skip order generation for holidays (BR-ORD-03, BR-HOL-02)
+        // Skip order generation for holidays
         if (businessHolidayService.isHoliday(deliveryDate)) {
             log.info("OrderGenerationJob skipped for {} — configured as a business holiday", deliveryDate);
             return new OrderGenerationResult(deliveryDate, 0, 0, 0);
@@ -66,7 +66,7 @@ public class OrderGenerationService {
 
         log.info("Starting order generation for delivery date: {}", deliveryDate);
 
-        // Find all ACTIVE subscriptions (BR-ORD-02)
+        // Find all ACTIVE subscriptions
         List<Subscription> activeSubscriptions = subscriptionRepository
                 .findAllByStatus(Subscription.SubscriptionStatus.ACTIVE);
 
@@ -75,10 +75,10 @@ public class OrderGenerationService {
 
         try {
             for (Subscription subscription : activeSubscriptions) {
-                // Apply any APPROVED change requests effective on or before deliveryDate (BR-SUB-10/11)
+                // Apply any APPROVED change requests effective on or before deliveryDate
                 applyChangeRequests(subscription, deliveryDate);
 
-                // Build idempotency key: sub_<id>_<YYYY-MM-DD> (BR-ORD-04)
+                // Build idempotency key: sub_<id>_<YYYY-MM-DD>
                 String idempotencyKey = "sub_" + subscription.getId() + "_" + deliveryDate;
 
                 // Check for duplicate (idempotency)
@@ -87,7 +87,7 @@ public class OrderGenerationService {
                     continue;
                 }
 
-                // Load product for price snapshot (BR-ORD-06)
+                // Load product for price snapshot
                 Product product = productRepository.findById(subscription.getProductId()).orElse(null);
                 if (product == null || !product.getIsAvailable()) {
                     log.warn("Skipping subscription {} — product {} unavailable",
@@ -95,7 +95,7 @@ public class OrderGenerationService {
                     continue;
                 }
 
-                // Load customer address for snapshot (BR-ONB-04)
+                // Load customer address for snapshot
                 DeliveryAddress address = deliveryAddressRepository
                         .findByCustomerId(subscription.getCustomerId()).orElse(null);
                 if (address == null) {
@@ -106,7 +106,7 @@ public class OrderGenerationService {
 
                 long orderCost = product.getPricePerUnitPaise() * subscription.getQuantity();
 
-                // Wallet balance check (BR-WAL-10 / BR-ORD-05)
+                // Wallet balance check
                 long walletBalance = walletLedgerRepository
                         .findTopByCustomerIdOrderByCreatedAtDesc(subscription.getCustomerId())
                         .map(WalletLedger::getRunningBalancePaise)
@@ -115,13 +115,13 @@ public class OrderGenerationService {
                 if (walletBalance < orderCost) {
                     log.warn("Skipping subscription {} — insufficient wallet balance ({} < {})",
                             subscription.getId(), walletBalance, orderCost);
-                    // Notify customer and admin — best-effort, after transaction (BR-NOT-01, BR-NOT-02, BR-NOT-03)
+                    // Notify customer and admin — best-effort, after transaction
                     notificationService.notifyOrderGenerationBlocked(
                             subscription.getCustomerId(), "Customer", walletBalance, orderCost);
                     continue;
                 }
 
-                // Low balance warning check (BR-WAL-09): balance < ₹200 = 20,000 paise
+                // Low balance warning: balance < ₹200 = 20,000 paise
                 if (walletBalance < 20_000L) {
                     notificationService.notifyLowBalance(
                             subscription.getCustomerId(), "Customer", walletBalance, 20_000L);
@@ -204,7 +204,7 @@ public class OrderGenerationService {
     /**
      * Applies all APPROVED change requests for a subscription whose effective_date <= deliveryDate.
      * Mutates the subscription in-memory (and persists it) and marks requests APPLIED.
-     * If a SCHEDULED order already exists for deliveryDate, it is updated inline (BR-SUB-11).
+     * If a SCHEDULED order already exists for deliveryDate, it is updated inline.
      * LOCKED/DELIVERED/SKIPPED/CANCELLED orders are never touched.
      */
     private void applyChangeRequests(Subscription subscription, LocalDate deliveryDate) {
@@ -222,14 +222,32 @@ public class OrderGenerationService {
 
         for (SubscriptionChangeRequest req : dueRequests) {
             if (req.getChangeType() == SubscriptionChangeRequest.ChangeRequestType.QUANTITY) {
-                int newQuantity = Integer.parseInt(req.getNewValue());
+                int newQuantity;
+                try {
+                    newQuantity = Integer.parseInt(req.getNewValue());
+                } catch (NumberFormatException e) {
+                    log.error("Malformed QUANTITY change request {} — new_value='{}' is not a valid integer; marking SUPERSEDED",
+                            req.getId(), req.getNewValue());
+                    req.setStatus(SubscriptionChangeRequest.ChangeRequestStatus.SUPERSEDED);
+                    changeRequestRepository.save(req);
+                    continue;
+                }
                 log.info("Applying QUANTITY change request {} to subscription {} — {} → {}",
                         req.getId(), subscription.getId(), subscription.getQuantity(), newQuantity);
                 subscription.setQuantity(newQuantity);
                 subscriptionMutated = true;
 
             } else if (req.getChangeType() == SubscriptionChangeRequest.ChangeRequestType.PRODUCT) {
-                java.util.UUID newProductId = java.util.UUID.fromString(req.getNewValue());
+                java.util.UUID newProductId;
+                try {
+                    newProductId = java.util.UUID.fromString(req.getNewValue());
+                } catch (IllegalArgumentException e) {
+                    log.error("Malformed PRODUCT change request {} — new_value='{}' is not a valid UUID; marking SUPERSEDED",
+                            req.getId(), req.getNewValue());
+                    req.setStatus(SubscriptionChangeRequest.ChangeRequestStatus.SUPERSEDED);
+                    changeRequestRepository.save(req);
+                    continue;
+                }
                 Product newProduct = productRepository.findById(newProductId).orElse(null);
                 if (newProduct == null || !newProduct.getIsAvailable()) {
                     log.warn("Skipping PRODUCT change request {} — product {} unavailable",
@@ -250,7 +268,7 @@ public class OrderGenerationService {
         if (subscriptionMutated) {
             subscriptionRepository.save(subscription);
 
-            // If a SCHEDULED order already exists for deliveryDate, update it inline (BR-SUB-11)
+            // If a SCHEDULED order already exists for deliveryDate, update it inline
             String idempotencyKey = "sub_" + subscription.getId() + "_" + deliveryDate;
             orderRepository.findByIdempotencyKeyAndStatus(idempotencyKey, Order.OrderStatus.SCHEDULED)
                     .ifPresent(existingOrder -> {

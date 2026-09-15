@@ -8,7 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * Request DTO for PUT /api/v1/customer/address (API spec §2.2).
+ * Request DTO for PUT /api/v1/customer/address.
  * Validation mirrors OnboardingRequest.AddressRequest for consistency.
  */
 @Getter

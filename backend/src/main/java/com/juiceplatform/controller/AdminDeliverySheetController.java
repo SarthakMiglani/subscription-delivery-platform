@@ -4,6 +4,7 @@ import com.juiceplatform.dto.common.ApiResponse;
 import com.juiceplatform.dto.deliverysheet.DeliverySheetResponse;
 import com.juiceplatform.entity.DeliverySheetSnapshot;
 import com.juiceplatform.security.AuthenticatedUser;
+import com.juiceplatform.service.DeliverySheetPdfService;
 import com.juiceplatform.service.DeliverySheetService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -31,6 +32,7 @@ import java.time.LocalDate;
 public class AdminDeliverySheetController {
 
     private final DeliverySheetService deliverySheetService;
+    private final DeliverySheetPdfService deliverySheetPdfService;
 
     @GetMapping("/{date}")
     public ResponseEntity<ApiResponse<DeliverySheetResponse>> getDeliverySheet(
@@ -77,25 +79,8 @@ public class AdminDeliverySheetController {
     public ResponseEntity<byte[]> downloadPdf(
             @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
 
-        // PDF generation requires a PDF library (e.g. iText, OpenPDF).
-        // Per API spec §13.2: returns application/pdf binary stream.
-        // TODO: Implement PDF generation when a PDF library is added to the project.
-        // For now, return a plain-text representation as a placeholder.
         DeliverySheetResponse sheet = deliverySheetService.getSnapshot(date);
-
-        StringBuilder content = new StringBuilder();
-        content.append("DELIVERY SHEET — ").append(date).append("\n\n");
-        for (var order : sheet.getOrders()) {
-            content.append(order.getCustomerName()).append(" | ")
-                   .append(order.getAddress()).append(" | ")
-                   .append(order.getProductName()).append(" x").append(order.getQuantity()).append("\n");
-        }
-        content.append("\nJUICE SUMMARY\n");
-        for (var summary : sheet.getJuiceSummary()) {
-            content.append(summary.getProductName()).append(": ").append(summary.getTotalQuantity()).append("\n");
-        }
-
-        byte[] bytes = content.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8);
+        byte[] bytes = deliverySheetPdfService.render(sheet);
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION,

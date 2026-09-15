@@ -8,3 +8,9 @@ backend/target/
 
 *.log
 .env
+
+# Frontend build artifacts and dependencies (both apps)
+frontend/*/node_modules/
+frontend/*/dist/
+frontend/*/.env
+frontend/*/.env.local

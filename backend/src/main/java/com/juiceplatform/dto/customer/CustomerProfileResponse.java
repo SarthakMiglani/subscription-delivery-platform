@@ -8,7 +8,7 @@ import java.time.OffsetDateTime;
 import java.util.UUID;
 
 /**
- * Response DTO for GET /api/v1/customer/me (API spec §2.3).
+ * Response DTO for GET /api/v1/customer/me.
  */
 @Getter
 @Builder
@@ -20,7 +20,7 @@ public class CustomerProfileResponse {
     private String phone;
     private boolean onboardingComplete;
 
-    /** Null when onboarding is not yet complete (API spec §2.3 note). */
+    /** Null when onboarding is not yet complete. */
     @JsonInclude(JsonInclude.Include.ALWAYS)
     private AddressDto address;
 

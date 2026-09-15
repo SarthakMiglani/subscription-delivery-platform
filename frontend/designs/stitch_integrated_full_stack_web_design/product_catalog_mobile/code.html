@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<title>FreshFlow | Juice Catalog</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Hanken+Grotesk:wght@400;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        @keyframes pulse-subtle {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.85; }
+        }
+        .animate-cutoff {
+            animation: pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-dim": "#d8dad9",
+                        "on-secondary-fixed": "#2c1600",
+                        "secondary-fixed": "#ffdcbe",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "tertiary": "#264300",
+                        "error": "#ba1a1a",
+                        "status-locked": "#455A64",
+                        "tertiary-container": "#365c00",
+                        "on-secondary-container": "#653900",
+                        "on-primary-fixed": "#002203",
+                        "on-error": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-highest": "#e1e3e1",
+                        "background": "#f8faf8",
+                        "status-future": "#0288D1",
+                        "surface-variant": "#e1e3e1",
+                        "inverse-on-surface": "#eff1ef",
+                        "secondary-container": "#ff9800",
+                        "secondary": "#8b5000",
+                        "on-surface-variant": "#41493e",
+                        "tertiary-fixed-dim": "#9ed75b",
+                        "wallet-debit": "#D32F2F",
+                        "on-surface": "#191c1b",
+                        "on-secondary-fixed-variant": "#693c00",
+                        "primary-fixed": "#acf4a4",
+                        "inverse-surface": "#2e3130",
+                        "primary-fixed-dim": "#91d78a",
+                        "on-tertiary-container": "#9dd65b",
+                        "inverse-primary": "#91d78a",
+                        "surface-container-low": "#f2f4f2",
+                        "surface-tint": "#2a6b2c",
+                        "status-active": "#2E7D32",
+                        "primary-container": "#1b5e20",
+                        "surface-bright": "#f8faf8",
+                        "on-tertiary-fixed": "#0f2000",
+                        "tertiary-fixed": "#b9f474",
+                        "status-error": "#D32F2F",
+                        "on-primary-container": "#90d689",
+                        "status-warning": "#ED6C02",
+                        "on-tertiary-fixed-variant": "#2e4f00",
+                        "on-primary": "#ffffff",
+                        "outline": "#717a6d",
+                        "secondary-fixed-dim": "#ffb870",
+                        "primary": "#00450d",
+                        "wallet-credit": "#2E7D32",
+                        "outline-variant": "#c0c9bb",
+                        "error-container": "#ffdad6",
+                        "surface-container": "#eceeec",
+                        "on-error-container": "#93000a",
+                        "surface-container-high": "#e6e9e7",
+                        "on-primary-fixed-variant": "#0c5216",
+                        "surface": "#f8faf8",
+                        "on-background": "#191c1b"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "section-gap": "40px",
+                        "container-padding-mobile": "16px",
+                        "gutter": "16px",
+                        "container-padding-desktop": "32px",
+                        "card-inner-padding": "24px",
+                        "base": "8px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Hanken Grotesk"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "label-caps": ["Hanken Grotesk"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "body-sm": ["Hanken Grotesk"],
+                        "headline-sm": ["Plus Jakarta Sans"],
+                        "body-md": ["Hanken Grotesk"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "mono-data": ["JetBrains Mono"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "mono-data": ["13px", {"lineHeight": "18px", "fontWeight": "500"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen pb-24 lg:pb-0 lg:pl-64">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-container-padding-mobile md:px-container-padding-desktop h-16 bg-surface dark:bg-surface-dim shadow-sm dark:shadow-none transition-colors">
+<h1 class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed-dim">FreshFlow</h1>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-primary dark:text-primary-fixed-dim hover:bg-surface-container-high transition-colors p-2 rounded-full active:scale-95 duration-200">account_balance_wallet</button>
+<button class="material-symbols-outlined text-primary dark:text-primary-fixed-dim hover:bg-surface-container-high transition-colors p-2 rounded-full active:scale-95 duration-200">notifications</button>
+<img class="w-8 h-8 rounded-full border-2 border-primary-fixed" data-alt="A professional close-up studio portrait of a customer avatar with a clean, friendly expression, soft natural lighting, set against a blurred organic greenery background, representing health and wellness." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYPq3jny4u97r1FkhVRHwU3gLm3Te0Ch7gBnXUUbuWXThTV4vut1vYKrB4KAuYV8BeoqgZHGG-9mQlJiqmYRFk1ATkD_iA30A3ihMln6lNS9QarHdUDqSgIXYekn4OLLF72vVDHXy7dRKo7KkyFlrT_cPrufW9m7ViT3r-SfAwXzcZhhwGSukxaqJ5kGY9U8uCQSwsDbS6F-3xFGBeQx1jfPPvBYphFqW9JH_9t_ODwek-Jx_BeiF_zBo46xTc4hO_96LdqeO-vIo"/>
+</div>
+</header>
+<!-- SideNavBar (Desktop Only) -->
+<nav class="fixed left-0 top-0 h-full w-64 border-r border-outline-variant dark:border-outline bg-surface-container-low dark:bg-surface-container-lowest hidden lg:flex flex-col z-50">
+<div class="p-6">
+<h1 class="font-headline-sm text-headline-sm font-bold text-primary mb-8">FreshFlow</h1>
+<div class="space-y-2">
+<a class="flex items-center gap-3 p-3 text-on-surface-variant hover:bg-surface-container-high transition-all font-body-md text-body-md rounded-lg active:scale-98" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+                    Dashboard
+                </a>
+<a class="flex items-center gap-3 p-3 bg-primary-container text-on-primary-container rounded-lg font-bold font-body-md text-body-md active:scale-98" href="#">
+<span class="material-symbols-outlined">local_shipping</span>
+                    Deliveries
+                </a>
+<a class="flex items-center gap-3 p-3 text-on-surface-variant hover:bg-surface-container-high transition-all font-body-md text-body-md rounded-lg active:scale-98" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+                    Subscriptions
+                </a>
+<a class="flex items-center gap-3 p-3 text-on-surface-variant hover:bg-surface-container-high transition-all font-body-md text-body-md rounded-lg active:scale-98" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+                    Wallet
+                </a>
+<a class="flex items-center gap-3 p-3 text-on-surface-variant hover:bg-surface-container-high transition-all font-body-md text-body-md rounded-lg active:scale-98" href="#">
+<span class="material-symbols-outlined">support_agent</span>
+                    Support
+                </a>
+</div>
+</div>
+<div class="mt-auto p-6 border-t border-outline-variant">
+<div class="flex items-center gap-3 mb-6">
+<img class="w-10 h-10 rounded-full" data-alt="A minimalist profile picture of a user, clean design, bright lighting, high quality." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCh0eXoAMwBBQoLV2B8vw9PcZzFHOYD-7v7GzmE0KqOZe0n2qkJ41uh4dNeRlJAHSrLaTn4wgb7wNNUuFTadD20aZBmAwxqYppIE5kzIxmJxwxMNUy6fwRxI7cXCd4pfZFmF98_5cnwyhKAaiad3prPeQ1vSe-88twiR_51ROW7gK9JWzbwrt1QgEzQxqXMRZzrmqfmvBYeloaOMlKkDyxtCKKsl_ly7OgfQXj5PdycPubVNPXWre1ohN9dkTuuORfqJ1KgXd9Uoyg"/>
+<div>
+<p class="font-body-md text-body-md font-bold text-on-surface">Juice Subscriber</p>
+<p class="font-label-caps text-label-caps text-primary">Wallet: ₹1,240.00</p>
+</div>
+</div>
+<button class="w-full bg-secondary-container text-on-secondary-container py-3 rounded-xl font-bold mb-4 hover:opacity-90 transition-opacity">Quick Top-up</button>
+<div class="space-y-1">
+<a class="flex items-center gap-3 p-2 text-on-surface-variant hover:bg-surface-container-high transition-all font-body-md text-body-md rounded-lg" href="#">
+<span class="material-symbols-outlined">settings</span>
+                    Settings
+                </a>
+<a class="flex items-center gap-3 p-2 text-on-surface-variant hover:bg-surface-container-high transition-all font-body-md text-body-md rounded-lg" href="#">
+<span class="material-symbols-outlined">logout</span>
+                    Logout
+                </a>
+</div>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="mt-16 p-container-padding-mobile lg:p-container-padding-desktop">
+<!-- Sticky Cutoff Banner -->
+<div class="sticky top-16 z-40 mx-[-16px] lg:mx-0 mb-6 glass-card border-l-4 border-status-warning p-4 shadow-sm animate-cutoff">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-status-warning">timer</span>
+<div>
+<p class="font-label-caps text-label-caps text-on-surface-variant uppercase">Order Cutoff</p>
+<p class="font-body-md text-body-md font-bold text-on-surface">10 PM IST Countdown</p>
+</div>
+</div>
+<div class="bg-status-warning text-white px-3 py-1 rounded-full font-mono-data text-mono-data">
+                    04h 22m 15s
+                </div>
+</div>
+</div>
+<!-- Catalog Header -->
+<div class="mb-8">
+<h2 class="font-headline-lg-mobile lg:font-headline-lg text-headline-lg-mobile lg:text-headline-lg text-primary mb-2">Daily Freshness</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Cold-pressed nutrients delivered to your doorstep by 7 AM.</p>
+</div>
+<!-- Category Filters -->
+<div class="flex gap-3 overflow-x-auto hide-scrollbar mb-8 pb-2">
+<button class="flex-none px-6 py-2 bg-primary text-on-primary rounded-full font-body-md text-body-md font-bold">All Juices</button>
+<button class="flex-none px-6 py-2 bg-surface-container-high text-on-surface-variant rounded-full font-body-md text-body-md hover:bg-primary-fixed transition-colors">Green</button>
+<button class="flex-none px-6 py-2 bg-surface-container-high text-on-surface-variant rounded-full font-body-md text-body-md hover:bg-primary-fixed transition-colors">Detox</button>
+<button class="flex-none px-6 py-2 bg-surface-container-high text-on-surface-variant rounded-full font-body-md text-body-md hover:bg-primary-fixed transition-colors">Fruit</button>
+<button class="flex-none px-6 py-2 bg-surface-container-high text-on-surface-variant rounded-full font-body-md text-body-md hover:bg-primary-fixed transition-colors">Seasonal</button>
+</div>
+<!-- Product Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+<!-- Product Card 1 -->
+<div class="bg-surface rounded-xl shadow-[0px_4px_20px_rgba(0,40,0,0.05)] overflow-hidden flex flex-col group hover:shadow-lg transition-shadow">
+<div class="relative h-64 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A high-fidelity photo of a cold-pressed 'Green Vitality' juice bottle, condensation on glass, vibrant kale and green apple ingredients in the background, bright studio lighting, professional food photography, minimalist aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAAQv3l-BefBV4TjhtPMu-uyKYaDAfHyVBSLBVOF4oFiszr_dCeVz-3BiX2ReOzxXEJI2qr0QhCSiPaiqFQbD9gItulUl1wgT5W7keF5_mFQBkF2uiMuDxyBiK6uDSYWwwPF-mrIvsbMP3GzjntoIGxD3E0gYZ8xb6xIPHnwgENvqirqV4QdfAx1s8me6b21lY_1ldFTBbJyrOf5EKnEa_YX8ynNvxfaWSCrFKy1vNgxqAV7cZ8xnBYogGRs0w6Ivye2YP5X166i6E"/>
+<div class="absolute top-4 left-4 bg-status-active/10 text-status-active px-3 py-1 rounded-full font-label-caps text-label-caps backdrop-blur-md">GREEN</div>
+</div>
+<div class="p-card-inner-padding flex flex-col flex-grow">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Green Vitality</h3>
+<p class="font-mono-data text-mono-data font-bold text-primary">₹149</p>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-6">Kale, Spinach, Green Apple, Lemon. Rich in Iron &amp; Vitamins.</p>
+<div class="mt-auto">
+<button class="w-full bg-primary text-on-primary py-3 rounded-xl font-bold flex items-center justify-center gap-2 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">add_circle</span>
+                            Subscribe
+                        </button>
+</div>
+</div>
+</div>
+<!-- Product Card 2 -->
+<div class="bg-surface rounded-xl shadow-[0px_4px_20px_rgba(0,40,0,0.05)] overflow-hidden flex flex-col group hover:shadow-lg transition-shadow">
+<div class="relative h-64 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A vivid product shot of an orange 'Citrus Glow' juice bottle, surrounded by fresh orange slices and ginger root, bright morning sunlight effect, high contrast, clean white surface, vibrant orange and yellow tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDpXNZmUBhGhbZ-etVPR49UsOhSEqQ4PsBWH2Gtd4tc8HaSLDfiUokZDArd8RwoxOlb8X2unI7Py5tFT1kmEnwLEDpYyoTaq_uwdtqIwQFxpdCWycTqXbW1j9h4kpbh3jhvHr0us-c-NC1vYrvKHcN9N6fh9DvxNYVtnlDepxVC9ZgW-bjXxAocQYvE1TjU3htwTpQRcILhUBAEUwiQM7KkuMG6TpDllg2z7gRSyf_LezitL1ey-XvAU4Ui171DWqmDOWk8wjqKLlg"/>
+<div class="absolute top-4 left-4 bg-secondary-container/10 text-secondary px-3 py-1 rounded-full font-label-caps text-label-caps backdrop-blur-md">FRUIT</div>
+</div>
+<div class="p-card-inner-padding flex flex-col flex-grow">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Citrus Glow</h3>
+<p class="font-mono-data text-mono-data font-bold text-primary">₹129</p>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-6">Orange, Carrot, Ginger, Turmeric. Immune system booster.</p>
+<div class="mt-auto">
+<button class="w-full bg-primary text-on-primary py-3 rounded-xl font-bold flex items-center justify-center gap-2 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">add_circle</span>
+                            Subscribe
+                        </button>
+</div>
+</div>
+</div>
+<!-- Product Card 3 -->
+<div class="bg-surface rounded-xl shadow-[0px_4px_20px_rgba(0,40,0,0.05)] overflow-hidden flex flex-col group hover:shadow-lg transition-shadow">
+<div class="relative h-64 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A dark and moody aesthetic photo of a deep red 'Beet Detox' juice bottle, highlighted by soft rim lighting, earthy beetroots and pomegranates in the composition, professional minimalist product photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCI2mFGXewSPFTj4ZdbYpzZiX77zX5OSG5rtFvRl7OeGEG0SqHiFVqY5prubBC8S46_7QgeV3ckNgCK4HGxgKiagmqY0iRJZFu2qMt2RgRv90hK6Eyxg4UVXIHzaOsfan9tiiANI-o0SYew56MBXpIpWhGb38oYlXQRC95GQcWyYjfcvJHyekKVm9wPE_Zh7O1U5c1U9kdgfrQVnVfyMwFuD2eGQ3h0fssDJcsgqVrAIvQzDAMtP21NHiRGLgLQAE3gu9GguFx24xE"/>
+<div class="absolute top-4 left-4 bg-tertiary-container/10 text-tertiary px-3 py-1 rounded-full font-label-caps text-label-caps backdrop-blur-md">DETOX</div>
+</div>
+<div class="p-card-inner-padding flex flex-col flex-grow">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Beet Detox</h3>
+<p class="font-mono-data text-mono-data font-bold text-primary">₹159</p>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-6">Beetroot, Pomegranate, Mint, Chia. Perfect for recovery.</p>
+<div class="mt-auto">
+<button class="w-full bg-primary text-on-primary py-3 rounded-xl font-bold flex items-center justify-center gap-2 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">add_circle</span>
+                            Subscribe
+                        </button>
+</div>
+</div>
+</div>
+<!-- Product Card 4 -->
+<div class="bg-surface rounded-xl shadow-[0px_4px_20px_rgba(0,40,0,0.05)] overflow-hidden flex flex-col group hover:shadow-lg transition-shadow">
+<div class="relative h-64 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Refreshing 'Coconut Hydrate' product photography, clear bottle with fresh coconut water, mint leaves floating inside, tropical light, airy and bright minimalist style, pristine white and soft green palette." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAvY7E0wiQdEvDc5i-AO0pFtF8gO9RSnnnAhkMu0hllmLCCnqcP_Zpyw_d_u4jskWxmNUbYuw1EIQb-gtlMRSde89Aoa2H6EVg7v6-eunW3ScRPJGL2n5Yhev3lxcLN4OEfoWtUJTw2IkrCrHL3v_2T1dUWLtoCXywve2y_nV0b35B8yNPhAlygtLwhKnS5pYSqNobnCPmIbgE6miGI9Be8Z61UoDUgUIZGC3e6BkPxn0ENc9O8FS23xrZDExpqOZ16Rn7Q1xEkHDc"/>
+<div class="absolute top-4 left-4 bg-status-future/10 text-status-future px-3 py-1 rounded-full font-label-caps text-label-caps backdrop-blur-md">HYDRATE</div>
+</div>
+<div class="p-card-inner-padding flex flex-col flex-grow">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Coconut Hydrate</h3>
+<p class="font-mono-data text-mono-data font-bold text-primary">₹99</p>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-6">Pure Tender Coconut, Mint, Sea Salt. Natural electrolytes.</p>
+<div class="mt-auto">
+<button class="w-full bg-primary text-on-primary py-3 rounded-xl font-bold flex items-center justify-center gap-2 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">add_circle</span>
+                            Subscribe
+                        </button>
+</div>
+</div>
+</div>
+<!-- Product Card 5 -->
+<div class="bg-surface rounded-xl shadow-[0px_4px_20px_rgba(0,40,0,0.05)] overflow-hidden flex flex-col group hover:shadow-lg transition-shadow">
+<div class="relative h-64 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Vibrant 'Almond Protein' milk bottle, creamy texture visible, scattered almonds and cinnamon sticks, soft warm lighting, rustic but modern wellness kitchen setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCsmhilLEF2N1UMSnVKumK_3TtS5Smqq7DjgnHferk3cFZaZgXDW77crRrxfcsxOtVdRDU_3ctTgpzlIzZdC-TtInawnb-UHwS9P3zS2EK2fzGnTYsLD3yW42SUdiruq7k7L3eiVDj_qdGcGyTPb_uCVpY5DyA3CE4PiQclwT8JlMVZkZldMeSnKCedUNUGbzhMePE4oQRBtcBdRxZlvSk6iWCpI_AHmTInGM-lzHq0y1ZhdTaCV5HQVfkd-hiaojV41Rewi0RILZs"/>
+<div class="absolute top-4 left-4 bg-on-secondary-fixed-variant/10 text-on-secondary-fixed-variant px-3 py-1 rounded-full font-label-caps text-label-caps backdrop-blur-md">NUT MILK</div>
+</div>
+<div class="p-card-inner-padding flex flex-col flex-grow">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Almond Protein</h3>
+<p class="font-mono-data text-mono-data font-bold text-primary">₹189</p>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-6">Almonds, Dates, Vanilla, Himalayan Salt. Dairy-free energy.</p>
+<div class="mt-auto">
+<button class="w-full bg-primary text-on-primary py-3 rounded-xl font-bold flex items-center justify-center gap-2 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">add_circle</span>
+                            Subscribe
+                        </button>
+</div>
+</div>
+</div>
+<!-- Product Card 6 -->
+<div class="bg-surface rounded-xl shadow-[0px_4px_20px_rgba(0,40,0,0.05)] overflow-hidden flex flex-col group hover:shadow-lg transition-shadow">
+<div class="relative h-64 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Exotic 'Seasonal Mango' juice bottle, thick rich texture, vibrant yellow mangoes in background, summer sunlight, high-key lighting, professional beverage photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBi8xR_Y2cRYFqjwiPUHr13ZbbcZwoByDpcdwrxe6K_TxVT60SwUe_pyojKjR3sBas0QLmwH0MT09XUgMsZRs3v8oEY3cR9cO4ooJHg3LUPcoZvztHvZ-pRfbxIf95D2TMjHJhk-OU8wxdAQmOOWitbvjVd52RxrNpAkCS9_5MOchVGKBnQlyCantA-fGbbs9UQ9EKqW2QCvgWLLxL0Agemur1sJfGrWnxOmpDRwl_-HKntj-BbKTvi9fSI0W3G_qX4_WONEeB-hu4"/>
+<div class="absolute top-4 left-4 bg-status-warning/10 text-status-warning px-3 py-1 rounded-full font-label-caps text-label-caps backdrop-blur-md">SEASONAL</div>
+</div>
+<div class="p-card-inner-padding flex flex-col flex-grow">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Seasonal Mango</h3>
+<p class="font-mono-data text-mono-data font-bold text-primary">₹169</p>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-6">100% Pure Alphonso Mango Pulp. No added sugar.</p>
+<div class="mt-auto">
+<button class="w-full bg-primary text-on-primary py-3 rounded-xl font-bold flex items-center justify-center gap-2 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">add_circle</span>
+                            Subscribe
+                        </button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-safe h-16 bg-surface dark:bg-surface-container-lowest shadow-lg lg:hidden transition-colors">
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1 active:scale-90 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-label-caps text-label-caps">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant active:scale-90 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined">event_repeat</span>
+<span class="font-label-caps text-label-caps">Calendar</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant active:scale-90 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-label-caps text-label-caps">Wallet</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant active:scale-90 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined">menu</span>
+<span class="font-label-caps text-label-caps">Menu</span>
+</a>
+</nav>
+<script>
+        // Micro-interaction: Countdown Timer Logic
+        function updateCountdown() {
+            const now = new Date();
+            const cutoff = new Date();
+            cutoff.setHours(22, 0, 0, 0); // 10 PM IST
+
+            if (now > cutoff) {
+                cutoff.setDate(cutoff.getDate() + 1);
+            }
+
+            const diff = cutoff - now;
+            const hours = Math.floor(diff / (1000 * 60 * 60)).toString().padStart(2, '0');
+            const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
+            const secs = Math.floor((diff % (1000 * 60)) / 1000).toString().padStart(2, '0');
+
+            const timerElement = document.querySelector('.bg-status-warning.text-white');
+            if (timerElement) {
+                timerElement.textContent = `${hours}h ${mins}m ${secs}s`;
+            }
+        }
+
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+
+        // Simple filter active state toggle
+        const filterButtons = document.querySelectorAll('.flex-none.px-6.py-2');
+        filterButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterButtons.forEach(b => {
+                    b.classList.remove('bg-primary', 'text-on-primary');
+                    b.classList.add('bg-surface-container-high', 'text-on-surface-variant');
+                });
+                btn.classList.add('bg-primary', 'text-on-primary');
+                btn.classList.</script></body></html>

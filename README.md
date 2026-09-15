@@ -70,7 +70,9 @@ Key design principles:
 
 ## Database Schema
 
-20 Flyway migrations, applied in order:
+Flyway migrations, applied in ascending version order (version numbers are not
+contiguous — Flyway only requires strictly increasing order, not consecutive
+numbers):
 
 | Migration | Table / Change |
 |---|---|
@@ -81,19 +83,24 @@ Key design principles:
 | V8 | `admin_credentials` |
 | V9 | `refresh_tokens` |
 | V10 | `delivery_addresses` |
-| V11 | Seed test customer |
+| V11 | Seed test customer (dev/test convenience — not removed; harmless in prod) |
 | V12 | `subscriptions` |
 | V13 | `orders` |
 | V14 | `wallet_ledger` |
 | V15 | `delivery_records` |
 | V16 | `scheduler_job_log` |
-| V100 | Seed admin user |
+| V100 | Seed admin user (default test password — see "Admin Password" below) |
 | V101 | Add `HISTORICAL_CORRECTION_DEBIT` source type |
 | V102 | `admin_audit_log` |
 | V103 | `business_holidays` |
 | V104 | `delivery_sheet_snapshots` |
 | V105 | `recharge_request_log` |
 | V106 | `subscription_change_requests` |
+| V107 | Add `ADJUSTMENT` wallet entry type |
+| V108 | `ingredients`, `product_ingredients` (recipe/shopping-list feature) |
+| V109 | Missing FK indexes |
+| V110 | `admin_notifications` |
+| V111 | `admin_notifications` — nullable `customer_id`/`customer_name` (system-level events) |
 
 ---
 
@@ -347,7 +354,7 @@ cd backend
 mvn test
 ```
 
-**176 tests, 0 failures.**
+**212 tests, 0 failures** (last verified run).
 
 Test classes:
 
@@ -397,25 +404,285 @@ Test classes:
 
 ## Security Notes
 
-- `spring.profiles.active` is **not** hardcoded in `application.properties`. Set `SPRING_PROFILES_ACTIVE=dev` explicitly for local development only.
-- CORS origins are configurable via `app.cors.allowed-origins`. Set to your actual frontend domain in production (e.g. `https://app.juiceplatform.com`).
+- `spring.profiles.active` is **not** hardcoded in `application.properties`. Set `SPRING_PROFILES_ACTIVE=dev` explicitly for local development only. Never combine it with `SPRING_PROFILES_ACTIVE=prod` — use exactly one.
+- CORS origins are configurable via `app.cors.allowed-origins` (`app.cors.allowed-origins` in dev, `APP_CORS_ALLOWED_ORIGINS` in prod). Set to your actual frontend domain(s) in production.
 - `JWT_SECRET` and `GOOGLE_CLIENT_ID` must be provided as environment variables. The application will fail to start without them.
 - All admin mutations are audit-logged in `admin_audit_log` with before/after JSONB snapshots.
+
+### Admin Password
+
+The seeded admin account (`V100__seed_admin.sql`) has phone `9999999999` and password
+`admin123`. This default is kept intentionally for local development and testing — it is
+**not** removed from the migration. Migrations are append-only, so the fix is not to edit
+that file, but to set the `ADMIN_BOOTSTRAP_PASSWORD` environment variable before starting
+the app on any environment where the default password should not be used. On every
+startup, `AdminPasswordBootstrap` overwrites the seeded admin's password hash with this
+value. Unset the variable again after confirming the new password works — the hash stays
+as whatever it was last set to; it does not revert.
+
+```bash
+export ADMIN_BOOTSTRAP_PASSWORD="a-real-password-here"
+```
+
+---
+
+## Free-Tier Deployment (Render + Supabase + Vercel)
+
+For low-traffic deployments (this was built for ~100 daily customers) where a VPS is
+more than needed, the whole stack can run on free tiers: **Supabase** for Postgres,
+**Render** for the backend (using the existing `backend/Dockerfile` as-is), and
+**Vercel** for both frontends. Total cost: **$0/month**, with two important caveats
+covered at the end of this section.
+
+```
+┌──────────────┐        ┌──────────────┐
+│ Vercel        │        │ Vercel        │
+│ (customer PWA)│        │ (admin panel) │
+└──────┬────────┘        └──────┬────────┘
+       │  HTTPS (VITE_API_URL)  │
+       └────────────┬───────────┘
+                     ▼
+            ┌──────────────────┐
+            │  Render (free)   │
+            │  Spring Boot API │
+            └────────┬─────────┘
+                     │  Supavisor Session Pooler (IPv4, port 5432)
+                     ▼
+            ┌──────────────────┐
+            │ Supabase (free)  │
+            │   PostgreSQL     │
+            └──────────────────┘
+```
+
+### 1. Create the Supabase project
+
+1. Create a project at [supabase.com](https://supabase.com) (free tier, 1 project).
+2. In the project dashboard, click **Connect** and copy the **Session pooler**
+   connection string — not "Direct connection" and not "Transaction pooler".
+   - Direct connection is IPv6-only on the free tier; Render's network is IPv4-only,
+     so it can't reach it without Supabase's paid IPv4 add-on.
+   - The Transaction pooler (port 6543) doesn't support prepared statements, which
+     Hibernate and Flyway both rely on — only Session pooler mode (port 5432) does.
+3. From that connection string, extract:
+   - Host: `aws-0-<region>.pooler.supabase.com`
+   - Username: `postgres.<project-ref>`
+   - Password: the one you set when creating the project
+   - Build the JDBC URL: `jdbc:postgresql://aws-0-<region>.pooler.supabase.com:5432/postgres`
+
+### 2. Deploy the backend to Render
+
+1. Push this repo to GitHub (Render deploys from a Git repo).
+2. In the Render Dashboard, choose **New → Blueprint** and point it at the repo —
+   Render reads `render.yaml` from the repo root automatically.
+3. Render will prompt for every environment variable marked `sync: false` in
+   `render.yaml`:
+
+   | Variable | Value |
+   |---|---|
+   | `SPRING_DATASOURCE_URL` | `jdbc:postgresql://aws-0-<region>.pooler.supabase.com:5432/postgres` |
+   | `SPRING_DATASOURCE_USERNAME` | `postgres.<project-ref>` |
+   | `SPRING_DATASOURCE_PASSWORD` | your Supabase database password |
+   | `JWT_SECRET` | `openssl rand -base64 48` |
+   | `GOOGLE_CLIENT_ID` | your Google OAuth client ID |
+   | `APP_CORS_ALLOWED_ORIGINS` | your two Vercel URLs once you have them (step 3) — you can redeploy this later once Vercel gives you the URLs |
+   | `ADMIN_BOOTSTRAP_PASSWORD` | a real admin password (recommended — see "Admin Password" above) |
+
+4. Deploy. Render builds `backend/Dockerfile` and starts the service on the **free**
+   plan. First boot runs Flyway migrations against Supabase automatically.
+5. Confirm it's live: `curl https://<your-service>.onrender.com/api/v1/health`
+   should return `{"success":true,"data":{"status":"UP","db":"UP"}}`.
+
+### 3. Deploy both frontends to Vercel
+
+For each of `frontend/admin` and `frontend/customer`:
+
+1. In the Vercel Dashboard, **Add New → Project**, import the repo, and set the
+   project's **Root Directory** to `frontend/admin` (or `frontend/customer`).
+   Vercel auto-detects the Vite framework preset — no build command changes needed.
+2. Under **Environment Variables**, add:
+   - `VITE_API_URL` = `https://<your-render-service>.onrender.com/api/v1`
+   - `VITE_MOCK` = `false`
+   - Customer app only: `VITE_GOOGLE_CLIENT_ID` = your Google OAuth client ID
+3. Deploy. Vercel gives you a `*.vercel.app` URL for each app.
+4. Go back to Render and update `APP_CORS_ALLOWED_ORIGINS` with both real Vercel
+   URLs (comma-separated), then redeploy the backend so CORS actually allows
+   requests from them.
+5. In Google Cloud Console, add both Vercel URLs as authorized JavaScript origins
+   for your OAuth client (Google rejects sign-in requests from unlisted origins).
+
+### 4. Set up the keep-alive ping
+
+Render's free web service spins down after 15 minutes with no inbound traffic, and
+Supabase's free database pauses after 7 days with no activity. `.github/workflows/keep-alive.yml`
+pings `/api/v1/health` (which itself runs a real DB query) every 10 minutes to prevent
+both:
+
+1. In your GitHub repo, go to **Settings → Secrets and variables → Actions → Variables**.
+2. Add a repository variable named `BACKEND_HEALTH_URL` set to
+   `https://<your-render-service>.onrender.com/api/v1/health`.
+3. The workflow is already scheduled (`*/10 * * * *`) — no further setup needed.
+   You can trigger it manually from the Actions tab to confirm it works.
+
+### Known limitations of this free-tier setup
+
+Read this before relying on it for anything real:
+
+- **The keep-alive ping is a workaround, not an official feature.** Render does not
+  guarantee that an external pinger keeps a free instance permanently warm, and could
+  change spin-down behavior at any time. If a nightly job is ever found to have not
+  run — check **Admin Dashboard → Scheduler → History**, or `GET /admin/scheduler/history` —
+  that's a sign this setup is no longer reliable enough and the backend should move to
+  a paid Render plan (Starter, ~$7/month) or a persistent-VM alternative (Oracle Cloud's
+  Always Free tier is a genuinely free, non-expiring, no-spin-down option, though it
+  requires the VPS-style Docker Compose setup documented below instead of this one).
+- **GitHub Actions disables scheduled workflows after 60 days with no commits to the
+  repo.** If the repo goes quiet for two months, the keep-alive ping silently stops. A
+  free external cron service (e.g. [cron-job.org](https://cron-job.org)) pinging the
+  same health URL is a backup that doesn't depend on repo activity — consider setting
+  one up in addition to the GitHub Action.
+- **Render's free plan caps usage at 750 instance-hours per workspace per month.** One
+  service running continuously for a 31-day month uses almost exactly that. If you add
+  any other free Render service to the same account, you will exceed the cap and
+  Render suspends services until the next month.
+- **Cold starts still happen occasionally.** Even with the ping, a slow GitHub Actions
+  scheduler tick or a Render platform hiccup can leave a ~1-minute gap where the first
+  real user request of the day is slow. This is a UX inconvenience, not a correctness
+  issue, as long as the 22:00 IST scheduler window itself was covered by a ping.
+- **Free Supabase projects are capped at 500MB database storage** and 2 free projects
+  per account — more than enough at 100 customers/day, but worth knowing if usage grows.
+
+---
+
+## Production Deployment (VPS)
+
+The repository ships a complete Docker Compose topology for a single VPS deployment:
+Nginx (TLS termination + reverse proxy) in front of the Spring Boot API and the two
+static frontend builds (admin dashboard, customer PWA), with PostgreSQL on an internal-
+only Docker network (no published port).
+
+```
+                    ┌────────────────────────┐
+  Internet ── 443 ─▶│   nginx (TLS, proxy)   │
+                    └───────────┬────────────┘
+                    ┌───────────┼────────────┐
+                    ▼           ▼            ▼
+              ┌─────────┐ ┌──────────┐ ┌────────────┐
+              │   app   │ │  admin   │ │  customer  │
+              │(Spring) │ │ (static) │ │  (static)  │
+              └────┬────┘ └──────────┘ └────────────┘
+                   │
+              ┌────▼────┐
+              │   db    │  (no published port — internal network only)
+              │(Postgres)│
+              └─────────┘
+```
+
+Files involved: `docker-compose.prod.yml` (root), `backend/Dockerfile`,
+`frontend/admin/Dockerfile`, `frontend/customer/Dockerfile`,
+`nginx/default.conf.template`, `.env.example`.
+
+### 1. Provision a VPS
+
+Any small VPS works — the original design target was a 2 vCPU / 4 GB RAM instance
+(e.g. Hetzner CX21). Install Docker and the Docker Compose plugin. Point two DNS
+A records at the server's public IP: one for the customer app domain, one for the
+admin domain (e.g. `app.yourdomain.com` and `admin.yourdomain.com`).
+
+### 2. Configure environment variables
+
+```bash
+cd /opt/juice-platform   # wherever you've cloned the repo
+cp .env.example .env
+```
+
+Edit `.env` and fill in every value — see the comments in `.env.example` for what
+each variable is and how to generate secrets (`openssl rand -base64 32`, etc.).
+**Never commit the real `.env` file.**
+
+### 3. Bootstrap TLS certificates (first run only)
+
+Certificates don't exist yet, so nginx needs to start once in a certificate-less
+state to serve the ACME HTTP-01 challenge, then certbot issues the certs, then
+nginx is reloaded to pick them up.
+
+```bash
+# Start nginx + backing services (nginx will fail its HTTPS server blocks until
+# certs exist, but the HTTP-01 challenge location still works).
+docker compose -f docker-compose.prod.yml up -d db app admin customer nginx
+
+# Issue certificates for both domains via the webroot challenge.
+docker compose -f docker-compose.prod.yml run --rm certbot certonly \
+  --webroot --webroot-path=/var/www/certbot \
+  -d app.yourdomain.com -d admin.yourdomain.com \
+  --email you@yourdomain.com --agree-tos --no-eff-email
+
+# Reload nginx now that certificates exist on the shared volume.
+docker compose -f docker-compose.prod.yml exec nginx nginx -s reload
+```
+
+### 4. Steady-state deploy / redeploy
+
+```bash
+docker compose -f docker-compose.prod.yml up -d --build
+```
+
+Rerunning this is safe — Flyway migrations are idempotent and the app container
+rebuilds only if source changed.
+
+### 5. Certificate renewal
+
+Let's Encrypt certificates expire after 90 days. Add a host crontab entry to renew
+and reload nginx periodically:
+
+```cron
+0 3 * * 0 cd /opt/juice-platform && docker compose -f docker-compose.prod.yml run --rm certbot renew && docker compose -f docker-compose.prod.yml exec nginx nginx -s reload
+```
+
+### 6. Database backups
+
+`backend/backup/backup.sh` runs `pg_dump` inside the running `juice-db` container,
+gzips the output, and prunes backups older than 14 days. Schedule it daily:
+
+```cron
+0 3 * * * cd /opt/juice-platform && ./backend/backup/backup.sh >> /var/log/juice-backup.log 2>&1
+```
+
+To restore a backup (destructive — overwrites the target database):
+
+```bash
+gunzip -c backend/backup/juice_platform_2025-01-15_0300.sql.gz | \
+  docker exec -i juice-db psql -U "$POSTGRES_USER" -d "$POSTGRES_DB"
+```
+
+For disaster recovery beyond the local backup files, periodically copy the
+`backend/backup/*.sql.gz` files off-server (e.g. to S3-compatible object storage
+or another machine) — a backup that only exists on the VPS it's protecting against
+doesn't survive that VPS failing.
+
+### 7. Monitoring
+
+No APM/metrics stack is bundled (Spring Boot Actuator is intentionally not a
+dependency — see `pom.xml`). For basic uptime monitoring, point an external
+service (e.g. UptimeRobot) at `https://app.yourdomain.com/api/v1/health`.
+
+### Production checklist
+
+- [ ] `.env` filled in with real, randomly generated secrets (not the values in `.env.example`)
+- [ ] `ADMIN_BOOTSTRAP_PASSWORD` set on first boot, then admin password confirmed working
+- [ ] DNS records for both domains point at the server
+- [ ] TLS certificates issued (step 3 above)
+- [ ] Cron jobs installed for certbot renewal and database backups
+- [ ] `APP_CORS_ALLOWED_ORIGINS` matches the real HTTPS domains exactly
+- [ ] Google OAuth client configured for the production domain (not localhost)
+- [ ] Confirmed `SPRING_PROFILES_ACTIVE=prod` is set and `dev` is never set alongside it
 
 ---
 
 ## Known Gaps (Not Yet Implemented)
 
-The following API spec endpoints are defined in docs but not yet implemented:
+- `POST /api/v1/admin/orders/{id}/confirm-email` — delivery confirmation email trigger (spec Domain 15). No UI or backend endpoint exists yet.
+- Email delivery for notifications is not wired to any SMTP provider. Low-balance warnings, order-generation-blocked, wallet-credited, scheduler-failure, product-auto-pause, and subscription-cancelled events are all persisted to the in-app admin notification panel (`admin_notifications` table, visible under Notifications in the admin dashboard) and logged server-side, but no email is sent to customers or admins for any of them yet.
+- `subscription_pause_history` (an audit/history table for pause/resume events) described in early design docs was never implemented — this is not functionally required since operational state is fully derived from `subscriptions.status`/`pause_reason`, but there's no dedicated pause/resume audit trail beyond `admin_audit_log`.
+- BR-ORD-08 (deferring `PENDING_START` activation itself to the next operational day when the activation date falls on a holiday) is not implemented as a distinct step — in practice the net effect is largely covered because order generation independently skips holidays, but the literal "defer activation" behavior isn't separately coded.
 
-- `GET /api/v1/orders/{id}` — customer order detail
-- `GET /api/v1/admin/orders` and `GET /api/v1/admin/orders/{id}` — admin order listing
-- `GET /api/v1/admin/subscriptions` and `PATCH /api/v1/admin/subscriptions/{id}` — admin subscription management
-- `GET /api/v1/admin/subscriptions/{id}/change-requests` — admin change request view
-- `POST /api/v1/admin/customers/{id}/deactivate` / `reactivate` — customer account management
-- `GET /api/v1/admin/customers` and `GET /api/v1/admin/customers/{id}` — admin customer listing
-- `POST /api/v1/admin/customers/{id}/wallet/adjust` and `set-balance` — manual wallet adjustments
-- `GET /api/v1/admin/customers/{id}/wallet/ledger` — admin ledger view
-- `POST /api/v1/admin/orders/{id}/confirm-email` — delivery confirmation email trigger
-- Email delivery for all notifications (currently log-only stubs)
-- Real PDF generation for delivery sheet download (currently plain-text placeholder)
+Everything else described in the original design docs — customer CRUD, admin customer/subscription/order/wallet management, delivery sheets (CSV + real PDF), ingredient recipes and shopping lists, scheduler reruns and startup recovery, and historical order corrections including quantity/product price recalculation — is implemented and covered by the test suite.

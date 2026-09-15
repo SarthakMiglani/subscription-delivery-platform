@@ -14,7 +14,7 @@ import java.time.ZoneId;
 
 /**
  * Scheduled job for delivery sheet generation.
- * Runs at 22:10 IST daily (BR-SCH-01) — after OrderFreezeJob (22:00).
+ * Runs at 22:10 IST daily — after OrderFreezeJob (22:00).
  * Generates snapshot for tomorrow's delivery date.
  */
 @Component
@@ -41,7 +41,7 @@ public class DeliverySheetScheduler {
             log.info("DeliverySheetGenerationJob completed for {}", deliveryDate);
         } catch (Exception e) {
             log.error("DeliverySheetGenerationJob failed for {}: {}", deliveryDate, e.getMessage(), e);
-            // Best-effort notification — non-blocking (BR-NOT-01, BR-NOT-03, BR-SCH-06)
+            // Best-effort notification — non-blocking
             try {
                 notificationService.notifySchedulerJobFailure(JOB_NAME, deliveryDate, e.getMessage());
             } catch (Exception notifyEx) {

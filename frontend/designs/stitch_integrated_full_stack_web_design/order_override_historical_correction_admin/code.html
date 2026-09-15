@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Order Override | FreshFlow Admin</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Hanken+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@500&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@100..900&family=Plus+Jakarta+Sans:wght@100..900&display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .status-pill {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+        /* Custom Toggle Style */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #2a6b2c;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #2a6b2c;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "wallet-credit": "#2E7D32",
+                      "on-secondary-container": "#653900",
+                      "secondary-container": "#ff9800",
+                      "error-container": "#ffdad6",
+                      "surface-container-high": "#e6e9e7",
+                      "surface-dim": "#d8dad9",
+                      "surface": "#f8faf8",
+                      "outline-variant": "#c0c9bb",
+                      "on-secondary-fixed": "#2c1600",
+                      "surface-variant": "#e1e3e1",
+                      "surface-tint": "#2a6b2c",
+                      "status-warning": "#ED6C02",
+                      "status-error": "#D32F2F",
+                      "surface-container-lowest": "#ffffff",
+                      "on-surface-variant": "#41493e",
+                      "status-active": "#2E7D32",
+                      "on-tertiary-fixed-variant": "#2e4f00",
+                      "tertiary-fixed-dim": "#9ed75b",
+                      "on-background": "#191c1b",
+                      "primary": "#00450d",
+                      "tertiary-fixed": "#b9f474",
+                      "on-tertiary-container": "#9dd65b",
+                      "inverse-surface": "#2e3130",
+                      "on-tertiary": "#ffffff",
+                      "on-primary": "#ffffff",
+                      "on-surface": "#191c1b",
+                      "secondary": "#8b5000",
+                      "surface-bright": "#f8faf8",
+                      "on-error-container": "#93000a",
+                      "inverse-on-surface": "#eff1ef",
+                      "surface-container-highest": "#e1e3e1",
+                      "primary-fixed-dim": "#91d78a",
+                      "background": "#f8faf8",
+                      "secondary-fixed": "#ffdcbe",
+                      "status-locked": "#455A64",
+                      "on-primary-fixed": "#002203",
+                      "tertiary": "#264300",
+                      "outline": "#717a6d",
+                      "on-secondary-fixed-variant": "#693c00",
+                      "tertiary-container": "#365c00",
+                      "primary-fixed": "#acf4a4",
+                      "surface-container": "#eceeec",
+                      "secondary-fixed-dim": "#ffb870",
+                      "wallet-debit": "#D32F2F",
+                      "on-secondary": "#ffffff",
+                      "status-future": "#0288D1",
+                      "on-error": "#ffffff",
+                      "on-primary-fixed-variant": "#0c5216",
+                      "on-tertiary-fixed": "#0f2000",
+                      "on-primary-container": "#90d689",
+                      "surface-container-low": "#f2f4f2",
+                      "primary-container": "#1b5e20",
+                      "inverse-primary": "#91d78a",
+                      "error": "#ba1a1a"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "container-padding-mobile": "16px",
+                      "container-padding-desktop": "32px",
+                      "card-inner-padding": "24px",
+                      "gutter": "16px",
+                      "section-gap": "40px",
+                      "base": "8px"
+              },
+              "fontFamily": {
+                      "headline-md": ["Plus Jakarta Sans"],
+                      "headline-lg-mobile": ["Plus Jakarta Sans"],
+                      "body-sm": ["Hanken Grotesk"],
+                      "headline-lg": ["Plus Jakarta Sans"],
+                      "body-lg": ["Hanken Grotesk"],
+                      "body-md": ["Hanken Grotesk"],
+                      "label-caps": ["Hanken Grotesk"],
+                      "mono-data": ["JetBrains Mono"],
+                      "headline-sm": ["Plus Jakarta Sans"]
+              },
+              "fontSize": {
+                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                      "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                      "mono-data": ["13px", {"lineHeight": "18px", "fontWeight": "500"}],
+                      "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}]
+              }
+            },
+          },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface font-body-md min-h-screen">
+<!-- Top Navigation Bar -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-container-padding-mobile md:px-container-padding-desktop h-16 bg-surface dark:bg-surface-dim shadow-sm">
+<div class="flex items-center gap-4">
+<span class="font-headline-md text-headline-md font-bold text-primary">FreshFlow</span>
+<div class="hidden md:flex gap-6 ml-10">
+<a class="text-primary font-bold transition-colors" href="#">Dashboard</a>
+<a class="text-on-surface-variant hover:bg-surface-container-high px-3 py-1 rounded transition-colors" href="#">Logistics</a>
+<a class="text-on-surface-variant hover:bg-surface-container-high px-3 py-1 rounded transition-colors" href="#">Users</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary cursor-pointer p-2 rounded-full hover:bg-surface-container-high transition-colors">notifications</span>
+<span class="material-symbols-outlined text-primary cursor-pointer p-2 rounded-full hover:bg-surface-container-high transition-colors">account_balance_wallet</span>
+<div class="w-8 h-8 rounded-full bg-surface-container-highest overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A professional studio portrait of a female administrative manager with a friendly expression. She is wearing a modern green blazer that matches the brand identity. The background is a clean, softly blurred corporate office with warm lighting and minimalist decor. High resolution photography style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAjOcT-yMsf1xFeBFfmp0IGKh3W7nNQp9_BiPKzMNuM9IxCM5O38iY0p3cXadPCv3VH7Rx_Q47vKKri8C5bUYE2CTWzTQCimO4lu-fKR9XvfE2r5Xp3jO0e5cy8peIS08RM3OgC7_fqnLjPGHetf6t8G8iN6q5CPIE0MSUJ3Qa9TJzUhXvfiA69ULGEL0VyylOZ3VHz0igdd30mdqFrkpiqepJ6AaK_vXA9GCI0j2gL2sMh7MDAyr_rCDbUuTsIAnESO6dCnU8ZNb4"/>
+</div>
+</div>
+</header>
+<!-- Sidebar Navigation (Desktop) -->
+<aside class="fixed left-0 top-0 h-full w-64 border-r border-outline-variant hidden lg:flex flex-col bg-surface-container-low pt-20 pb-6 px-4">
+<div class="mb-8 px-4">
+<div class="flex items-center gap-3 mb-2">
+<div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined">shield_person</span>
+</div>
+<div>
+<p class="font-headline-sm text-headline-sm font-bold text-primary leading-tight">Admin Console</p>
+<p class="text-xs text-on-surface-variant">V 4.2.1-stable</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all group" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-primary-container text-on-primary-container rounded-lg font-bold transition-all" href="#">
+<span class="material-symbols-outlined">history_edu</span>
+<span>Order Overrides</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">account_balance</span>
+<span>Wallet Ledgers</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span>Catalog</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">support_agent</span>
+<span>Support Queue</span>
+</a>
+</nav>
+<div class="mt-auto space-y-1 pt-4 border-t border-outline-variant">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span>Settings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span>Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="lg:ml-64 pt-24 pb-20 px-container-padding-mobile md:px-container-padding-desktop min-h-screen">
+<!-- Header Section -->
+<div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<div class="flex items-center gap-2 text-on-surface-variant mb-2">
+<span class="material-symbols-outlined text-sm">arrow_back</span>
+<span class="text-xs font-label-caps uppercase tracking-wider">Back to Delivery Queue</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-primary">Override Order #ORD-88291-LX</h1>
+<p class="text-on-surface-variant mt-1">Transaction audit logs will be updated automatically upon submission.</p>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex flex-col items-end">
+<span class="text-xs font-label-caps text-on-surface-variant">CURRENT STATE</span>
+<span class="status-pill bg-status-locked text-white flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">lock</span> LOCKED
+                    </span>
+</div>
+<div class="h-10 w-[1px] bg-outline-variant hidden md:block"></div>
+<div class="flex flex-col items-end">
+<span class="text-xs font-label-caps text-on-surface-variant">CUTOFF PERIOD</span>
+<span class="font-mono-data text-mono-data text-status-error">EXPIRED (10 PM IST)</span>
+</div>
+</div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-12 gap-gutter">
+<!-- LEFT COLUMN: Form Section -->
+<div class="col-span-12 lg:col-span-8 space-y-gutter">
+<!-- Override Form Card -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant p-card-inner-padding">
+<h2 class="font-headline-sm text-headline-sm text-primary mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined">edit_square</span>
+                        Modification Parameters
+                    </h2>
+<form class="space-y-8" id="overrideForm">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Product Selection -->
+<div class="space-y-2">
+<label class="text-xs font-label-caps text-on-surface-variant">PRODUCT SNAPSHOT</label>
+<div class="relative">
+<select class="w-full bg-surface-container-low border-b-2 border-outline-variant focus:border-primary focus:ring-0 px-3 py-3 rounded-t transition-all appearance-none">
+<option value="p1">Organic A2 Milk (1L Bottle)</option>
+<option value="p2">Fresh Buffalo Curd (500g)</option>
+<option selected="" value="p3">Daily Cold Pressed Valencia Orange (250ml)</option>
+<option value="p4">Farm Fresh Eggs (Pack of 6)</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-3 text-on-surface-variant pointer-events-none">expand_more</span>
+</div>
+</div>
+<!-- Status Override -->
+<div class="space-y-2">
+<label class="text-xs font-label-caps text-on-surface-variant">NEW STATUS</label>
+<div class="relative">
+<select class="w-full bg-surface-container-low border-b-2 border-outline-variant focus:border-primary focus:ring-0 px-3 py-3 rounded-t transition-all appearance-none font-bold" id="statusSelect">
+<option value="LOCKED">LOCKED (Current)</option>
+<option value="DELIVERED">DELIVERED</option>
+<option value="CANCELLED">CANCELLED</option>
+<option selected="" value="SKIPPED">SKIPPED</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-3 text-on-surface-variant pointer-events-none">swap_horiz</span>
+</div>
+</div>
+<!-- Quantity -->
+<div class="space-y-2">
+<label class="text-xs font-label-caps text-on-surface-variant">QUANTITY</label>
+<div class="flex items-center gap-4 bg-surface-container-low px-4 py-2 rounded-lg border border-outline-variant">
+<button class="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center active:scale-90 transition-transform" type="button">
+<span class="material-symbols-outlined">remove</span>
+</button>
+<input class="flex-1 bg-transparent border-none text-center font-headline-sm focus:ring-0" id="qtyInput" type="number" value="2"/>
+<button class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-on-primary active:scale-90 transition-transform" type="button">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+</div>
+<!-- System Error Toggle -->
+<div class="flex items-center justify-between p-4 bg-error-container/20 rounded-lg border border-error-container">
+<div>
+<p class="font-bold text-on-error-container flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">report</span>
+                                        isSystemError
+                                    </p>
+<p class="text-xs text-on-surface-variant">Triggers automated refund to wallet</p>
+</div>
+<div class="relative inline-block w-12 align-middle select-none">
+<input checked="" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer transition-all duration-300 right-6 checked:right-0" id="SystemErrorToggle" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-outline-variant cursor-pointer transition-colors duration-300" for="SystemErrorToggle"></label>
+</div>
+</div>
+</div>
+<!-- Audit Notes -->
+<div class="space-y-2">
+<label class="text-xs font-label-caps text-on-surface-variant">AUDIT LOG NOTES (BR-HIS-01)</label>
+<textarea class="w-full bg-surface-container-low border-b-2 border-outline-variant focus:border-primary focus:ring-0 px-4 py-3 rounded-t transition-all placeholder:text-on-surface-variant/40" placeholder="Mandatory: Describe the reason for this override (e.g., Customer called for cancellation after 10PM, delivery agent vehicle breakdown...)" rows="4"></textarea>
+<p class="text-[11px] text-on-surface-variant italic">Note: These comments are visible to logistics auditors and customer support.</p>
+</div>
+<!-- Submit Group -->
+<div class="flex flex-col md:flex-row items-center gap-4 pt-4">
+<button class="w-full md:w-auto px-8 py-3 bg-primary text-on-primary rounded-lg font-bold flex items-center justify-center gap-2 hover:opacity-90 active:scale-95 transition-all shadow-lg" type="submit">
+<span class="material-symbols-outlined">published_with_changes</span>
+                                Commit Override
+                            </button>
+<button class="w-full md:w-auto px-8 py-3 border border-primary text-primary rounded-lg font-bold hover:bg-surface-container-high transition-all" type="button">
+                                Cancel Modification
+                            </button>
+</div>
+</form>
+</div>
+<!-- Recalculation Preview -->
+<div class="bg-surface-container rounded-xl p-card-inner-padding border-l-4 border-primary">
+<div class="flex items-center justify-between mb-4">
+<h3 class="font-headline-sm text-headline-sm text-primary">Financial Impact Recalculation</h3>
+<span class="status-pill bg-status-active text-white">Live Sync</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="p-4 bg-surface-container-lowest rounded-lg">
+<p class="text-xs font-label-caps text-on-surface-variant mb-1">UNIT PRICE (PAISE)</p>
+<p class="font-mono-data text-headline-sm text-on-surface">₹ 85.00 <span class="text-xs font-normal opacity-60">(8500p)</span></p>
+</div>
+<div class="p-4 bg-surface-container-lowest rounded-lg">
+<p class="text-xs font-label-caps text-on-surface-variant mb-1">TOTAL AMOUNT (PAISE)</p>
+<p class="font-mono-data text-headline-sm text-on-surface">₹ 170.00 <span class="text-xs font-normal opacity-60">(17000p)</span></p>
+</div>
+<div class="p-4 bg-secondary-container/10 border border-secondary-container rounded-lg">
+<p class="text-xs font-label-caps text-on-secondary-container mb-1">EXPECTED REFUND</p>
+<p class="font-mono-data text-headline-sm text-wallet-credit">₹ 170.00</p>
+</div>
+</div>
+</div>
+</div>
+<!-- RIGHT COLUMN: Identity & Reference -->
+<div class="col-span-12 lg:col-span-4 space-y-gutter">
+<!-- Address Snapshot Card -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant overflow-hidden">
+<div class="h-32 relative">
+<div class="absolute inset-0 bg-surface-container-high">
+<img class="w-full h-full object-cover opacity-60" data-alt="A detailed digital map view showing a residential neighborhood in a modern city like Bangalore. Minimalist UI style map with soft green and gray tones, showing streets and building footprints. A single green marker points to a delivery location. Clean, flat design aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgslEJjxZnrwPJkyEW1bg18gNS6gZxXcyx0UVxFVS6nMAc2zux9clkI6HmgGSvyk52UglmzrNchfmCmaW6g0y0XFE9hvs35BUly1Vb4rjdufQPFZg9nQc33iHqXJ3nz-pkWNZOVCDZ51jBtWSzodsByklaWpaUO2Frp6Rxf9qFGW27I0k1CIbAu_OTGWKQux5oPKRVzp4i7RU3gWCe5jmM2d1k1mpAZ1cKJJgWanM-r5DtMabxTTdUPuQ5BeGZFRHNZ0sOGWUmo1I"/>
+</div>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest to-transparent"></div>
+<div class="absolute bottom-4 left-6">
+<span class="status-pill bg-primary text-white">Immutable Address Snapshot</span>
+</div>
+</div>
+<div class="p-card-inner-padding pt-2">
+<div class="flex items-start gap-3 mb-4">
+<span class="material-symbols-outlined text-primary mt-1">location_on</span>
+<div>
+<p class="font-bold text-on-surface">Rajesh Kumar</p>
+<p class="text-sm text-on-surface-variant leading-relaxed">
+                                    Villa 402, Green Meadows Phase II,<br/>
+                                    Sarjapur Main Road, Near Wipro Gate,<br/>
+                                    Bangalore, Karnataka - 560035
+                                </p>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 border-t border-outline-variant pt-4">
+<div>
+<p class="text-[10px] font-label-caps text-on-surface-variant">COORDINATES</p>
+<p class="text-xs font-mono-data">12.9141° N, 77.6412° E</p>
+</div>
+<div>
+<p class="text-[10px] font-label-caps text-on-surface-variant">LAST UPDATED</p>
+<p class="text-xs font-mono-data">12 Oct, 11:32 AM</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Customer Context Card -->
+<div class="bg-surface-container-low rounded-xl p-card-inner-padding border border-outline-variant">
+<h3 class="text-xs font-label-caps text-on-surface-variant mb-4">CUSTOMER PROFILE</h3>
+<div class="flex items-center gap-4 mb-6">
+<div class="w-12 h-12 rounded-full border-2 border-primary-fixed overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A warm, approachable portrait of an Indian male customer in his 30s, casual attire, smiling gently. Soft natural morning light, high-end commercial photography style with a shallow depth of field. High quality resolution." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB0MJ_uwbNb3iuzfdaCVPy6W8oqOdwWimhj3FN25uOcN9le4CBMUH-dqojbW4ngEsovy5GltfIfuJVAMKnQKwS-u3DfEJmuczJ1Tmf0pmUZaEAi25eLHiFiuYybcgEaiUIKaVE_o-d6Tpf9HXT3WS47KInmz4NgmO6xx4jp731MrPCeftO80CN2tiA4DbE2WtqRVmN4ytRiotRY5e1GYbgVXj8a55_qlSs5YYT3m3jOMBdvxF0MfrG0Q-gLIjYHE20Q0yWZz31htFw"/>
+</div>
+<div>
+<p class="font-bold">Rajesh Kumar</p>
+<p class="text-xs text-on-surface-variant">Member since Jan 2023</p>
+</div>
+</div>
+<div class="space-y-3">
+<div class="flex justify-between items-center text-sm">
+<span class="text-on-surface-variant">Wallet Balance</span>
+<span class="font-mono-data text-wallet-credit font-bold">₹ 1,240.00</span>
+</div>
+<div class="flex justify-between items-center text-sm">
+<span class="text-on-surface-variant">Active Subscriptions</span>
+<span class="font-bold">04</span>
+</div>
+<div class="flex justify-between items-center text-sm">
+<span class="text-on-surface-variant">Reliability Score</span>
+<span class="text-status-active font-bold">98%</span>
+</div>
+</div>
+<button class="w-full mt-6 py-2 border border-outline text-on-surface-variant rounded text-sm hover:bg-surface-container-high transition-colors">
+                        View Order History
+                    </button>
+</div>
+<!-- Logistics Context -->
+<div class="bg-surface-container-lowest rounded-xl p-card-inner-padding border border-outline-variant">
+<h3 class="text-xs font-label-caps text-on-surface-variant mb-4">ASSIGNED LOGISTICS</h3>
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-surface-container-high rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant">local_shipping</span>
+</div>
+<div>
+<p class="text-sm font-bold">South-East Hub (HSR)</p>
+<p class="text-xs text-on-surface-variant">Route: HSR-SJP-12</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation (Mobile Only) -->
+<nav class="lg:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-safe h-16 bg-surface shadow-lg border-t border-outline-variant">
+<button class="flex flex-col items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined">home</span>
+<span class="text-[10px] font-label-caps">Home</span>
+</button>
+<button class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1">
+<span class="material-symbols-outlined">history_edu</span>
+<span class="text-[10px] font-label-caps">Override</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined">payments</span>
+<span class="text-[10px] font-label-caps">Wallet</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined">menu</span>
+<span class="text-[10px] font-label-caps">Menu</span>
+</button>
+</nav>
+<script>
+        // Micro-interaction for quantity buttons
+        const qtyInput = document.getElementById('qtyInput');
+        const btns = document.querySelectorAll('button[type="button"]');
+        
+        btns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                let currentVal = parseInt(qtyInput.value);
+                if(btn.innerText.includes('add')) {
+                    qtyInput.value = currentVal + 1;
+                } else if(btn.innerText.includes('remove') && currentVal > 1) {
+                    qtyInput.value = currentVal - 1;
+                }
+            });
+        });
+
+        // Form submission prevention for demo
+        document.getElementById('overrideForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('Override committed successfully to ledger logs.');
+        });
+    </script>
+</body></html>

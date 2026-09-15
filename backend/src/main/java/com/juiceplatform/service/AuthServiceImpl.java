@@ -51,7 +51,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public CustomerLoginResponse customerGoogleLogin(CustomerGoogleLoginRequest request) {
-        // 1. Verify Google ID token server-side (BR-AUTH-02)
+        // 1. Verify Google ID token server-side
         GoogleIdToken.Payload payload = googleTokenVerifier.verify(request.getIdToken());
         if (payload == null) {
             throw new AuthenticationFailedException("Invalid Google ID token");
@@ -65,20 +65,20 @@ public class AuthServiceImpl implements AuthService {
         User customer = userRepository.findByGoogleId(googleId)
                 .orElseGet(() -> createCustomerUser(googleId, email, name));
 
-        // 3. Check account is active (BR-ACC-02)
+        // 3. Check account is active
         if (!customer.getIsActive()) {
             throw new AuthenticationFailedException("Account is deactivated");
         }
 
-        // 4. Revoke all existing refresh tokens (BR-AUTH-04: single session)
+        // 4. Revoke all existing refresh tokens (single session)
         refreshTokenRepository.revokeAllByUserId(customer.getId());
 
-        // 4. Generate tokens
+        // 5. Generate tokens
         String accessToken = jwtService.generateAccessToken(
                 customer.getId(), customer.getRole().name(), customer.getPhone());
         String rawRefreshToken = generateSecureToken();
 
-        // 5. Persist hashed refresh token
+        // 6. Persist hashed refresh token
         persistRefreshToken(customer.getId(), rawRefreshToken);
 
         return CustomerLoginResponse.builder()
@@ -110,7 +110,7 @@ public class AuthServiceImpl implements AuthService {
             throw new AuthenticationFailedException("Invalid phone or password");
         }
 
-        // 5. Revoke all existing refresh tokens for this user (BR-AUTH-04)
+        // 5. Revoke all existing refresh tokens for this user
         refreshTokenRepository.revokeAllByUserId(user.getId());
 
         // 6. Generate tokens
@@ -158,7 +158,7 @@ public class AuthServiceImpl implements AuthService {
         String accessToken = jwtService.generateAccessToken(user.getId(), user.getRole().name(), user.getPhone());
         String newRawRefreshToken = generateSecureToken();
 
-        // 6. Persist new hashed refresh token
+        // 7. Persist new hashed refresh token
         persistRefreshToken(user.getId(), newRawRefreshToken);
 
         return AuthResponse.builder()

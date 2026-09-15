@@ -17,8 +17,7 @@ import java.util.UUID;
 
 /**
  * Immutable audit trail of all admin mutations.
- * Retained forever. Never updated or deleted (BR-AUD-03).
- * Schema matches db-schema section 3.15 exactly.
+ * Retained forever. Never updated or deleted.
  */
 @Entity
 @Table(name = "admin_audit_log")

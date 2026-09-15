@@ -22,6 +22,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springdoc.core.annotations.ParameterObject;
 
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 @RestController
 @RequestMapping("/api/v1/orders")
 @RequiredArgsConstructor
@@ -52,22 +56,24 @@ public class OrderController {
                     authenticatedUser.getUserId(), pageable);
         }
 
-        Page<OrderListResponse> responsePage = page.map(order -> {
-            String productName = productRepository.findById(order.getProductId())
-                    .map(Product::getName)
-                    .orElse("Unknown Product");
+        Map<UUID, String> productNames = productRepository
+                .findAllById(page.getContent().stream()
+                        .map(Order::getProductId)
+                        .distinct()
+                        .collect(Collectors.toList()))
+                .stream()
+                .collect(Collectors.toMap(Product::getId, Product::getName));
 
-            return OrderListResponse.builder()
-                    .id(order.getId())
-                    .subscriptionId(order.getSubscriptionId())
-                    .productName(productName)
-                    .quantity(order.getQuantity())
-                    .totalAmountPaise(order.getTotalAmountPaise())
-                    .deliveryDate(order.getDeliveryDate())
-                    .status(order.getStatus().name())
-                    .isLocked(order.getStatus() == Order.OrderStatus.LOCKED)
-                    .build();
-        });
+        Page<OrderListResponse> responsePage = page.map(order -> OrderListResponse.builder()
+                .id(order.getId())
+                .subscriptionId(order.getSubscriptionId())
+                .productName(productNames.getOrDefault(order.getProductId(), "Unknown Product"))
+                .quantity(order.getQuantity())
+                .totalAmountPaise(order.getTotalAmountPaise())
+                .deliveryDate(order.getDeliveryDate())
+                .status(order.getStatus().name())
+                .isLocked(order.getStatus() == Order.OrderStatus.LOCKED)
+                .build());
 
         PagedResponse<OrderListResponse> data = new PagedResponse<>(responsePage.getContent());
         PaginationMeta meta = new PaginationMeta(responsePage.getNumber(), responsePage.getSize(), responsePage.getTotalElements());

@@ -13,7 +13,7 @@ import java.time.ZoneId;
 
 /**
  * Scheduled job for order freezing.
- * Runs at 22:00 IST daily (BR-SCH-01, BR-LCK-01).
+ * Runs at 22:00 IST daily.
  * Freezes SCHEDULED orders for tomorrow's delivery date.
  */
 @Component
@@ -37,7 +37,7 @@ public class OrderFreezeScheduler {
                     result.deliveryDate(), result.ordersLocked(), result.duplicatesSkipped());
         } catch (Exception e) {
             log.error("OrderFreezeJob failed for delivery date {}: {}", deliveryDate, e.getMessage(), e);
-            // Best-effort notification — non-blocking (BR-NOT-01, BR-NOT-03, BR-SCH-06)
+            // Best-effort notification — non-blocking
             try {
                 notificationService.notifySchedulerJobFailure(
                         OrderFreezeService.JOB_NAME, deliveryDate, e.getMessage());

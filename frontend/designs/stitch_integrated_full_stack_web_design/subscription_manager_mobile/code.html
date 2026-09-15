@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FreshFlow | Subscriptions</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Hanken+Grotesk:wght@400;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .animate-slide-up { animation: slideUp 0.4s ease-out forwards; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md min-h-screen pb-20">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-container-padding-mobile md:px-container-padding-desktop h-16 bg-surface dark:bg-surface-dim shadow-sm dark:shadow-none">
+<div class="flex items-center gap-2">
+<span class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed-dim">FreshFlow</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high transition-colors active:scale-95 duration-200">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high transition-colors active:scale-95 duration-200">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden bg-surface-container-highest">
+<img class="w-full h-full object-cover" data-alt="A professional close-up studio portrait of a customer avatar with soft, directional lighting. The background is a clean, neutral minimalist tone that matches the FreshFlow app aesthetic. The person looks approachable and satisfied, representing a healthy lifestyle subscriber. High-resolution photography with natural skin textures and a slight bokeh effect." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDeyZFo1VJmzsBpVnoS8JncsnH21FlUVlAw44dY-t-QYKgCndoH6Z180k5VS9ZlHZ_1LV5zZ5qDq6mIDJdkuXOlSPTNfuf91mrzl_fjOLNRjH6oA8nZi5HK_jzUjQJU8yQ84ws_TomULFmfrubkIHJubH5XJ56oS-Tfi68XH7QyQXD8Tl4e5IIniogjpHHBbxNtQcGX16zLthA4AdtruBe7g02aOY-nDA-pcj8VV0DoBnhTtUa_3yHxmxYBHLrSrbvcJewrHxF_xPo"/>
+</div>
+</div>
+</header>
+<main class="pt-20 px-container-padding-mobile max-w-2xl mx-auto">
+<!-- Header Section -->
+<section class="mb-8">
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-primary mb-2">My Subscriptions</h1>
+<p class="text-on-surface-variant text-body-sm">Manage your recurring deliveries and upcoming changes.</p>
+</section>
+<!-- Cutoff Notice Banner -->
+<div class="bg-surface-container-high border-l-4 border-status-warning p-card-inner-padding mb-6 rounded-r-xl">
+<div class="flex gap-3">
+<span class="material-symbols-outlined text-status-warning" data-icon="info">info</span>
+<div>
+<p class="font-bold text-body-md text-on-surface">10 PM Cutoff Rule</p>
+<p class="text-body-sm text-on-surface-variant">Changes made after 10:00 PM IST will be effective from the day after tomorrow (T+2).</p>
+</div>
+</div>
+</div>
+<!-- Subscription List -->
+<div class="space-y-4">
+<!-- Active Subscription Item -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden animate-slide-up" style="animation-delay: 0.1s;">
+<div class="p-card-inner-padding">
+<div class="flex justify-between items-start mb-4">
+<div class="flex gap-4">
+<div class="w-16 h-16 rounded-lg bg-surface-container-high flex-shrink-0">
+<img class="w-full h-full object-cover rounded-lg" data-alt="A high-fidelity organic product photo of a premium glass bottle of fresh farm milk, condensation on the glass, placed on a light oak wooden table. Bright morning sunlight streams in, creating a fresh, vibrant, and transparent atmosphere. The overall style is clean, high-precision, and wellness-focused." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC5KPpqdO6Wn1oRcbjFhZrOWoIlI8b70FM6HI1XYD_bgPXe6lGxfly3Vu8ffkHQrUwugHmgZnxXK7agDlRzMeCaOzJ4NGhO4FEqygKD9lMSPlcjN6_6eOSXptIolOWlx6Eb9AI8LERDguyC2DZRzndhjjr5sSp5J-KsGpseXLwyY9F6zsGXsviDcA0ajk_aHtp9qoFsBwMBsjWzzntT9LDVx-uUv3vhC7GOrcv87zRgskQhrfeo-deGlrFAxRz-qOxQrjJYHqdeZmU"/>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">A2 Farm Milk</h3>
+<p class="text-on-surface-variant text-body-sm">1 Litre • Daily</p>
+</div>
+</div>
+<span class="bg-status-active/10 text-status-active px-3 py-1 rounded-full font-label-caps text-label-caps">ACTIVE</span>
+</div>
+<div class="flex items-center justify-between py-3 border-y border-outline-variant">
+<div class="flex flex-col">
+<span class="text-label-caps text-on-surface-variant">QUANTITY</span>
+<span class="font-mono-data text-on-surface">02 Units</span>
+</div>
+<div class="flex flex-col items-end">
+<span class="text-label-caps text-on-surface-variant">NEXT DELIVERY</span>
+<span class="font-mono-data text-on-surface">Tomorrow, 6:00 AM</span>
+</div>
+</div>
+<div class="mt-4 flex gap-2">
+<button class="flex-1 bg-primary text-on-primary py-2 rounded-lg font-bold text-body-sm flex items-center justify-center gap-2 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[18px]" data-icon="edit">edit</span> Change Qty
+                        </button>
+<button class="flex-1 border border-primary text-primary py-2 rounded-lg font-bold text-body-sm flex items-center justify-center gap-2 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[18px]" data-icon="pause">pause</span> Pause
+                        </button>
+</div>
+</div>
+</div>
+<!-- Paused Subscription Item -->
+<div class="bg-surface-container-low border border-outline-variant rounded-xl overflow-hidden opacity-80 animate-slide-up" style="animation-delay: 0.2s;">
+<div class="p-card-inner-padding">
+<div class="flex justify-between items-start mb-4">
+<div class="flex gap-4">
+<div class="w-16 h-16 rounded-lg bg-surface-container-high flex-shrink-0 grayscale">
+<img class="w-full h-full object-cover rounded-lg" data-alt="A vibrant macro shot of a bowl of assorted fresh Greek yogurt with blueberries and honey. The lighting is crisp and airy, emphasizing the organic quality of the food. The background is a clean, minimalist white ceramic surface, consistent with the high-energy wellness brand of FreshFlow." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8UbE3g4thsZRII7-B6MLziPSOLgfqXAgRfeRqYFUV2ocAvJ_ssmGc8z_atGnm05cpGkcnbleT6A07PQ6wAUpSVKcpYS6yPYglTRse8JlxrUbRROCMbYczX4-8A4R132aYDtB3EpqCbp0D2Ucp7adQJ0kj73rhm6HpX7zAJw4svy32-tc0JB0S84o1_tqKwxwcnz1SZgLCfyIelUzkPvT7ap0eoTWnjsvLz_extNzG2eeHkY78X7gzjnHbztR1E-l5Rd-jm2QkL7M"/>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Greek Yogurt</h3>
+<p class="text-on-surface-variant text-body-sm">200g • Mon, Wed, Fri</p>
+</div>
+</div>
+<span class="bg-status-locked/10 text-status-locked px-3 py-1 rounded-full font-label-caps text-label-caps">PAUSED</span>
+</div>
+<div class="flex items-center justify-between py-3 border-y border-outline-variant">
+<div class="flex flex-col">
+<span class="text-label-caps text-on-surface-variant">STATUS</span>
+<span class="font-mono-data text-on-surface">On Hold</span>
+</div>
+<div class="flex flex-col items-end">
+<span class="text-label-caps text-on-surface-variant">RESUME DATE</span>
+<span class="font-mono-data text-status-future">Set Date</span>
+</div>
+</div>
+<div class="mt-4 flex gap-2">
+<button class="flex-1 bg-secondary text-on-secondary py-2 rounded-lg font-bold text-body-sm flex items-center justify-center gap-2 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[18px]" data-icon="play_arrow">play_arrow</span> Resume
+                        </button>
+<button class="w-12 border border-error text-error py-2 rounded-lg font-bold text-body-sm flex items-center justify-center active:scale-95 transition-transform" title="Cancel Subscription">
+<span class="material-symbols-outlined text-[18px]" data-icon="delete">delete</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Recently Added/Future Item -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden animate-slide-up" style="animation-delay: 0.3s;">
+<div class="p-card-inner-padding">
+<div class="flex justify-between items-start mb-4">
+<div class="flex gap-4">
+<div class="w-16 h-16 rounded-lg bg-surface-container-high flex-shrink-0">
+<img class="w-full h-full object-cover rounded-lg" data-alt="A bunch of bright, organic bananas on a minimalist marble countertop. The lighting is high-key and fresh, emphasizing natural yellow tones. The visual style is vibrant and transparent, evoking a sense of health and logistics precision for delivery." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_-fMG1JCcED-lnELln2Eh1HqNTfBoUY6JpG71WMIjGYXO3_OzQU0Q8kq5vcgIa59rkVCJ3QbrR194ROKBurGpxQCp6vzdim4NPNnvD9MB-Pm48TVG9TFEacAHIfZoSpnZaa7htEh3CP4IY89sjLMAk5M_Sj_Ui4Xyiq6vA9Ktivxr9o7YXfHuJnUs52ly2Y5VxHzBM476tOrENqIhFsyfYmOtJfw3nssRLNCJWxcM5xxbSC36YS6cFb2FGWMNwGOIpwmHUV3IsIc"/>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Organic Bananas</h3>
+<p class="text-on-surface-variant text-body-sm">6 Units • Bi-weekly</p>
+</div>
+</div>
+<span class="bg-status-future/10 text-status-future px-3 py-1 rounded-full font-label-caps text-label-caps">STARTING SOON</span>
+</div>
+<div class="flex items-center justify-between py-3 border-y border-outline-variant">
+<div class="flex flex-col">
+<span class="text-label-caps text-on-surface-variant">EFFECTIVE FROM</span>
+<span class="font-mono-data text-on-surface">Oct 24 (T+2)</span>
+</div>
+<div class="flex flex-col items-end">
+<span class="text-label-caps text-on-surface-variant">REASON</span>
+<span class="font-mono-data text-on-surface-variant italic">Post-10PM Order</span>
+</div>
+</div>
+<div class="mt-4 flex gap-2">
+<button class="flex-1 bg-surface-container-highest text-on-surface py-2 rounded-lg font-bold text-body-sm flex items-center justify-center gap-2 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[18px]" data-icon="cancel">cancel</span> Cancel Start
+                        </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Add New CTA -->
+<button class="w-full mt-8 mb-12 border-2 border-dashed border-outline-variant rounded-xl p-6 flex flex-col items-center gap-2 text-on-surface-variant hover:bg-surface-container-low transition-colors active:scale-98">
+<span class="material-symbols-outlined text-4xl" data-icon="add_circle">add_circle</span>
+<span class="font-bold">Add New Subscription</span>
+</button>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-safe h-16 bg-surface dark:bg-surface-container-lowest shadow-lg dark:shadow-none">
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-label-caps text-label-caps">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1 font-bold" href="#">
+<span class="material-symbols-outlined" data-icon="event_repeat">event_repeat</span>
+<span class="font-label-caps text-label-caps">Subscriptions</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="font-label-caps text-label-caps">Wallet</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+<span class="font-label-caps text-label-caps">Menu</span>
+</a>
+</nav>
+<script>
+        // Micro-interaction for feedback on button clicks
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('click', function() {
+                const originalContent = this.innerHTML;
+                if (!this.classList.contains('no-feedback')) {
+                    // Visual ripple or state change could go here
+                }
+            });
+        });
+
+        // Simple check for 10 PM cutoff logic display
+        const now = new Date();
+        const hour = now.getHours();
+        if (hour >= 22) {
+            console.log("Current time is past 10 PM. T+2 Logic active.");
+        }
+    </script>
+</body></html>

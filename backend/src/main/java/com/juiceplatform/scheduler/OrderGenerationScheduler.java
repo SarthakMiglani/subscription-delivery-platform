@@ -14,9 +14,9 @@ import java.time.ZoneId;
 
 /**
  * Scheduled job for daily order generation.
- * Runs at 22:05 IST daily (BR-SCH-01).
+ * Runs at 22:05 IST daily.
  * Generates orders for the next operational delivery date (tomorrow).
- * Subscription activation runs first (BR-ORD-07).
+ * Subscription activation runs first.
  */
 @Component
 @RequiredArgsConstructor
@@ -34,14 +34,14 @@ public class OrderGenerationScheduler {
         LocalDate deliveryDate = LocalDate.now(IST).plusDays(1);
         log.info("Scheduled OrderGenerationJob triggered for delivery date: {}", deliveryDate);
 
-        // Activate eligible PENDING_START subscriptions before generating orders (BR-ORD-07)
+        // Activate eligible PENDING_START subscriptions before generating orders
         try {
             SubscriptionActivationService.ActivationResult activation =
                     subscriptionActivationService.activateEligibleSubscriptions();
             log.info("SubscriptionActivation completed: activated={}", activation.subscriptionsActivated());
         } catch (Exception e) {
             log.error("SubscriptionActivationJob failed during OrderGenerationScheduler: {}", e.getMessage(), e);
-            // Best-effort notification — non-blocking (BR-NOT-01, BR-NOT-03)
+            // Best-effort notification — non-blocking
             try {
                 notificationService.notifySchedulerJobFailure(
                         SubscriptionActivationService.JOB_NAME, deliveryDate, e.getMessage());
@@ -60,7 +60,7 @@ public class OrderGenerationScheduler {
                     result.ordersCreated(), result.duplicatesSkipped());
         } catch (Exception e) {
             log.error("OrderGenerationJob failed for delivery date {}: {}", deliveryDate, e.getMessage(), e);
-            // Best-effort notification — non-blocking (BR-NOT-01, BR-NOT-03, BR-SCH-06)
+            // Best-effort notification — non-blocking
             try {
                 notificationService.notifySchedulerJobFailure(
                         OrderGenerationService.JOB_NAME, deliveryDate, e.getMessage());

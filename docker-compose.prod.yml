@@ -1,0 +1,138 @@
+# Production deployment topology for a single VPS.
+#
+#   nginx (edge, TLS termination) ── proxies ──> app (Spring Boot API)
+#                                 └─ proxies ──> admin (static SPA)
+#                                 └─ proxies ──> customer (static SPA)
+#   app ── connects to ──> db (PostgreSQL, internal network only, no published port)
+#
+# Usage:
+#   1. Copy .env.example to .env and fill in every value (see comments in that file).
+#   2. docker compose -f docker-compose.prod.yml up -d --build
+#   3. First-time TLS cert issuance — see README.md "Production Deployment" section
+#      for the certbot bootstrap sequence (nginx must be running with the HTTP-01
+#      challenge path served before certificates exist).
+#
+# This file intentionally has NO hardcoded credentials. Every secret is read from
+# the shell environment / .env file via ${VARIABLE} substitution, and docker compose
+# will fail to start rather than silently fall back to an insecure default if a
+# required variable is missing (no ":-default" fallback is used for secrets below).
+
+services:
+  db:
+    image: postgres:15
+    container_name: juice-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - juice_pg_data:/var/lib/postgresql/data
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    # No "ports:" mapping — Postgres is reachable only from other containers on
+    # the internal network, never from the host or the public internet.
+
+  app:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: juice-app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/${POSTGRES_DB}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      APP_CORS_ALLOWED_ORIGINS: ${APP_CORS_ALLOWED_ORIGINS}
+      ADMIN_BOOTSTRAP_PASSWORD: ${ADMIN_BOOTSTRAP_PASSWORD:-}
+      TZ: Asia/Kolkata
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/api/v1/health"]
+      interval: 30s
+      timeout: 5s
+      start_period: 40s
+      retries: 3
+    # No "ports:" mapping — only the nginx container reaches the app, via the
+    # internal network on port 8080.
+
+  admin:
+    build:
+      context: ./frontend/admin
+      dockerfile: Dockerfile
+      args:
+        VITE_MOCK: "false"
+    container_name: juice-admin-web
+    restart: unless-stopped
+    networks:
+      - internal
+
+  customer:
+    build:
+      context: ./frontend/customer
+      dockerfile: Dockerfile
+      args:
+        VITE_MOCK: "false"
+        VITE_GOOGLE_CLIENT_ID: ${VITE_GOOGLE_CLIENT_ID}
+    container_name: juice-customer-web
+    restart: unless-stopped
+    networks:
+      - internal
+
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: juice-nginx
+    restart: unless-stopped
+    depends_on:
+      - app
+      - admin
+      - customer
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      # Consumed by nginx's built-in envsubst templating (files under
+      # /etc/nginx/templates/*.template are rendered to /etc/nginx/conf.d/*.conf
+      # on container start using these variables).
+      APP_DOMAIN: ${APP_DOMAIN}
+      ADMIN_DOMAIN: ${ADMIN_DOMAIN}
+    volumes:
+      - ./nginx/default.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - certbot_www:/var/www/certbot
+      - certbot_conf:/etc/letsencrypt:ro
+    networks:
+      - internal
+
+  # One-shot / periodically-rerun certbot container for Let's Encrypt certificate
+  # issuance and renewal. See README.md for the initial bootstrap command — this
+  # service definition alone does not obtain a certificate, it renews an existing
+  # one when run (e.g. via a host cron calling `docker compose run --rm certbot renew`).
+  certbot:
+    image: certbot/certbot:latest
+    container_name: juice-certbot
+    volumes:
+      - certbot_www:/var/www/certbot
+      - certbot_conf:/etc/letsencrypt
+    networks:
+      - internal
+
+networks:
+  internal:
+    driver: bridge
+
+volumes:
+  juice_pg_data:
+  certbot_www:
+  certbot_conf:

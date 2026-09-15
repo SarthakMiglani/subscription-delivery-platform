@@ -20,8 +20,8 @@ import java.util.UUID;
 
 /**
  * Handles delivery execution: mark DELIVERED or SKIPPED.
- * Wallet deduction occurs ONLY on DELIVERED, inside the same transaction (BR-DEL-04).
- * No wallet deduction for SKIPPED (BR-DEL-05).
+ * Wallet deduction occurs only on DELIVERED, inside the same transaction.
+ * No wallet deduction for SKIPPED.
  */
 @Service
 @RequiredArgsConstructor
@@ -42,7 +42,6 @@ public class DeliveryService {
      *   3. Inserts DEBIT wallet_ledger entry (source_type = DELIVERY_DEBIT)
      *
      * Idempotent: if already DELIVERED, returns existing state without a second debit.
-     * (BR-DEL-04, BR-LCK-06, BR-WAL-03)
      */
     @Transactional
     public MarkDeliveredResponse markDelivered(UUID orderId, UUID adminId) {
@@ -69,14 +68,14 @@ public class DeliveryService {
                     .build();
         }
 
-        // Only LOCKED orders can be marked delivered (BR-LCK-02)
+        // Only LOCKED orders can be marked delivered
         if (order.getStatus() != Order.OrderStatus.LOCKED) {
             throw new BusinessException("ORDER_NOT_DELIVERABLE",
                     "Order must be in LOCKED state to mark as delivered", HttpStatus.CONFLICT);
         }
 
         // Check wallet balance — acquire pessimistic write lock on latest ledger row
-        // to prevent concurrent delivery confirmations from computing the same balance (db-schema §6.1)
+        // to prevent concurrent delivery confirmations from computing the same balance
         long currentBalance = walletLedgerRepository.findTopByCustomerIdForUpdate(order.getCustomerId())
                 .map(WalletLedger::getRunningBalancePaise)
                 .orElse(0L);
@@ -101,7 +100,7 @@ public class DeliveryService {
         record.setDeliveredAt(now);
         deliveryRecordRepository.save(record);
 
-        // 3. Insert DEBIT ledger entry (BR-DEL-04, BR-WAL-04)
+        // 3. Insert DEBIT ledger entry
         // Idempotency enforced at DB level by uq_wallet_ledger_order_source (order_id, source_type)
         WalletLedger ledgerEntry = new WalletLedger();
         ledgerEntry.setCustomerId(order.getCustomerId());
@@ -115,7 +114,7 @@ public class DeliveryService {
         ledgerEntry.setCreatedByUserId(adminId);
         walletLedgerRepository.save(ledgerEntry);
 
-        // Audit log — action_type: ORDER_OVERRIDE (BR-AUD-01)
+        // Audit log
         auditLogService.log("ORDER_OVERRIDE", "order", orderId.toString(),
                 java.util.Map.of("status", "LOCKED"),
                 java.util.Map.of("status", "DELIVERED", "amountDeductedPaise", order.getTotalAmountPaise()),
@@ -133,7 +132,7 @@ public class DeliveryService {
     /**
      * Marks a LOCKED order as SKIPPED.
      * Updates order.status and delivery_record.status.
-     * NO wallet deduction (BR-DEL-05).
+     * NO wallet deduction.
      * Idempotent: if already SKIPPED, returns existing state.
      */
     @Transactional
@@ -187,7 +186,7 @@ public class DeliveryService {
         record.setSkipReason(skipReason);
         deliveryRecordRepository.save(record);
 
-        // Audit log — action_type: MANUAL_STATUS_CORRECTION (BR-AUD-01)
+        // Audit log
         auditLogService.log("MANUAL_STATUS_CORRECTION", "order", orderId.toString(),
                 java.util.Map.of("status", "LOCKED"),
                 java.util.Map.of("status", "SKIPPED", "skipReason", skipReason.name()),

@@ -14,8 +14,8 @@ import java.util.UUID;
 
 /**
  * Tracks the last recharge request timestamp per customer for rate limiting.
- * Per API spec §6.3: one request per hour per customer.
- * This is infrastructure-only — no business data, no wallet mutation, no audit log.
+ * Rate limit: one request per hour per customer.
+ * Infrastructure-only — no business data, no wallet mutation, no audit log.
  */
 @Entity
 @Table(name = "recharge_request_log")

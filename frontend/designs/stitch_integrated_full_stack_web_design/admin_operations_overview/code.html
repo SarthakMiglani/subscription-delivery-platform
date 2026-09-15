@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FreshFlow Admin | Operational Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Hanken+Grotesk:wght@400;500;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-bright": "#f8faf8",
+                        "status-locked": "#455A64",
+                        "on-secondary-fixed-variant": "#693c00",
+                        "surface-container-high": "#e6e9e7",
+                        "on-error-container": "#93000a",
+                        "error-container": "#ffdad6",
+                        "on-surface": "#191c1b",
+                        "on-primary-container": "#90d689",
+                        "surface-container-low": "#f2f4f2",
+                        "secondary": "#8b5000",
+                        "on-tertiary-container": "#9dd65b",
+                        "surface-variant": "#e1e3e1",
+                        "primary": "#00450d",
+                        "inverse-primary": "#91d78a",
+                        "wallet-debit": "#D32F2F",
+                        "surface": "#f8faf8",
+                        "status-error": "#D32F2F",
+                        "secondary-container": "#ff9800",
+                        "on-background": "#191c1b",
+                        "on-secondary-fixed": "#2c1600",
+                        "tertiary-fixed": "#b9f474",
+                        "tertiary-container": "#365c00",
+                        "surface-container-lowest": "#ffffff",
+                        "on-error": "#ffffff",
+                        "on-tertiary-fixed": "#0f2000",
+                        "primary-fixed-dim": "#91d78a",
+                        "background": "#f8faf8",
+                        "wallet-credit": "#2E7D32",
+                        "surface-container": "#eceeec",
+                        "surface-dim": "#d8dad9",
+                        "on-surface-variant": "#41493e",
+                        "secondary-fixed": "#ffdcbe",
+                        "error": "#ba1a1a",
+                        "secondary-fixed-dim": "#ffb870",
+                        "tertiary-fixed-dim": "#9ed75b",
+                        "status-warning": "#ED6C02",
+                        "outline": "#717a6d",
+                        "primary-fixed": "#acf4a4",
+                        "primary-container": "#1b5e20",
+                        "status-future": "#0288D1",
+                        "on-secondary": "#ffffff",
+                        "surface-tint": "#2a6b2c",
+                        "on-primary": "#ffffff",
+                        "status-active": "#2E7D32",
+                        "tertiary": "#264300",
+                        "on-tertiary-fixed-variant": "#2e4f00",
+                        "on-primary-fixed": "#002203",
+                        "outline-variant": "#c0c9bb",
+                        "inverse-on-surface": "#eff1ef",
+                        "on-tertiary": "#ffffff",
+                        "inverse-surface": "#2e3130",
+                        "surface-container-highest": "#e1e3e1",
+                        "on-secondary-container": "#653900",
+                        "on-primary-fixed-variant": "#0c5216"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-padding-desktop": "32px",
+                        "card-inner-padding": "24px",
+                        "section-gap": "40px",
+                        "base": "8px",
+                        "container-padding-mobile": "16px",
+                        "gutter": "16px"
+                    },
+                    "fontFamily": {
+                        "body-sm": ["Hanken Grotesk"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "body-lg": ["Hanken Grotesk"],
+                        "label-caps": ["Hanken Grotesk"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "mono-data": ["JetBrains Mono"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "body-md": ["Hanken Grotesk"],
+                        "headline-sm": ["Plus Jakarta Sans"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #f8faf8;
+            color: #191c1b;
+        }
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 1.5rem;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body class="font-body-md text-on-surface overflow-x-hidden">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-container-padding-mobile md:px-container-padding-desktop h-16 bg-surface dark:bg-surface-dim shadow-sm dark:shadow-none">
+<div class="flex items-center gap-4">
+<h1 class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed-dim">FreshFlow</h1>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 rounded-full hover:bg-surface-container-high transition-colors active:scale-95">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="search">search</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container-high transition-colors active:scale-95">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="account_balance_wallet">account_balance_wallet</span>
+</button>
+<div class="relative">
+<button class="p-2 rounded-full hover:bg-surface-container-high transition-colors active:scale-95">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+</div>
+<div class="h-8 w-8 rounded-full overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a corporate administrator in a bright office setting, with soft natural light. The aesthetic is clean, modern, and high-trust, reflecting a wellness and logistics platform identity with a palette of soft whites and deep greens." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVEokK0v-TRa_UDkX3bNtq8pAGHFvNT5UqDX8pnguyUZJgo9HPw-cr-1QAVGfTdaILysUTVF3wBUZKmMsGBk3NZh1E8TIB9JYzQLUC9Y01aDUoExUYXjHPrp-JqzEjGApmmihEKKBWT6d_XvDUIG-LiCsELLMUalK8EFl1fBcTKh_d6v_g-ePMD_oy9_PDyiRSl2H6E7lXempnGKzvzCd64dEVk92-WAvRnh36aAz-JqVWk9SfIJkXmxPp2KOVh_CoGaS665aUkug"/>
+</div>
+</div>
+</header>
+<!-- SideNavBar -->
+<nav class="fixed left-0 top-0 h-full w-64 border-r border-outline-variant dark:border-outline bg-surface-container-low dark:bg-surface-container-lowest hidden lg:flex flex-col pt-20 pb-6 px-4">
+<div class="flex items-center gap-3 px-2 mb-8">
+<div class="w-10 h-10 rounded-lg bg-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary-container" data-icon="shield_person">shield_person</span>
+</div>
+<div>
+<p class="font-headline-sm text-[16px] font-bold text-primary">Juice Subscriber</p>
+<p class="font-body-sm text-[12px] text-on-surface-variant">Wallet: ₹1,240.00</p>
+</div>
+</div>
+<div class="flex-grow flex flex-col gap-1">
+<a class="flex items-center gap-3 px-4 py-3 bg-primary-container text-on-primary-container rounded-lg font-bold transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all active:scale-98" href="#">
+<span class="material-symbols-outlined" data-icon="local_shipping">local_shipping</span>
+<span class="font-body-md">Deliveries</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all active:scale-98" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
+<span class="font-body-md">Subscriptions</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all active:scale-98" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span class="font-body-md">Wallet</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all active:scale-98" href="#">
+<span class="material-symbols-outlined" data-icon="support_agent">support_agent</span>
+<span class="font-body-md">Support</span>
+</a>
+</div>
+<button class="mb-8 w-full bg-secondary-container text-on-secondary-container py-3 rounded-xl font-bold active:scale-95 transition-transform">
+            Quick Top-up
+        </button>
+<div class="flex flex-col gap-1 border-t border-outline-variant pt-4">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-body-md">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="font-body-md">Logout</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="lg:ml-64 pt-24 pb-20 px-container-padding-mobile md:px-container-padding-desktop min-h-screen">
+<!-- Header & Date Status -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4">
+<div>
+<p class="font-label-caps text-label-caps text-primary uppercase tracking-widest mb-1">Operational Overview</p>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Good Morning, Admin</h2>
+</div>
+<div class="flex items-center gap-3 bg-surface-container p-3 rounded-xl">
+<span class="material-symbols-outlined text-status-active" data-icon="schedule" data-weight="fill" style="font-variation-settings: 'FILL' 1;">schedule</span>
+<div>
+<p class="font-label-caps text-[10px] text-on-surface-variant">NEXT CUTOFF</p>
+<p class="font-mono-data text-on-surface">10:00 PM IST · Today</p>
+</div>
+</div>
+</div>
+<!-- Metric Cards Grid -->
+<div class="bento-grid mb-section-gap">
+<!-- Total Active Customers -->
+<div class="col-span-12 sm:col-span-6 lg:col-span-3 bg-surface-container-lowest p-card-inner-padding rounded-xl shadow-sm border border-outline-variant/30 flex flex-col justify-between h-40">
+<div class="flex justify-between items-start">
+<div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="groups">groups</span>
+</div>
+<span class="text-status-active font-bold text-body-sm">+12%</span>
+</div>
+<div>
+<p class="font-label-caps text-on-surface-variant">ACTIVE CUSTOMERS</p>
+<h3 class="font-headline-md text-headline-md">1,842</h3>
+</div>
+</div>
+<!-- Revenue -->
+<div class="col-span-12 sm:col-span-6 lg:col-span-3 bg-primary text-on-primary p-card-inner-padding rounded-xl shadow-lg flex flex-col justify-between h-40">
+<div class="flex justify-between items-start">
+<div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+</div>
+<span class="text-primary-fixed font-bold text-body-sm">+₹4.2k</span>
+</div>
+<div>
+<p class="font-label-caps text-white/70">TODAY'S REVENUE</p>
+<h3 class="font-headline-md text-headline-md">₹84,290.00</h3>
+</div>
+</div>
+<!-- Morning Deliveries -->
+<div class="col-span-12 sm:col-span-6 lg:col-span-3 bg-surface-container-lowest p-card-inner-padding rounded-xl shadow-sm border border-outline-variant/30 flex flex-col justify-between h-40">
+<div class="flex justify-between items-start">
+<div class="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined" data-icon="wb_sunny">wb_sunny</span>
+</div>
+<span class="text-on-surface-variant font-body-sm">Slot: 5AM-8AM</span>
+</div>
+<div>
+<p class="font-label-caps text-on-surface-variant">MORNING SHIPMENTS</p>
+<h3 class="font-headline-md text-headline-md">412 <span class="text-body-sm font-normal text-on-surface-variant">/ 450</span></h3>
+</div>
+</div>
+<!-- Pending Approvals -->
+<div class="col-span-12 sm:col-span-6 lg:col-span-3 bg-surface-container-lowest p-card-inner-padding rounded-xl shadow-sm border border-outline-variant/30 flex flex-col justify-between h-40">
+<div class="flex justify-between items-start">
+<div class="w-10 h-10 rounded-full bg-tertiary/10 flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined" data-icon="assignment_late">assignment_late</span>
+</div>
+<span class="bg-error/10 text-error px-2 py-0.5 rounded-full text-[10px] font-bold">URGENT</span>
+</div>
+<div>
+<p class="font-label-caps text-on-surface-variant">PENDING TICKETS</p>
+<h3 class="font-headline-md text-headline-md">28</h3>
+</div>
+</div>
+</div>
+<!-- Middle Section: Quick Actions & Alerts -->
+<div class="grid grid-cols-12 gap-6">
+<!-- Quick Actions -->
+<div class="col-span-12 lg:col-span-4 flex flex-col gap-4">
+<h4 class="font-headline-sm text-headline-sm px-1">Quick Tasks</h4>
+<button class="flex items-center justify-between p-4 bg-secondary-container text-on-secondary-container rounded-xl shadow-sm hover:shadow-md transition-all active:scale-95 group">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+</div>
+<span class="font-bold">Credit Wallet</span>
+</div>
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform" data-icon="chevron_right">chevron_right</span>
+</button>
+<button class="flex items-center justify-between p-4 bg-surface-container-lowest border border-outline-variant text-on-surface rounded-xl shadow-sm hover:bg-surface-container transition-all active:scale-95 group">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="add_box">add_box</span>
+</div>
+<span class="font-bold">Add Product</span>
+</div>
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform" data-icon="chevron_right">chevron_right</span>
+</button>
+<button class="flex items-center justify-between p-4 bg-surface-container-lowest border border-outline-variant text-on-surface rounded-xl shadow-sm hover:bg-surface-container transition-all active:scale-95 group">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-status-future/10 text-status-future flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="description">description</span>
+</div>
+<span class="font-bold">View Delivery Sheet</span>
+</div>
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+<!-- Low Balance Alerts -->
+<div class="col-span-12 lg:col-span-8 bg-surface-container-lowest rounded-xl border-l-4 border-error shadow-sm p-0 flex flex-col overflow-hidden">
+<div class="p-6 border-b border-outline-variant flex justify-between items-center">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-error" data-icon="warning" data-weight="fill" style="font-variation-settings: 'FILL' 1;">warning</span>
+<h4 class="font-headline-sm text-headline-sm">Low Balance Alerts</h4>
+</div>
+<button class="text-primary font-bold text-body-sm hover:underline">Notify All</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead class="bg-surface-container-low">
+<tr>
+<th class="px-6 py-3 font-label-caps text-on-surface-variant text-[11px]">CUSTOMER</th>
+<th class="px-6 py-3 font-label-caps text-on-surface-variant text-[11px]">SUBSCRIPTION</th>
+<th class="px-6 py-3 font-label-caps text-on-surface-variant text-[11px]">BALANCE</th>
+<th class="px-6 py-3 font-label-caps text-on-surface-variant text-[11px]">ACTION</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<tr class="hover:bg-surface-container-high transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A portrait of a young professional customer, clean skin, vibrant energy, minimalist background. The photography style is organic and high-fidelity, consistent with a modern health and fintech brand aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1t0ws7DHCyYptCdRCAypHfQmGLjAf2SgoVodfz1BuQZR9F6rexKOE12JACR0zcE_LgVg11PfzG_qT4EzlulsCzSQRq8Dpj6BZ3Gy0Od-HaMgs6H2z_ADUHpF6V-bav_8e1VUnyMU7OLRNLysH5VhJFvRZd1RTTsRjXIY9Px4bfXPumNpEv0v3wSsv5TrZY6Z4SOjW1bGGzUDo4y6o8woaaNgPVcu8gLDhQxbN9Sf7wHnPBk3BsCbrYM8tL544WJhoN4UvTCLHPNw"/>
+</div>
+<div>
+<p class="font-bold text-body-md">Aditi Sharma</p>
+<p class="font-body-sm text-[12px] text-on-surface-variant">+91 98XXX X4211</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 rounded bg-primary/10 text-primary text-[11px] font-bold uppercase">Daily Cold Press</span>
+</td>
+<td class="px-6 py-4">
+<p class="font-mono-data text-error font-bold">₹12.50</p>
+</td>
+<td class="px-6 py-4">
+<button class="px-3 py-1 bg-primary text-on-primary rounded-lg text-body-sm hover:opacity-90 active:scale-95 transition-all">Top Up</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-high transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A portrait of a middle-aged male customer, friendly expression, well-lit, professional photography with a focus on vitality and health. Soft greens and whites in the background to match the FreshFlow brand identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCpH7udQYtUye3ixu450txJ2Vk-4ldzH2s9oLm6zWFKBNFO2enMXklooqK6bN5oXNjlwE4gZvKNqeyED7nplgkS_foGsamCFMAXzFmiqLHKieiDPmPJFZ-7XjTpzo0EMIf6RPrfj-7k7Paqp5dhl28Gp5gLw2nRwDsHfBuLw8WKRdqdvBgKv2Tx36Y6uOY0LnqbFfxyGe-_ZEq6wbCuMkDWKpabd-4A9alVl3W7P9RC1LvoltsWnwtCpFcdQsBZ3JpC7-bgl2BpEYk"/>
+</div>
+<div>
+<p class="font-bold text-body-md">Rajesh Khanna</p>
+<p class="font-body-sm text-[12px] text-on-surface-variant">+91 88XXX X1109</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 rounded bg-secondary/10 text-secondary text-[11px] font-bold uppercase">Weekly Nut Milk</span>
+</td>
+<td class="px-6 py-4">
+<p class="font-mono-data text-error font-bold">₹ -45.00</p>
+</td>
+<td class="px-6 py-4">
+<button class="px-3 py-1 bg-primary text-on-primary rounded-lg text-body-sm hover:opacity-90 active:scale-95 transition-all">Top Up</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-high transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A professional woman in her 30s, looking into the camera with a calm and confident expression. The environment is a clean, minimalist studio with natural lighting that highlights freshness and wellness, in line with the Vitality Flow design language." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBK3NpnsUNvE1Po6RmjPIHRlr76PSl7ZZZLnkohecxIreyeVo3p1AnJluvJeKJTxKg15PDud9Sdded9UJQNCGyEP5UZTFAZXfthL-_51Pc-CIOcwl3CKG3SBRr1EgP90CSLxmo5ZCvBwF-JPtrH8ZYn2-6YY7_km_F6IJF9Ynl6IW1gviKsgaxyd5TtfNgvDJfKgo4UrqswRsagpoBPdp4D3gc8FMbL21JaP88ZoEkTMpFTBrwExLRZvBcjOAYrYftbJVF4rY0U-w4"/>
+</div>
+<div>
+<p class="font-bold text-body-md">Sana Khan</p>
+<p class="font-body-sm text-[12px] text-on-surface-variant">+91 91XXX X8822</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 rounded bg-primary/10 text-primary text-[11px] font-bold uppercase">Daily Detox</span>
+</td>
+<td class="px-6 py-4">
+<p class="font-mono-data text-error font-bold">₹82.00</p>
+</td>
+<td class="px-6 py-4">
+<button class="px-3 py-1 bg-primary text-on-primary rounded-lg text-body-sm hover:opacity-90 active:scale-95 transition-all">Top Up</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-4 bg-surface-container-low text-center">
+<button class="text-on-surface-variant font-bold text-body-sm hover:text-primary transition-colors">View All 14 Alerts</button>
+</div>
+</div>
+</div>
+<!-- Operational Status Footer -->
+<div class="mt-section-gap grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="bg-surface-container-high/50 p-4 rounded-xl flex items-center gap-4">
+<div class="w-2 h-2 rounded-full bg-status-active animate-pulse"></div>
+<p class="text-body-sm text-on-surface">Systems Online: Logistics Engine v2.4</p>
+</div>
+<div class="bg-surface-container-high/50 p-4 rounded-xl flex items-center gap-4">
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]" data-icon="inventory_2">inventory_2</span>
+<p class="text-body-sm text-on-surface">Inventory: 94% Stocked</p>
+</div>
+<div class="bg-surface-container-high/50 p-4 rounded-xl flex items-center gap-4">
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]" data-icon="local_shipping">local_shipping</span>
+<p class="text-body-sm text-on-surface">Riders: 18/20 Active</p>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-safe h-16 bg-surface dark:bg-surface-container-lowest shadow-lg lg:hidden">
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1 active:scale-90 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-label-caps text-[10px]">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant active:scale-90 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="event_repeat">event_repeat</span>
+<span class="font-label-caps text-[10px]">Calendar</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant active:scale-90 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="font-label-caps text-[10px]">Wallet</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant active:scale-90 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+<span class="font-label-caps text-[10px]">Menu</span>
+</a>
+</nav>
+<script>
+        // Micro-interaction for clicking buttons
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const icon = this.querySelector('.material-symbols-outlined');
+                if (icon) {
+                    icon.style.transform = 'scale(0.8)';
+                    setTimeout(() => {
+                        icon.style.transform = 'scale(1)';
+                    }, 150);
+                }
+            });
+        });
+
+        // Simulating auto-refresh for the revenue
+        const revenueEl = document.querySelector('h3.font-headline-md.text-headline-md:nth-of-type(1)');
+        setInterval(() => {
+            if (revenueEl && revenueEl.innerText.includes('84,290')) {
+                // Occasional minor bump to simulate live data
+                const current = 84290.00;
+                const next = (current + (Math.random() * 50)).toFixed(2);
+                revenueEl.innerText = `₹${parseFloat(next).toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+            }
+        }, 15000);
+    </script>
+</body></html>

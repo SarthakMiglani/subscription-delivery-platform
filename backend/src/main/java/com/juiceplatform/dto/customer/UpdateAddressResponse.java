@@ -7,7 +7,7 @@ import java.time.OffsetDateTime;
 import java.util.UUID;
 
 /**
- * Response DTO for PUT /api/v1/customer/address (API spec §2.2).
+ * Response DTO for PUT /api/v1/customer/address.
  */
 @Getter
 @Builder

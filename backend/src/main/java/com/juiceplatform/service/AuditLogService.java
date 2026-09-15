@@ -15,10 +15,9 @@ import java.util.UUID;
 
 /**
  * Writes audit log entries for all admin mutations.
- * Per db-schema 1.2: audit logging happens in the same transaction as the mutation.
- * Per BR-AUD-01/02/03: all admin mutations are logged, entries are immutable.
+ * Audit logging happens in the same transaction as the mutation — entries are immutable.
  *
- * action_type values (from db-schema 3.15 examples):
+ * Recognised action_type values:
  *   BALANCE_CREDIT, ORDER_OVERRIDE, SUBSCRIPTION_EDIT, HISTORICAL_ORDER_EDIT,
  *   HISTORICAL_DELIVERY_EDIT, MANUAL_STATUS_CORRECTION, CUSTOMER_DEACTIVATION,
  *   SCHEDULER_RERUN, PRODUCT_DISABLE, PRODUCT_PRICE_UPDATE

@@ -25,7 +25,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     /**
      * Returns the authenticated customer's full profile.
-     * address is null when onboarding is not yet complete (API spec §2.3 note).
+     * Address is null when onboarding is not yet complete.
      */
     @Override
     @Transactional(readOnly = true)
@@ -34,7 +34,7 @@ public class CustomerServiceImpl implements CustomerService {
                 .orElseThrow(() -> new BusinessException("RESOURCE_NOT_FOUND",
                         "Customer not found", HttpStatus.NOT_FOUND));
 
-        // Address is null when onboarding is incomplete (API spec §2.3)
+        // Address is null when onboarding is incomplete
         CustomerProfileResponse.AddressDto addressDto = null;
         if (customer.getOnboardingCompleted()) {
             addressDto = deliveryAddressRepository.findByCustomerId(customerId)
@@ -73,8 +73,8 @@ public class CustomerServiceImpl implements CustomerService {
 
     /**
      * Updates the customer's delivery address immediately.
-     * No cutoff rule (BR-ONB-03, BR-CUT-05).
-     * Existing order address snapshots are immutable and unaffected (BR-ONB-04).
+     * No cutoff rule — changes apply at once.
+     * Existing order address snapshots are immutable and unaffected.
      * Requires onboarding to be complete — address record must already exist.
      */
     @Override
@@ -94,7 +94,7 @@ public class CustomerServiceImpl implements CustomerService {
                 .orElseThrow(() -> new BusinessException("RESOURCE_NOT_FOUND",
                         "Delivery address not found", HttpStatus.NOT_FOUND));
 
-        // Update fields in-place (same row, same id — BR-ONB-03: applies immediately)
+        // Update fields in-place — changes apply immediately
         address.setLine1(request.getLine1());
         address.setLine2(request.getLine2());
         address.setCity(request.getCity());
@@ -113,5 +113,21 @@ public class CustomerServiceImpl implements CustomerService {
                 .deliveryNotes(address.getDeliveryNotes())
                 .updatedAt(address.getUpdatedAt())
                 .build();
+    }
+
+    /**
+     * Updates the customer's profile details.
+     */
+    @Override
+    @Transactional
+    public CustomerProfileResponse updateProfile(UUID customerId, com.juiceplatform.dto.customer.UpdateProfileRequest request) {
+        User customer = userRepository.findById(customerId)
+                .orElseThrow(() -> new BusinessException("RESOURCE_NOT_FOUND",
+                        "Customer not found", HttpStatus.NOT_FOUND));
+
+        customer.setName(request.getName());
+        userRepository.save(customer);
+
+        return getProfile(customerId);
     }
 }

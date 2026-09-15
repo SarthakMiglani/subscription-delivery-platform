@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FreshFlow | Subscription Manager</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Hanken+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@500&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@100..900&family=Plus+Jakarta+Sans:wght@100..900&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary": "#8b5000",
+                    "inverse-on-surface": "#eff1ef",
+                    "secondary-container": "#ff9800",
+                    "on-secondary-fixed": "#2c1600",
+                    "wallet-debit": "#D32F2F",
+                    "status-active": "#2E7D32",
+                    "surface-container-high": "#e6e9e7",
+                    "on-tertiary-container": "#9dd65b",
+                    "surface-variant": "#e1e3e1",
+                    "on-primary-container": "#90d689",
+                    "on-background": "#191c1b",
+                    "surface-container": "#eceeec",
+                    "on-secondary": "#ffffff",
+                    "surface-container-lowest": "#ffffff",
+                    "on-secondary-container": "#653900",
+                    "inverse-primary": "#91d78a",
+                    "on-tertiary": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "status-future": "#0288D1",
+                    "status-error": "#D32F2F",
+                    "on-secondary-fixed-variant": "#693c00",
+                    "tertiary-fixed": "#b9f474",
+                    "status-warning": "#ED6C02",
+                    "outline": "#717a6d",
+                    "background": "#f8faf8",
+                    "surface-tint": "#2a6b2c",
+                    "inverse-surface": "#2e3130",
+                    "tertiary": "#264300",
+                    "on-error": "#ffffff",
+                    "tertiary-fixed-dim": "#9ed75b",
+                    "primary": "#00450d",
+                    "on-surface": "#191c1b",
+                    "primary-fixed-dim": "#91d78a",
+                    "on-tertiary-fixed": "#0f2000",
+                    "surface-bright": "#f8faf8",
+                    "on-tertiary-fixed-variant": "#2e4f00",
+                    "surface-container-low": "#f2f4f2",
+                    "secondary-fixed": "#ffdcbe",
+                    "error": "#ba1a1a",
+                    "on-primary-fixed-variant": "#0c5216",
+                    "primary-fixed": "#acf4a4",
+                    "surface": "#f8faf8",
+                    "on-surface-variant": "#41493e",
+                    "on-primary": "#ffffff",
+                    "surface-container-highest": "#e1e3e1",
+                    "primary-container": "#1b5e20",
+                    "secondary-fixed-dim": "#ffb870",
+                    "status-locked": "#455A64",
+                    "error-container": "#ffdad6",
+                    "surface-dim": "#d8dad9",
+                    "wallet-credit": "#2E7D32",
+                    "outline-variant": "#c0c9bb",
+                    "tertiary-container": "#365c00",
+                    "on-primary-fixed": "#002203"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "base": "8px",
+                    "container-padding-mobile": "16px",
+                    "gutter": "16px",
+                    "container-padding-desktop": "32px",
+                    "card-inner-padding": "24px",
+                    "section-gap": "40px"
+            },
+            "fontFamily": {
+                    "body-sm": ["Hanken Grotesk"],
+                    "headline-lg-mobile": ["Plus Jakarta Sans"],
+                    "body-md": ["Hanken Grotesk"],
+                    "label-caps": ["Hanken Grotesk"],
+                    "body-lg": ["Hanken Grotesk"],
+                    "mono-data": ["JetBrains Mono"],
+                    "headline-lg": ["Plus Jakarta Sans"],
+                    "headline-md": ["Plus Jakarta Sans"],
+                    "headline-sm": ["Plus Jakarta Sans"]
+            },
+            "fontSize": {
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "mono-data": ["13px", {"lineHeight": "18px", "fontWeight": "500"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .status-badge {
+            padding: 2px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+        .cutoff-warning {
+            border-left: 4px solid #ED6C02;
+        }
+        /* Custom scrollbar for better look */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c0c9bb;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #717a6d;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md min-h-screen">
+<!-- TopNavBar (Fixed) -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-container-padding-mobile md:px-container-padding-desktop h-16 bg-surface dark:bg-surface-dim shadow-sm dark:shadow-none">
+<div class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed-dim">FreshFlow</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-high transition-colors p-2 rounded-full active:scale-95 duration-200">account_balance_wallet</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-high transition-colors p-2 rounded-full active:scale-95 duration-200">notifications</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A professional high-fidelity studio portrait of a health-conscious customer, smiling warmly against a soft, neutral-toned green background. The lighting is bright and natural, reflecting the FreshFlow brand's emphasis on vitality and transparency. The subject is wearing clean, minimalist clothing, embodying a modern wellness aesthetic consistent with a high-end fintech and health service." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCxJ1lCpnmawqIgh1P3m_pWiduyIQJbeLzLGF6CccCYT6RJxAg77MsMaF9HW7l6mqVp0Eov4fuhiwqnEbZuVlueNO8q1YYqW7rv7oNcnq_LTbeLWxGpENqHfdAJMl1RRZdGQEujB4t8TaJHFScTDzeZqs2y6boKpqry4Lp9hnTQZkBmdKzLsHiwafLfhgY_lkAiTGg2Khl6Zx9H8SM0wr_tCFYGKxnYadAvPWhjuKGeBqC1cLHNntUUAVej_-xtxpFJF0d0JvQRpRs"/>
+</div>
+</div>
+</header>
+<!-- SideNavBar (Desktop Only) -->
+<aside class="fixed left-0 top-0 h-full w-64 border-r border-outline-variant dark:border-outline bg-surface-container-low dark:bg-surface-container-lowest hidden lg:flex flex-col pt-20">
+<div class="px-6 mb-8">
+<div class="font-headline-sm text-headline-sm font-bold text-primary mb-1">Juice Subscriber</div>
+<div class="font-body-md text-body-md text-on-surface-variant">Wallet: ₹1,240.00</div>
+<button class="mt-4 w-full bg-secondary-container text-on-secondary-container py-2 px-4 rounded-lg font-bold hover:bg-secondary transition-colors active:scale-98">Quick Top-up</button>
+</div>
+<nav class="flex-1 px-4 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">local_shipping</span>
+<span class="font-body-md">Deliveries</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-primary-container text-on-primary-container rounded-lg font-bold" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="font-body-md">Subscriptions</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="font-body-md">Wallet</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">support_agent</span>
+<span class="font-body-md">Support</span>
+</a>
+</nav>
+<div class="p-4 border-t border-outline-variant space-y-1">
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-md">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-body-md">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="pt-24 pb-24 lg:pb-8 lg:ml-64 px-container-padding-mobile md:px-container-padding-desktop max-w-6xl mx-auto">
+<!-- Header Section -->
+<section class="mb-section-gap">
+<h1 class="font-headline-lg text-headline-lg text-on-background mb-2">My Subscriptions</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">Manage your daily wellness routine. Remember to finalize changes before 10:00 PM for tomorrow's delivery.</p>
+</section>
+<!-- Cutoff Banner -->
+<div class="cutoff-warning bg-surface-container-high p-card-inner-padding mb-8 rounded-lg flex items-start gap-4">
+<span class="material-symbols-outlined text-status-warning">timer</span>
+<div>
+<span class="font-label-caps text-label-caps text-status-warning block mb-1">10 PM CUTOFF RULE</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Any modifications made after 10:00 PM IST will be scheduled for T+2 delivery. Current status: <span class="font-bold text-status-active">OPEN for tomorrow.</span></p>
+</div>
+</div>
+<!-- Subscription Grid (Bento Style) -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-gutter">
+<!-- Active Subscription Card -->
+<div class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_20px_rgba(0,40,0,0.05)] overflow-hidden border border-transparent transition-all hover:shadow-[0px_8px_30px_rgba(0,40,0,0.08)]">
+<div class="p-card-inner-padding">
+<div class="flex justify-between items-start mb-6">
+<div class="flex gap-4">
+<div class="w-16 h-16 rounded-lg bg-surface-container overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A macro photograph of a cold-pressed 'Vitality Green' juice bottle with visible droplets of condensation. The vibrant green liquid is clear and fresh, surrounded by organic spinach leaves and slices of green apple. The lighting is crisp and energetic, emphasizing the morning wellness theme of FreshFlow." src="https://lh3.googleusercontent.com/aida-public/AB6AXuALQ744NK_hJQcn5jsh1vCwbTsqdiY_htISQtWtFTMU-7DX7qGpcNfJWVIbHLWaMxz94WoH7NK9M5H7tvCbXMhafdXwRLRtNFz7J2O9ilmJYyXZ5-bq12OnFvKV4dtVj8JJtPCjqeXQolvMZgQRmE5VH0mYHLLoD1amjnWDaqhWeU-13XkwgVFM6RtUNt0pKdVGFAh37LsNUORMrPE9G5woZVcfp6YJIFaOq8a6hutAkkTjYYgWe5d7kXiBC8WnVwPVleoZlJ3SIiI"/>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Vitality Green Juice</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Daily • 500ml</p>
+<div class="mt-2 flex gap-2">
+<span class="status-badge bg-status-active bg-opacity-10 text-status-active font-label-caps text-[10px]">ACTIVE</span>
+<span class="status-badge bg-secondary-container bg-opacity-10 text-on-secondary-container font-label-caps text-[10px]">NEXT: TOMORROW</span>
+</div>
+</div>
+</div>
+<div class="text-right">
+<div class="font-headline-sm text-headline-sm text-primary">₹145</div>
+<div class="font-label-caps text-label-caps text-on-surface-variant">PER DELIVERY</div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 mb-6">
+<div class="p-3 bg-surface-container-low rounded-lg">
+<label class="font-label-caps text-label-caps text-on-surface-variant block mb-1">QUANTITY</label>
+<div class="flex items-center gap-3">
+<button class="w-8 h-8 rounded-full border border-outline-variant flex items-center justify-center hover:bg-surface-variant active:scale-90 transition-all">
+<span class="material-symbols-outlined text-[18px]">remove</span>
+</button>
+<span class="font-mono-data text-body-lg">01</span>
+<button class="w-8 h-8 rounded-full border border-outline-variant flex items-center justify-center hover:bg-surface-variant active:scale-90 transition-all">
+<span class="material-symbols-outlined text-[18px]">add</span>
+</button>
+</div>
+</div>
+<div class="p-3 bg-surface-container-low rounded-lg">
+<label class="font-label-caps text-label-caps text-on-surface-variant block mb-1">FREQUENCY</label>
+<div class="flex items-center gap-1 font-body-md text-on-surface font-bold">
+<span>Daily</span>
+<span class="material-symbols-outlined text-on-surface-variant">expand_more</span>
+</div>
+</div>
+</div>
+<div class="flex gap-3">
+<button class="flex-1 border border-primary text-primary py-3 rounded-lg font-bold hover:bg-surface-container-high transition-colors active:scale-[0.98]">
+                            Pause Subscription
+                        </button>
+<button class="w-12 h-12 flex items-center justify-center border border-outline-variant rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined">edit</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Paused Subscription Card -->
+<div class="bg-surface-container rounded-xl overflow-hidden border border-outline-variant opacity-80">
+<div class="p-card-inner-padding">
+<div class="flex justify-between items-start mb-6">
+<div class="flex gap-4">
+<div class="w-16 h-16 rounded-lg bg-surface-container-high overflow-hidden grayscale">
+<img class="w-full h-full object-cover" data-alt="A professional close-up of organic almond milk in a glass bottle, placed on a rustic wooden surface with scattered almonds around it. The lighting is soft and warm, creating a cozy and high-quality aesthetic. The image represents a premium dairy alternative within the FreshFlow ecosystem, with a focus on purity and health." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAjP6YrXbMzVtjktOO2_rbGptN4eB6hBLM2OacCnSHby5x4uQZxPSILV21YOr3Jq_gXikj4vB7rNJj-zj3ceuh_td6p_7GuOicJD2IrHvVxbc9aSQY2pXgxdfs5yhE6TtX5TKtrSOGkCiw8bILWsx8GV4-ejuaCFH4eERFly6xKCx_n7JazHzhQ3Df9Ow91nkaDRX5502FDKrZam_0K5VJwZUeBFQy_iRbT1VnG3Ed3BJxAHzEi2PGBmE97zhDhrAonPepG_Ep-bWc"/>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Organic Almond Milk</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Mon, Wed, Fri • 1L</p>
+<div class="mt-2 flex gap-2">
+<span class="status-badge bg-status-locked bg-opacity-10 text-status-locked font-label-caps text-[10px]">PAUSED</span>
+</div>
+</div>
+</div>
+<div class="text-right">
+<div class="font-headline-sm text-headline-sm text-on-surface-variant">₹210</div>
+<div class="font-label-caps text-label-caps text-on-surface-variant">PER DELIVERY</div>
+</div>
+</div>
+<div class="p-4 bg-surface-container-highest rounded-lg mb-6 flex items-center gap-3">
+<span class="material-symbols-outlined text-status-warning text-[20px]">info</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant italic">Paused since Oct 12. Resume to get delivery on next available day.</p>
+</div>
+<div class="flex gap-3">
+<button class="flex-1 bg-primary text-on-primary py-3 rounded-lg font-bold hover:bg-opacity-90 shadow-md active:scale-[0.98] transition-all">
+                            Resume Delivery
+                        </button>
+<button class="w-12 h-12 flex items-center justify-center border border-outline-variant rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Pending Start Subscription Card -->
+<div class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_20px_rgba(0,40,0,0.05)] overflow-hidden border border-dashed border-primary transition-all">
+<div class="p-card-inner-padding">
+<div class="flex justify-between items-start mb-6">
+<div class="flex gap-4">
+<div class="w-16 h-16 rounded-lg bg-surface-container overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A vibrant and colorful photograph of a seasonal fruit basket containing sliced papayas, oranges, and berries. The arrangement is artistic and high-end, shot with a shallow depth of field against a clean white marble background. This represents the premium 'Seasonal Fruit Box' offered by FreshFlow, emphasizing freshness and variety." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAkoyIBERL4OjQIlg7q9UxlzVdivdG-KZwmlHwV01RZlcV01U3DnPjCiWkfZQQKg7wWnAefC3rD4vvEKSB01kD_IwFnj68Q8ZRrD4dixCxA_gPfYgKp6N92alJWWn5ugQftMcuPSxZV4VJGQS1LiuezTYwe_oi1GEvJ_miF4I68EeHwZTlFQQ55M0biud_WMYgWFhxErR72C7t2NacG8w1fjE761gOHzkocUZPfURhRHORNrwqgO3Pyh_w6Dlk1JUT4bo-xE36hlJ4"/>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Seasonal Fruit Box</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Weekly (Sun) • 2kg</p>
+<div class="mt-2 flex gap-2">
+<span class="status-badge bg-status-future bg-opacity-10 text-status-future font-label-caps text-[10px]">PENDING_START</span>
+</div>
+</div>
+</div>
+<div class="text-right">
+<div class="font-headline-sm text-headline-sm text-primary">₹399</div>
+<div class="font-label-caps text-label-caps text-on-surface-variant">WEEKLY</div>
+</div>
+</div>
+<div class="flex items-center gap-3 mb-6 p-3 border border-outline-variant rounded-lg">
+<span class="material-symbols-outlined text-primary">calendar_month</span>
+<div class="font-body-sm text-body-sm">Starts on <span class="font-bold">Sunday, Oct 27</span></div>
+</div>
+<div class="flex gap-3">
+<button class="flex-1 bg-surface-container-high text-on-surface-variant py-3 rounded-lg font-bold hover:bg-surface-variant transition-colors active:scale-[0.98]">
+                            Modify Start Date
+                        </button>
+<button class="flex-1 border border-error text-error py-3 rounded-lg font-bold hover:bg-error-container transition-colors active:scale-[0.98]">
+                            Cancel Plan
+                        </button>
+</div>
+</div>
+</div>
+<!-- Add New Placeholder -->
+<div class="group border-2 border-dashed border-outline-variant rounded-xl flex flex-col items-center justify-center p-card-inner-padding bg-surface-container-low hover:bg-surface-container transition-all cursor-pointer min-h-[300px]">
+<div class="w-16 h-16 rounded-full bg-surface-container-high flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-primary text-[40px]">add_circle</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface-variant">Add New Subscription</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-2 text-center">Browse our catalog for fresh daily essentials.</p>
+</div>
+</div>
+<!-- Wallet Quick View (Floating on Mobile) -->
+<div class="mt-12 bg-primary-container p-card-inner-padding rounded-2xl flex flex-col md:flex-row justify-between items-center gap-6">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-on-primary-container bg-opacity-20 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary-container">account_balance_wallet</span>
+</div>
+<div>
+<div class="font-label-caps text-label-caps text-on-primary-container opacity-80 uppercase">Available Balance</div>
+<div class="font-headline-md text-headline-md text-on-primary-container">₹1,240.50</div>
+</div>
+</div>
+<div class="flex gap-3 w-full md:w-auto">
+<button class="flex-1 md:flex-none px-8 py-3 bg-secondary-container text-on-secondary-container rounded-lg font-bold shadow-md hover:bg-secondary-fixed transition-colors active:scale-95">Recharge Wallet</button>
+<button class="flex-1 md:flex-none px-6 py-3 bg-primary text-on-primary rounded-lg font-bold hover:bg-opacity-90 transition-colors active:scale-95">View Ledger</button>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-safe h-16 bg-surface dark:bg-surface-container-lowest shadow-lg dark:shadow-none lg:hidden">
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant transition-all px-4 py-1" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-caps text-label-caps">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant transition-all px-4 py-1" href="#">
+<span class="material-symbols-outlined">event_repeat</span>
+<span class="font-label-caps text-label-caps">Calendar</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1 font-bold" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-label-caps text-label-caps">Wallet</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant transition-all px-4 py-1" href="#">
+<span class="material-symbols-outlined">menu</span>
+<span class="font-label-caps text-label-caps">Menu</span>
+</a>
+</nav>
+<!-- Contextual FAB (Only on relevant screens) -->
+<button class="fixed bottom-20 right-6 lg:bottom-10 lg:right-10 w-14 h-14 bg-primary text-on-primary rounded-2xl shadow-xl flex items-center justify-center active:scale-90 transition-transform duration-150 z-40 hover:bg-primary-container hover:text-on-primary-container">
+<span class="material-symbols-outlined text-[32px]">add</span>
+</button>
+<script>
+        // Simple micro-interaction for quantity buttons
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                // Flash effect for feedback
+                const ripple = document.createElement('div');
+                ripple.classList.add('ripple-effect');
+                this.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 600);
+            });
+        });
+
+        // Time Cutoff Logic Mock
+        const checkCutoffStatus = () => {
+            const now = new Date();
+            const hours = now.getHours();
+            if (hours >= 22) {
+                document.querySelector('.cutoff-warning').classList.remove('bg-surface-container-high');
+                document.querySelector('.cutoff-warning').classList.add('bg-error-container');
+                document.querySelector('.cutoff-warning .text-status-active').textContent = 'LOCKED for tomorrow';
+                document.querySelector('.cutoff-warning .text-status-active').classList.replace('text-status-active', 'text-status-error');
+            }
+        };
+        checkCutoffStatus();
+    </script>
+</body></html>

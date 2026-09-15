@@ -14,7 +14,12 @@ import java.util.UUID;
 
 public interface ProductService {
 
-    Page<ProductCustomerResponse> listProductsForCustomer(Pageable pageable);
+    /**
+     * Lists enabled products for the customer catalogue.
+     * Requires the customer to have completed onboarding (BR-ONB-02) —
+     * throws 403 ONBOARDING_INCOMPLETE otherwise.
+     */
+    Page<ProductCustomerResponse> listProductsForCustomer(UUID customerId, Pageable pageable);
 
     Page<ProductResponse> listProductsForAdmin(Boolean isAvailable, Pageable pageable);
 

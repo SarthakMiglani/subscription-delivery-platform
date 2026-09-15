@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FreshFlow | Product Catalog</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;700&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Three.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "status-error": "#D32F2F",
+                        "error-container": "#ffdad6",
+                        "on-primary-fixed-variant": "#0c5216",
+                        "on-tertiary-fixed-variant": "#2e4f00",
+                        "surface-tint": "#2a6b2c",
+                        "outline": "#717a6d",
+                        "primary-fixed": "#acf4a4",
+                        "on-tertiary-fixed": "#0f2000",
+                        "inverse-on-surface": "#eff1ef",
+                        "on-tertiary-container": "#9dd65b",
+                        "on-secondary-fixed-variant": "#693c00",
+                        "primary-container": "#1b5e20",
+                        "inverse-surface": "#2e3130",
+                        "surface-container-highest": "#e1e3e1",
+                        "tertiary-fixed-dim": "#9ed75b",
+                        "on-surface": "#191c1b",
+                        "secondary-fixed-dim": "#ffb870",
+                        "on-secondary-fixed": "#2c1600",
+                        "wallet-credit": "#2E7D32",
+                        "on-primary-container": "#90d689",
+                        "tertiary": "#264300",
+                        "status-active": "#2E7D32",
+                        "on-error": "#ffffff",
+                        "wallet-debit": "#D32F2F",
+                        "surface-variant": "#e1e3e1",
+                        "primary-fixed-dim": "#91d78a",
+                        "on-secondary-container": "#653900",
+                        "on-primary": "#ffffff",
+                        "on-surface-variant": "#41493e",
+                        "surface-container-low": "#f2f4f2",
+                        "on-error-container": "#93000a",
+                        "on-background": "#191c1b",
+                        "status-locked": "#455A64",
+                        "status-future": "#0288D1",
+                        "surface-dim": "#d8dad9",
+                        "secondary-fixed": "#ffdcbe",
+                        "surface-container": "#eceeec",
+                        "on-secondary": "#ffffff",
+                        "primary": "#00450d",
+                        "secondary-container": "#ff9800",
+                        "tertiary-fixed": "#b9f474",
+                        "on-primary-fixed": "#002203",
+                        "surface": "#f8faf8",
+                        "error": "#ba1a1a",
+                        "on-tertiary": "#ffffff",
+                        "background": "#f8faf8",
+                        "secondary": "#8b5000",
+                        "tertiary-container": "#365c00",
+                        "surface-container-high": "#e6e9e7",
+                        "surface-bright": "#f8faf8",
+                        "inverse-primary": "#91d78a",
+                        "status-warning": "#ED6C02",
+                        "outline-variant": "#c0c9bb"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "card-inner-padding": "24px",
+                        "section-gap": "40px",
+                        "container-padding-desktop": "32px",
+                        "gutter": "16px",
+                        "base": "8px",
+                        "container-padding-mobile": "16px"
+                    },
+                    "fontFamily": {
+                        "body-sm": ["Hanken Grotesk"],
+                        "label-caps": ["Hanken Grotesk"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "mono-data": ["JetBrains Mono"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "body-md": ["Hanken Grotesk"],
+                        "body-lg": ["Hanken Grotesk"],
+                        "headline-sm": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "mono-data": ["13px", {"lineHeight": "18px", "fontWeight": "500"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}]
+                    },
+                    "animation": {
+                        "shimmer": "shimmer 2s infinite linear",
+                        "pulse-indicator": "pulse-indicator 1.5s infinite",
+                        "fade-in-up": "fade-in-up 0.5s ease-out forwards"
+                    },
+                    "keyframes": {
+                        "shimmer": {
+                            "0%": { "background-position": "-200% 0" },
+                            "100%": { "background-position": "200% 0" }
+                        },
+                        "pulse-indicator": {
+                            "0%": { "transform": "scale(0.95)", "opacity": "0.5" },
+                            "50%": { "transform": "scale(1.1)", "opacity": "1" },
+                            "100%": { "transform": "scale(0.95)", "opacity": "0.5" }
+                        },
+                        "fade-in-up": {
+                            "0%": { "opacity": "0", "transform": "translateY(10px)" },
+                            "100%": { "opacity": "1", "transform": "translateY(0)" }
+                        }
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #f8faf8;
+            color: #191c1b;
+            -webkit-font-smoothing: antialiased;
+        }
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+        }
+        @media (max-width: 600px) {
+            .product-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #c0c9bb; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #717a6d; }
+
+        /* Shimmer Loading Effect */
+        .shimmer-bg {
+            background: linear-gradient(90deg, #f2f4f2 25%, #e1e3e1 50%, #f2f4f2 75%);
+            background-size: 200% 100%;
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Scale-on-hover for product cards */
+        .product-card {
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .product-card:hover {
+            transform: scale(1.02);
+        }
+
+        /* Staggered Entrance for Filter Chips */
+        .filter-chip {
+            opacity: 0;
+            animation: fade-in-up 0.5s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-container-padding-mobile md:px-container-padding-desktop h-16 bg-surface dark:bg-surface-dim shadow-sm dark:shadow-none">
+<div class="flex items-center gap-4">
+<span class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed-dim">FreshFlow</span>
+</div>
+<div class="hidden md:flex flex-1 max-w-md mx-8">
+<div class="relative w-full group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full bg-surface-container-low border-none rounded-full py-2 pl-10 pr-4 focus:ring-2 focus:ring-primary/20 transition-all text-body-sm font-body-sm" placeholder="Search for flavors..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="p-2 rounded-full hover:bg-surface-container-high transition-colors active:scale-95 duration-200">
+<span class="material-symbols-outlined text-primary">account_balance_wallet</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container-high transition-colors active:scale-95 duration-200 relative">
+<span class="material-symbols-outlined text-primary">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-secondary rounded-full"></span>
+</button>
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-primary-container">
+<img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBozPuGHlKppDLqwRv008PkrCgJNY_Jnn5KIEwKwYK40myBTP85xbvOr19D2W6mteI2TUI4rcQXNs1omvC9vvamsflS-PX1noG-6GNPSizxdG_SDMOO3EM3Iy0S69xXIgRYGdsUVp2WxLDq7flJisDuj9DpCWf2BN3rruZW8HJp9nVsLbWpB0NcqcDeRjqWR-yDAMd6WhKc1mtWTYDKxBGmPX-MrvAyaBfl3JrZVFR8x_kCUVwumQ4_3SwoN_wRf3MxsbGW68aBXSM"/>
+</div>
+</div>
+</header>
+<!-- SideNavBar -->
+<nav class="fixed left-0 top-0 h-full w-64 border-r border-outline-variant dark:border-outline bg-surface-container-low dark:bg-surface-container-lowest hidden lg:flex flex-col z-40 pt-20 pb-8 px-4">
+<div class="mb-8 px-4">
+<h2 class="font-headline-sm text-headline-sm font-bold text-primary mb-1">Juice Subscriber</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Wallet: ₹1,240.00</p>
+<button class="mt-4 w-full bg-secondary-container text-on-secondary-container py-2 rounded-lg font-bold hover:opacity-90 active:scale-98 transition-all">Quick Top-up</button>
+</div>
+<div class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-md text-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-primary-container text-on-primary-container rounded-lg font-bold" href="#">
+<span class="material-symbols-outlined">local_shipping</span>
+<span class="font-body-md text-body-md">Deliveries</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="font-body-md text-body-md">Subscriptions</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="font-body-md text-body-md">Wallet</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">support_agent</span>
+<span class="font-body-md text-body-md">Support</span>
+</a>
+</div>
+<div class="border-t border-outline-variant pt-4 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-md text-body-md">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-body-md text-body-md">Logout</span>
+</a>
+</div>
+</nav>
+<!-- Main Content -->
+<main class="lg:ml-64 pt-24 pb-20 px-container-padding-mobile md:px-container-padding-desktop min-h-screen">
+<div class="mb-10">
+<h1 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary mb-2">Our Fresh Blends</h1>
+<p class="text-on-surface-variant max-w-2xl font-body-lg text-body-lg">Cold-pressed daily and delivered to your doorstep. Subscriptions placed before 10 PM IST are delivered by 7 AM tomorrow.</p>
+</div>
+<!-- Filter Bar -->
+<div class="flex flex-wrap items-center gap-3 mb-8 overflow-x-auto pb-2 no-scrollbar">
+<button class="filter-chip px-6 py-2 bg-primary text-on-primary rounded-full font-bold text-body-sm shadow-sm transition-all active:scale-95" style="animation-delay: 100ms;">All Juices</button>
+<button class="filter-chip px-6 py-2 bg-surface-container-high text-on-surface-variant rounded-full font-medium text-body-sm hover:bg-surface-container-highest transition-all active:scale-95" style="animation-delay: 200ms;">Green Juices</button>
+<button class="filter-chip px-6 py-2 bg-surface-container-high text-on-surface-variant rounded-full font-medium text-body-sm hover:bg-surface-container-highest transition-all active:scale-95" style="animation-delay: 300ms;">Fruit Blends</button>
+<button class="filter-chip px-6 py-2 bg-surface-container-high text-on-surface-variant rounded-full font-medium text-body-sm hover:bg-surface-container-highest transition-all active:scale-95" style="animation-delay: 400ms;">Detox Cleanse</button>
+<button class="filter-chip px-6 py-2 bg-surface-container-high text-on-surface-variant rounded-full font-medium text-body-sm hover:bg-surface-container-highest transition-all active:scale-95" style="animation-delay: 500ms;">Immunity Boost</button>
+</div>
+<!-- Product Grid -->
+<div class="product-grid">
+<!-- Product Card 1 -->
+<div class="product-card bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm hover:shadow-md group flex flex-col relative">
+<div class="relative h-64 overflow-hidden shimmer-bg animate-shimmer">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-0 transition-opacity" onload="this.classList.remove('opacity-0')" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB-tvPr-4Sikc0Jz5aq_E3fK4NvyIwj5aECsR-K7KQuKvQzC-Drq_Fst81cBYg-3wJfgL7M74XRV95x_2gEsL5LMzrAZJK8-NXQy-TSsdJ143AXbduzYNn3dglvx9dm4qQc1rSOW_WeK_1Y7apoNVnuh21ZTivtOMNzfO6hW6KcxZpBGGsPGe43slXy9mLJWhtwfgnOuOcxF9suxFNmfSqsZOTGeGxJB-Zh--CcRvFk-AHCGs1hJTlRRAywF7E__CXM_M8fbNqKoqI"/>
+<!-- 3D Animation Container -->
+<div class="absolute top-2 right-12 w-20 h-20 pointer-events-none z-20" id="evergreen-3d-container"></div>
+<div class="absolute top-3 left-3 bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full font-label-caps text-label-caps uppercase z-10">Best Seller</div>
+<button class="absolute top-3 right-3 w-10 h-10 bg-white/90 backdrop-blur rounded-full flex items-center justify-center text-status-error shadow-sm z-10">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</button>
+</div>
+<div class="p-card-inner-padding flex-1 flex flex-col">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-headline-sm text-headline-sm text-primary">Evergreen Detox</h3>
+<span class="font-headline-sm text-headline-sm text-primary">₹149</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-4">Spinach, Apple, Cucumber, Lemon, Ginger. <span class="font-mono-data text-mono-data ml-1">(500ml)</span></p>
+<div class="mt-auto space-y-3">
+<div class="flex items-center gap-2 text-status-active">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+<span class="font-label-caps text-label-caps uppercase">Fresh Today</span>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<button class="bg-primary text-on-primary py-3 rounded-lg font-bold text-body-sm hover:opacity-90 active:scale-95 transition-all">Subscribe</button>
+<button class="border border-primary text-primary py-3 rounded-lg font-bold text-body-sm hover:bg-primary/5 active:scale-95 transition-all">Quick Add</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Product Card 2 -->
+<div class="product-card bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm hover:shadow-md group flex flex-col">
+<div class="relative h-64 overflow-hidden shimmer-bg animate-shimmer">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-0 transition-opacity" onload="this.classList.remove('opacity-0')" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCFmvpD3jK15S71LHsBguIu3U7P6PyEQ07GYBQaeuVshcKd9nA088dW40YQqVPeLpf7wRiDoPA-RFjWeReiFjXznExLTny1VvVjY7US2kGgtjQgD84JaQfN7Pv0rISO5Exc05M-NDFSzfb3rKJB9SbAH6JUygDMgOfLGAnSSY4s0RLcXpypJOjssMEIByFJ0DXK6JL3DMFSJvg7C8sjvUTAzflwdQ4qVJbz1J8GhC1jP_f8q1mkJ9o6w3qpNoMmzxux4n6d5qklLa0"/>
+<div class="absolute top-3 left-3 bg-tertiary-container text-on-tertiary-container px-3 py-1 rounded-full font-label-caps text-label-caps uppercase">New</div>
+</div>
+<div class="p-card-inner-padding flex-1 flex flex-col">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-headline-sm text-headline-sm text-primary">Sun-Kissed Glow</h3>
+<span class="font-headline-sm text-headline-sm text-primary">₹129</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-4">Orange, Turmeric, Carrot, Black Pepper. <span class="font-mono-data text-mono-data ml-1">(500ml)</span></p>
+<div class="mt-auto space-y-3">
+<div class="flex items-center gap-2 text-status-future">
+<span class="material-symbols-outlined text-[18px]">schedule</span>
+<span class="font-label-caps text-label-caps uppercase">Next slot: Tomorrow 7AM</span>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<button class="bg-primary text-on-primary py-3 rounded-lg font-bold text-body-sm hover:opacity-90 active:scale-95 transition-all">Subscribe</button>
+<button class="border border-primary text-primary py-3 rounded-lg font-bold text-body-sm hover:bg-primary/5 active:scale-95 transition-all">Quick Add</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Product Card 3 -->
+<div class="product-card bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm hover:shadow-md group flex flex-col">
+<div class="relative h-64 overflow-hidden shimmer-bg animate-shimmer">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-0 transition-opacity" onload="this.classList.remove('opacity-0')" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAx1o1f18Ytcdxvhbk7QKeegka4NOXiTlTEmRAzHhoZfObt6QqDWgV6sl2jy9yRFYq4bi10TQLjtJOqivxA847mlzhfEDxQ9vEkN_CDXMDJ1AukTZqdEOfYa7Ltgn15KtaEMzlj2CZf-NGLjy7FZw9H3bOqF4SZ0WIxi2qTCNDl2R3n8roha-F3WtpqzIlNZg1kQzpY0OuGxPVCOhqJk7MwYDeN7kDZbApHWpPTo3m6jS-IkdvagL1f1yEHMgrTvIriLQwQHFaTKOk"/>
+</div>
+<div class="p-card-inner-padding flex-1 flex flex-col">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-headline-sm text-headline-sm text-primary">Ruby Recovery</h3>
+<span class="font-headline-sm text-headline-sm text-primary">₹179</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-4">Pomegranate, Beetroot, Chia Seeds. <span class="font-mono-data text-mono-data ml-1">(500ml)</span></p>
+<div class="mt-auto space-y-3">
+<div class="flex items-center gap-2 text-status-active">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+<span class="font-label-caps text-label-caps uppercase">Fresh Today</span>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<button class="bg-primary text-on-primary py-3 rounded-lg font-bold text-body-sm hover:opacity-90 active:scale-95 transition-all">Subscribe</button>
+<button class="border border-primary text-primary py-3 rounded-lg font-bold text-body-sm hover:bg-primary/5 active:scale-95 transition-all">Quick Add</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Product Card 4 -->
+<div class="product-card bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm hover:shadow-md group flex flex-col">
+<div class="relative h-64 overflow-hidden shimmer-bg animate-shimmer">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-0 transition-opacity" onload="this.classList.remove('opacity-0')" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAqwLzfk_-cZoloQuW8lOLhjcouefFn1ltZ5hRNwDNJKYVS2-QLKA3akYPN5DGT7_IQpvervGL7gBAKPaqRXC3K-0KNL4ACrT4-1AwbGdcvPLk_Iotk0JInyvYfwtYgxbvq7l6a9hKgsMK1RoMyWow7InifrA-iFejzJl5mb2-fOzgUQJ9DBmSc29UcUIiEakEHy2hz7Z1qtxqN8hdet3uhAk0eGB9IjWezsJJSoJNOEZuxja8kWaxFf3qkfTIlG6JmuuLvWjJY1o8"/>
+</div>
+<div class="p-card-inner-padding flex-1 flex flex-col">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-headline-sm text-headline-sm text-primary">Hydra-Flow</h3>
+<span class="font-headline-sm text-headline-sm text-primary">₹110</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-4">Tender Coconut, Aloe Vera, Mint. <span class="font-mono-data text-mono-data ml-1">(500ml)</span></p>
+<div class="mt-auto space-y-3">
+<div class="flex items-center gap-2 text-status-active">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+<span class="font-label-caps text-label-caps uppercase">Fresh Today</span>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<button class="bg-primary text-on-primary py-3 rounded-lg font-bold text-body-sm hover:opacity-90 active:scale-95 transition-all">Subscribe</button>
+<button class="border border-primary text-primary py-3 rounded-lg font-bold text-body-sm hover:bg-primary/5 active:scale-95 transition-all">Quick Add</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Pagination -->
+<div class="mt-12 flex justify-center">
+<button class="flex items-center gap-2 px-8 py-3 bg-surface-container-low text-primary border border-outline-variant rounded-full font-bold hover:bg-surface-container-high transition-all active:scale-95">
+            Load More Juices
+            <span class="material-symbols-outlined">expand_more</span>
+</button>
+</div>
+</main>
+<!-- BottomNavBar (Mobile) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-safe h-16 bg-surface dark:bg-surface-container-lowest shadow-lg lg:hidden rounded-t-xl">
+<a class="flex flex-col items-center justify-center text-on-surface-variant group" href="#">
+<span class="material-symbols-outlined group-active:scale-90 transition-transform">home</span>
+<span class="font-label-caps text-label-caps">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant group" href="#">
+<span class="material-symbols-outlined group-active:scale-90 transition-transform">event_repeat</span>
+<span class="font-label-caps text-label-caps">Calendar</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1 group" href="#">
+<span class="material-symbols-outlined group-active:scale-90 transition-transform">payments</span>
+<span class="font-label-caps text-label-caps">Wallet</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant group" href="#">
+<span class="material-symbols-outlined group-active:scale-90 transition-transform">menu</span>
+<span class="font-label-caps text-label-caps">Menu</span>
+</a>
+</nav>
+<!-- Cutoff Alert Banner -->
+<div class="fixed bottom-20 lg:bottom-8 right-4 lg:right-8 z-40 max-w-sm bg-white shadow-2xl rounded-xl border-l-4 border-status-warning p-4 translate-y-24 opacity-0 transition-all duration-500" id="cutoff-banner">
+<div class="flex gap-4">
+<div class="bg-status-warning/10 p-2 rounded-lg h-fit">
+<!-- Pulsing indicator -->
+<div class="relative">
+<span class="material-symbols-outlined text-status-warning">alarm</span>
+<span class="absolute -top-1 -right-1 w-3 h-3 bg-status-warning rounded-full animate-pulse-indicator border-2 border-white"></span>
+</div>
+</div>
+<div>
+<p class="font-bold text-body-md mb-1">10 PM Cutoff Approaching</p>
+<p class="text-body-sm text-on-surface-variant">Order within 2h 45m to get delivery by tomorrow morning.</p>
+</div>
+<button class="text-on-surface-variant" onclick="document.getElementById('cutoff-banner').style.display='none'">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+</div>
+<script>
+    // Entrance animation for the banner
+    setTimeout(() => {
+        const banner = document.getElementById('cutoff-banner');
+        if(banner) banner.classList.remove('translate-y-24', 'opacity-0');
+    }, 1500);
+
+    // Three.js Integration for Evergreen Detox Card
+    (function initEvergreen3D() {
+        const container = document.getElementById('evergreen-3d-container');
+        if (!container) return;
+
+        const width = container.clientWidth;
+        const height = container.clientHeight;
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+
+        renderer.setSize(width, height);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        container.appendChild(renderer.domElement);
+
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+        scene.add(ambientLight);
+
+        const pointLight = new THREE.PointLight(0x1b5e20, 1, 10);
+        pointLight.position.set(2, 2, 2);
+        scene.add(pointLight);
+
+        const geometry = new THREE.CylinderGeometry(0.5, 0.5, 1.5, 32);
+        const material = new THREE.MeshPhongMaterial({ 
+            color: 0x2E7D32, 
+            shininess: 100,
+            transparent: true,
+            opacity: 0.9
+        });
+        const bottle = new THREE.Mesh(geometry, material);
+        scene.add(bottle);
+
+        camera.position.z = 3;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            bottle.rotation.y += 0.015;
+            bottle.rotation.x += 0.005;
+            bottle.position.y = Math.sin(Date.now() * 0.002) * 0.2;
+            renderer.render(scene, camera);
+        }
+
+        window.addEventListener('resize', () => {
+            const newWidth = container.clientWidth;
+            const newHeight = container.clientHeight;
+            camera.aspect = newWidth / newHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(newWidth, newHeight);
+        });
+
+        animate();
+    })();
+
+    // Interaction for "Quick Add" buttons
+    document.querySelectorAll('button').forEach(btn => {
+        if(btn.textContent.includes('Quick Add')) {
+            btn.addEventListener('click', function() {
+                const originalText = this.textContent;
+                this.textContent = 'Added!';
+                this.classList.add('bg-status-active', 'text-white', 'border-status-active');
+                setTimeout(() => {
+                    this.textContent = originalText;
+                    this.classList.remove('bg-status-active', 'text-white', 'border-status-active');
+                }, 2000);
+            });
+        }
+    });
+</script>
+</body></html>

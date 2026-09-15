@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<title>FreshFlow | My Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Hanken+Grotesk:wght@400;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-dim": "#d8dad9",
+                    "on-secondary-fixed": "#2c1600",
+                    "secondary-fixed": "#ffdcbe",
+                    "on-secondary": "#ffffff",
+                    "on-tertiary": "#ffffff",
+                    "tertiary": "#264300",
+                    "error": "#ba1a1a",
+                    "status-locked": "#455A64",
+                    "tertiary-container": "#365c00",
+                    "on-secondary-container": "#653900",
+                    "on-primary-fixed": "#002203",
+                    "on-error": "#ffffff",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container-highest": "#e1e3e1",
+                    "background": "#f8faf8",
+                    "status-future": "#0288D1",
+                    "surface-variant": "#e1e3e1",
+                    "inverse-on-surface": "#eff1ef",
+                    "secondary-container": "#ff9800",
+                    "secondary": "#8b5000",
+                    "on-surface-variant": "#41493e",
+                    "tertiary-fixed-dim": "#9ed75b",
+                    "wallet-debit": "#D32F2F",
+                    "on-surface": "#191c1b",
+                    "on-secondary-fixed-variant": "#693c00",
+                    "primary-fixed": "#acf4a4",
+                    "inverse-surface": "#2e3130",
+                    "primary-fixed-dim": "#91d78a",
+                    "on-tertiary-container": "#9dd65b",
+                    "inverse-primary": "#91d78a",
+                    "surface-container-low": "#f2f4f2",
+                    "surface-tint": "#2a6b2c",
+                    "status-active": "#2E7D32",
+                    "primary-container": "#1b5e20",
+                    "surface-bright": "#f8faf8",
+                    "on-tertiary-fixed": "#0f2000",
+                    "tertiary-fixed": "#b9f474",
+                    "status-error": "#D32F2F",
+                    "on-primary-container": "#90d689",
+                    "status-warning": "#ED6C02",
+                    "on-tertiary-fixed-variant": "#2e4f00",
+                    "on-primary": "#ffffff",
+                    "outline": "#717a6d",
+                    "secondary-fixed-dim": "#ffb870",
+                    "primary": "#00450d",
+                    "wallet-credit": "#2E7D32",
+                    "outline-variant": "#c0c9bb",
+                    "error-container": "#ffdad6",
+                    "surface-container": "#eceeec",
+                    "on-error-container": "#93000a",
+                    "surface-container-high": "#e6e9e7",
+                    "on-primary-fixed-variant": "#0c5216",
+                    "surface": "#f8faf8",
+                    "on-background": "#191c1b"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "section-gap": "40px",
+                    "container-padding-mobile": "16px",
+                    "gutter": "16px",
+                    "container-padding-desktop": "32px",
+                    "card-inner-padding": "24px",
+                    "base": "8px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Hanken Grotesk"],
+                    "headline-lg-mobile": ["Plus Jakarta Sans"],
+                    "label-caps": ["Hanken Grotesk"],
+                    "headline-lg": ["Plus Jakarta Sans"],
+                    "body-sm": ["Hanken Grotesk"],
+                    "headline-sm": ["Plus Jakarta Sans"],
+                    "body-md": ["Hanken Grotesk"],
+                    "headline-md": ["Plus Jakarta Sans"],
+                    "mono-data": ["JetBrains Mono"]
+            },
+            "fontSize": {
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "mono-data": ["13px", {"lineHeight": "18px", "fontWeight": "500"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            -webkit-tap-highlight-color: transparent;
+            overscroll-behavior-y: contain;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .cutoff-timer {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        .safe-bottom {
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen pb-24">
+<!-- Top Navigation Bar -->
+<nav class="fixed top-0 w-full z-50 flex justify-between items-center px-container-padding-mobile md:px-container-padding-desktop h-16 bg-surface dark:bg-surface-dim shadow-sm dark:shadow-none">
+<div class="flex items-center gap-2">
+<span class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed-dim">FreshFlow</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-primary dark:text-primary-fixed-dim hover:bg-surface-container-high transition-colors p-2 rounded-full active:scale-95 duration-200">account_balance_wallet</button>
+<button class="material-symbols-outlined text-primary dark:text-primary-fixed-dim hover:bg-surface-container-high transition-colors p-2 rounded-full active:scale-95 duration-200">notifications</button>
+<div class="w-8 h-8 rounded-full bg-surface-container overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A clean professional studio portrait of a healthy young adult with a glowing complexion, wearing minimalist fitness apparel, representing a high-energy wellness brand customer profile. The lighting is soft and natural, emphasizing health and vitality against a soft neutral background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAOF4RNvDJWCwSWyNpDSlxcMoUlD4GKsZW8l5mzAgDcpEVe3exUK0IqVIGEQteP4OWjpsF3Z9XhotXt5I4JuYlpDa2Nl6JJWXKjsGKx67dkfwCqkGEu3l2AUPYk3asFo0V3RTf1Q9qZ51UAdKVySBj1Y16TpBa8XYL2YDuPM8QZX3qopddrJMo4qrUxV8Ht_b6p704pZZPjtSe3gXFyPXdblbff8mQ6-r1ENNP43Y4ScYk138gn-jYkI1-AImejE6gZIB0p9JjpFPU"/>
+</div>
+</div>
+</nav>
+<main class="pt-20 px-container-padding-mobile">
+<!-- Next Delivery Bento Area -->
+<section class="mb-gutter">
+<div class="flex items-center justify-between mb-4">
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Next Delivery</h2>
+<span class="font-label-caps text-label-caps text-status-active flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-status-active"></span>
+                    TRACKING ACTIVE
+                </span>
+</div>
+<!-- BR-SLT-01: Hero Delivery Card -->
+<div class="relative overflow-hidden rounded-xl shadow-sm bg-surface-container-lowest border border-outline-variant">
+<div class="p-card-inner-padding flex flex-col md:flex-row gap-6 relative z-10">
+<div class="flex-1">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">local_shipping</span>
+<p class="font-label-caps text-label-caps text-on-surface-variant">TOMORROW, 6:00 AM — 8:00 AM</p>
+</div>
+<h3 class="font-headline-md text-headline-md text-primary mb-1">Cold-Pressed Morning Glow</h3>
+<p class="font-body-md text-on-surface-variant mb-4">Carrot, Ginger, Turmeric &amp; Green Apple (500ml)</p>
+<div class="flex items-center gap-3 bg-primary-container/10 p-3 rounded-lg border border-primary/10">
+<span class="material-symbols-outlined text-primary cutoff-timer">timer</span>
+<div>
+<p class="font-label-caps text-[10px] text-primary">10 PM CUTOFF</p>
+<p class="font-mono-data text-mono-data text-primary">04:12:35 remaining to edit</p>
+</div>
+</div>
+</div>
+<div class="w-full md:w-32 h-32 rounded-lg overflow-hidden shrink-0">
+<img class="w-full h-full object-cover" data-alt="A high-fidelity, vibrant photograph of a glass bottle filled with bright orange cold-pressed juice. Fresh carrots, a ginger root, and sliced green apples are artistically arranged around the bottle on a clean, white marble surface. The lighting is crisp and airy, highlighting the natural textures and organic quality of the ingredients in a modern wellness aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDaKt_-74uO3XYZwbXNbf4RUNeZggG9zfAnsK6X0v2C3cl7Ebq-uJ1RAzBm8r5-AnqTjgKmsNrwqE0CQJrEwgREKfw6bRfQU5rn7nAcPxY6rGUKOGg3wPC9Omn0iYUwApIqOwSInPAfR_8m2EuICwpJqhNrMRwU4Zz4ZH3HuZHbVLmxadNFNynqXTdWYCA0dY3tluueEjhqnBGSq-xyKR86yWTgnJK96u_za3pFCltMzFUmkqDStn4vR-6zMYvnPx-5WJYghjyP18Q"/>
+</div>
+</div>
+<!-- Subtle decorative element -->
+<div class="absolute -right-8 -bottom-8 w-32 h-32 bg-primary/5 rounded-full blur-3xl"></div>
+</div>
+</section>
+<!-- Wallet Section -->
+<section class="mb-gutter">
+<div class="bg-primary text-on-primary rounded-xl p-card-inner-padding shadow-lg flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden relative">
+<!-- Background visual texture -->
+<div class="absolute inset-0 opacity-10">
+
+</div>
+<div class="relative z-10">
+<p class="font-label-caps text-label-caps text-primary-fixed opacity-90 mb-1">CURRENT BALANCE</p>
+<div class="flex items-baseline gap-1">
+<span class="text-headline-sm font-headline-sm">₹</span>
+<span class="text-headline-lg font-headline-lg">1,240.00</span>
+</div>
+<div class="mt-2 inline-flex items-center gap-1 px-2 py-1 bg-on-primary/10 rounded-full">
+<span class="material-symbols-outlined text-[16px]">verified</span>
+<span class="font-label-caps text-[10px]">VERIFIED BALANCE</span>
+</div>
+</div>
+<button class="relative z-10 w-full md:w-auto bg-secondary-container text-on-secondary-container px-8 py-3 rounded-full font-headline-sm text-headline-sm shadow-md active:scale-95 transition-transform flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">add_circle</span>
+                    Quick Top-up
+                </button>
+</div>
+</section>
+<!-- Active Subscriptions -->
+<section class="mb-10">
+<div class="flex items-center justify-between mb-4">
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Active Subscriptions</h2>
+<button class="text-primary font-label-caps text-label-caps flex items-center gap-1">VIEW ALL <span class="material-symbols-outlined text-[18px]">chevron_right</span></button>
+</div>
+<div class="space-y-4">
+<!-- Subscription Card 1 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex items-center gap-4 hover:shadow-sm transition-all group">
+<div class="w-16 h-16 rounded-lg overflow-hidden shrink-0">
+<img class="w-full h-full object-cover" data-alt="Close up of a deep emerald green vegetable juice in a clear glass bottle. Fresh kale leaves and cucumber slices are blurred in the background. The aesthetic is clean, minimalist, and clinical yet organic, emphasizing the purity and nutrient density of the green juice." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB95JXpbxPDtvjfZFHHIVRmkHg6dmoSluPMb-nf5qYNCHU3BHy8y6T045y6OwJdy3pvM5jac4hCHp8plXfvca7xXmoAYiydjIEAPRh60kpG4aL8OZ6_TPd7ssM1xQoKikmv_vMbahc7LdU7sBPZpt---Iq1SNq48pE7zYoGl5IO7gU8GnRHq1vjcsQjsuuMYMLIETJ5ZsKdZ43ovtx1JyQqjmt7sX2T19vnNc6XZ8kRctOjah7O0n--nR7bNlhNZLV_WDwI2Tj_oRQ"/>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<h4 class="font-headline-sm text-[16px] text-on-surface">Daily Green Detox</h4>
+<span class="font-label-caps text-[10px] bg-status-active/10 text-status-active px-2 py-0.5 rounded">EVERYDAY</span>
+</div>
+<p class="font-body-sm text-on-surface-variant">Next: Wed, 14th June</p>
+</div>
+<button class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">edit_calendar</button>
+</div>
+<!-- Subscription Card 2 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex items-center gap-4 hover:shadow-sm transition-all group">
+<div class="w-16 h-16 rounded-lg overflow-hidden shrink-0">
+<img class="w-full h-full object-cover" data-alt="A bright ruby red pomegranate and beetroot juice bottle. Macro shot with water droplets on the glass indicating freshness and cold temperature. The background is a soft, warm cream color that highlights the vibrant red tones of the juice." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAk32Pk0uH6_mP9MgvMdsI_ldGsyA23skC5gtu0iWRJ7vhfTcodqOIBA8bfhefgB64e7tw944Y9KisgIY1fYJ2AotzXjMH-6ZjburekqVQ_MNJtBdQ4s0mU6-NCBO4BYPEPqJt5b2GfvSSmbGTkPomBZkpyD-fMw6rarhtVhz73EhPVFYSMFeJt7P7Pgc2S9BWLcpGNajBOBHBKQqXIMn-gH1jgheT4Ta5cbFeG-aNtp-uJ-iWCtSsl6aJAU5bw-dMXUl3L3iKA77c"/>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<h4 class="font-headline-sm text-[16px] text-on-surface">Vitality Red</h4>
+<span class="font-label-caps text-[10px] bg-status-warning/10 text-status-warning px-2 py-0.5 rounded">MON, WED, FRI</span>
+</div>
+<p class="font-body-sm text-on-surface-variant">Next: Fri, 16th June</p>
+</div>
+<button class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">edit_calendar</button>
+</div>
+</div>
+</section>
+<!-- Insights Bento -->
+<section class="mb-gutter grid grid-cols-2 gap-4">
+<div class="col-span-1 bg-surface-container-high rounded-xl p-4">
+<span class="material-symbols-outlined text-primary mb-2">eco</span>
+<p class="font-headline-md text-headline-md text-on-surface">12</p>
+<p class="font-label-caps text-[10px] text-on-surface-variant uppercase">Bottles Recycled</p>
+</div>
+<div class="col-span-1 bg-tertiary-container text-on-tertiary-container rounded-xl p-4">
+<span class="material-symbols-outlined mb-2" style="font-variation-settings: 'FILL' 1;">favorite</span>
+<p class="font-headline-md text-headline-md">2.4k</p>
+<p class="font-label-caps text-[10px] opacity-80 uppercase">Vitamins Delivered</p>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-safe h-16 shadow-lg dark:shadow-none bg-surface dark:bg-surface-container-lowest rounded-t-xl lg:hidden">
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1 active:scale-90 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-label-caps text-label-caps">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant active:scale-90 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined">event_repeat</span>
+<span class="font-label-caps text-label-caps">Calendar</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant active:scale-90 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-label-caps text-label-caps">Wallet</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant active:scale-90 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined">menu</span>
+<span class="font-label-caps text-label-caps">Menu</span>
+</a>
+</nav>
+<script>
+        // Simple Interaction logic for demo
+        document.querySelectorAll('button, a').forEach(el => {
+            el.addEventListener('click', (e) => {
+                // Potential ripple or analytics track could go here
+            });
+        });
+
+        // Cutoff Timer logic
+        function updateTimer() {
+            const now = new Date();
+            const tonight = new Date();
+            tonight.setHours(22, 0, 0, 0);
+            
+            let diff = tonight - now;
+            if (diff < 0) {
+                // If past 10PM today, look for tomorrow's 10PM
+                tonight.setDate(tonight.getDate() + 1);
+                diff = tonight - now;
+            }
+
+            const h = Math.floor(diff / 3600000);
+            const m = Math.floor((diff % 3600000) / 60000);
+            const s = Math.floor((diff % 60000) / 1000);
+
+            const display = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            const timerEl = document.querySelector('.font-mono-data');
+            if (timerEl) timerEl.innerText = `${display} remaining to edit`;
+        }
+        setInterval(updateTimer, 1000);
+        updateTimer();
+    </script>
+</body></html>

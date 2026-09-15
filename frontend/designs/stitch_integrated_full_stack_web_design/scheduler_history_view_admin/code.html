@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FreshFlow Admin | System Scheduler</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Hanken+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@500&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@100..900&family=Plus+Jakarta+Sans:wght@100..900&display=swap" rel="stylesheet"/>
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary-fixed-dim": "#ffb870",
+                    "error": "#ba1a1a",
+                    "surface-container-high": "#e6e9e7",
+                    "surface-dim": "#d8dad9",
+                    "inverse-on-surface": "#eff1ef",
+                    "outline": "#717a6d",
+                    "secondary-container": "#ff9800",
+                    "on-secondary-container": "#653900",
+                    "tertiary-fixed": "#b9f474",
+                    "status-locked": "#455A64",
+                    "surface-tint": "#2a6b2c",
+                    "on-tertiary-fixed": "#0f2000",
+                    "on-error": "#ffffff",
+                    "primary": "#00450d",
+                    "surface-variant": "#e1e3e1",
+                    "tertiary-container": "#365c00",
+                    "status-error": "#D32F2F",
+                    "error-container": "#ffdad6",
+                    "on-tertiary-fixed-variant": "#2e4f00",
+                    "on-primary-fixed": "#002203",
+                    "on-surface": "#191c1b",
+                    "on-primary-container": "#90d689",
+                    "inverse-surface": "#2e3130",
+                    "wallet-credit": "#2E7D32",
+                    "primary-container": "#1b5e20",
+                    "status-active": "#2E7D32",
+                    "primary-fixed-dim": "#91d78a",
+                    "outline-variant": "#c0c9bb",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary-fixed-variant": "#0c5216",
+                    "on-background": "#191c1b",
+                    "surface-container-low": "#f2f4f2",
+                    "surface-container-highest": "#e1e3e1",
+                    "wallet-debit": "#D32F2F",
+                    "tertiary-fixed-dim": "#9ed75b",
+                    "on-primary": "#ffffff",
+                    "status-future": "#0288D1",
+                    "on-secondary": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "surface": "#f8faf8",
+                    "on-secondary-fixed-variant": "#693c00",
+                    "on-surface-variant": "#41493e",
+                    "on-secondary-fixed": "#2c1600",
+                    "surface-container": "#eceeec",
+                    "inverse-primary": "#91d78a",
+                    "surface-bright": "#f8faf8",
+                    "tertiary": "#264300",
+                    "primary-fixed": "#acf4a4",
+                    "on-tertiary-container": "#9dd65b",
+                    "on-tertiary": "#ffffff",
+                    "status-warning": "#ED6C02",
+                    "secondary": "#8b5000",
+                    "secondary-fixed": "#ffdcbe",
+                    "background": "#f8faf8"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "card-inner-padding": "24px",
+                    "base": "8px",
+                    "gutter": "16px",
+                    "container-padding-mobile": "16px",
+                    "container-padding-desktop": "32px",
+                    "section-gap": "40px"
+            },
+            "fontFamily": {
+                    "headline-lg": ["Plus Jakarta Sans"],
+                    "mono-data": ["JetBrains Mono"],
+                    "body-sm": ["Hanken Grotesk"],
+                    "headline-md": ["Plus Jakarta Sans"],
+                    "label-caps": ["Hanken Grotesk"],
+                    "body-md": ["Hanken Grotesk"],
+                    "body-lg": ["Hanken Grotesk"],
+                    "headline-sm": ["Plus Jakarta Sans"]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .pulse-running {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+        }
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 24px;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c0c9bb;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md overflow-x-hidden">
+<!-- TopNavBar (Fixed Shell) -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-container-padding-mobile md:px-container-padding-desktop h-16 bg-surface dark:bg-surface-dim shadow-sm dark:shadow-none">
+<div class="flex items-center gap-4">
+<span class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed-dim">FreshFlow</span>
+<div class="hidden md:flex gap-6 ml-8">
+<a class="text-primary font-bold font-label-caps tracking-wider" href="#">DASHBOARD</a>
+<a class="text-on-surface-variant font-label-caps tracking-wider hover:text-primary transition-colors" href="#">OPERATIONS</a>
+<a class="text-on-surface-variant font-label-caps tracking-wider hover:text-primary transition-colors" href="#">FINANCE</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-full active:scale-95 duration-200">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-full active:scale-95 duration-200">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden bg-surface-container-high border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A clean, professional professional headshot of a logistics administrator in a modern office setting. The person is smiling confidently, wearing a dark polo shirt. The background is slightly blurred showing a high-tech control center with screens and indoor plants, reflecting the FreshFlow brand identity of vibrancy and precision." src="https://lh3.googleusercontent.com/aida-public/AB6AXuACTLrBiZD7Ggn8Uu87Mw5Srmj5Rh8rQHDUxCqXyg65x4hGzPcv3dGmqTEd4QUjQzHzw9YxcTgpr8pvKwntXSx00gMBh1BzQ2wOCX-DDUFVbkxb3YHnK3Vcp_JbT91FNmE4HvZNEsxUTVufpIlELtrIeyO-ead9T4_EaopZmUcTqDJNelDn2hgBob6pOsqeJx2iX_lLMD5WuKeQ9UYtUGH0Qw0zC4uqq7ADkASGFmPnzzmilKtZd6smFuk3r9N3Wa3i5vPYnJ-3lqI"/>
+</div>
+</div>
+</header>
+<!-- SideNavBar (Desktop Shell) -->
+<aside class="fixed left-0 top-0 h-full w-64 border-r border-outline-variant dark:border-outline bg-surface-container-low dark:bg-surface-container-lowest hidden lg:flex flex-col pt-20">
+<div class="px-6 py-4 mb-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary-container" data-icon="support_agent">support_agent</span>
+</div>
+<div>
+<p class="font-headline-sm text-headline-sm font-bold text-primary">Juice Subscriber</p>
+<p class="text-body-sm text-on-surface-variant">Wallet: ₹1,240.00</p>
+</div>
+</div>
+<button class="mt-4 w-full bg-secondary-container text-on-secondary-container py-2 rounded-lg font-bold hover:brightness-95 transition-all active:scale-98">
+                Quick Top-up
+            </button>
+</div>
+<nav class="flex-1 px-4 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-primary-container text-on-primary-container rounded-lg font-bold" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+<span class="font-body-md">Scheduler History</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="local_shipping">local_shipping</span>
+<span class="font-body-md">Deliveries</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
+<span class="font-body-md">Subscriptions</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span class="font-body-md">Wallet</span>
+</a>
+</nav>
+<div class="p-4 border-t border-outline-variant space-y-1">
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-high transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-body-md">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-high transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="font-body-md">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="lg:pl-64 pt-16 min-h-screen">
+<div class="px-container-padding-mobile md:px-container-padding-desktop py-8">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+<div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface">System Scheduler</h1>
+<div class="flex items-center gap-2 mt-1">
+<div class="w-2 h-2 rounded-full bg-status-active"></div>
+<span class="text-body-sm text-on-surface-variant">Next run scheduled for <span class="font-bold text-on-surface">Today, 22:00 IST</span> (T-minus 04:32:15)</span>
+</div>
+</div>
+<div class="flex gap-3">
+<button class="px-4 py-2 border border-primary text-primary rounded-lg font-bold hover:bg-primary/5 transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="refresh">refresh</span>
+                        Manual Refresh
+                    </button>
+<button class="px-4 py-2 bg-primary text-on-primary rounded-lg font-bold hover:brightness-110 shadow-sm transition-all flex items-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="play_arrow">play_arrow</span>
+                        Run All Jobs Now
+                    </button>
+</div>
+</div>
+<!-- Summary Section: Bento Cards -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+<!-- OrderGenerationJob -->
+<div class="bg-surface-container-lowest p-card-inner-padding rounded-xl shadow-[0px_4px_20px_rgba(0,40,0,0.05)] border-l-4 border-status-active">
+<div class="flex justify-between items-start mb-4">
+<span class="text-label-caps font-label-caps text-on-surface-variant">OPERATIONAL DATE: OCT 24</span>
+<span class="bg-status-active/10 text-status-active px-2 py-0.5 rounded text-[10px] font-bold uppercase">COMPLETED</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-1">OrderGenerationJob</h3>
+<p class="text-body-sm text-on-surface-variant mb-4">Generated 4,281 subscription orders for T+1.</p>
+<div class="flex items-center gap-2 text-mono-data text-on-surface-variant text-xs">
+<span class="material-symbols-outlined text-sm" data-icon="schedule">schedule</span>
+                        05:02m Execution Time
+                    </div>
+</div>
+<!-- OrderFreezeJob -->
+<div class="bg-surface-container-lowest p-card-inner-padding rounded-xl shadow-[0px_4px_20px_rgba(0,40,0,0.05)] border-l-4 border-status-warning">
+<div class="flex justify-between items-start mb-4">
+<span class="text-label-caps font-label-caps text-on-surface-variant">OPERATIONAL DATE: OCT 24</span>
+<div class="flex items-center gap-1.5 px-2 py-0.5 bg-secondary-container/10 text-secondary rounded pulse-running">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<span class="text-[10px] font-bold uppercase">RUNNING</span>
+</div>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-1">OrderFreezeJob</h3>
+<p class="text-body-sm text-on-surface-variant mb-4">Locking modifications for tonight's delivery cycle.</p>
+<div class="w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden">
+<div class="bg-secondary h-full" style="width: 65%"></div>
+</div>
+<p class="text-mono-data text-xs mt-2 text-on-surface-variant">65% Processed (2,782 / 4,281)</p>
+</div>
+<!-- DeliverySheetGenerationJob -->
+<div class="bg-surface-container-lowest p-card-inner-padding rounded-xl shadow-[0px_4px_20px_rgba(0,40,0,0.05)] border-l-4 border-status-future">
+<div class="flex justify-between items-start mb-4">
+<span class="text-label-caps font-label-caps text-on-surface-variant">OPERATIONAL DATE: OCT 24</span>
+<span class="bg-status-future/10 text-status-future px-2 py-0.5 rounded text-[10px] font-bold uppercase">PENDING</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-1">DeliverySheetJob</h3>
+<p class="text-body-sm text-on-surface-variant mb-4">Awaiting OrderFreezeJob completion to map routes.</p>
+<div class="flex items-center gap-2 text-on-surface-variant opacity-50">
+<span class="material-symbols-outlined text-sm" data-icon="block">block</span>
+<span class="text-xs">Locked until 22:30 IST</span>
+</div>
+</div>
+</div>
+<!-- Logs Overview & Filter -->
+<div class="flex flex-col xl:flex-row gap-6 mb-6">
+<!-- Logs Stats Card -->
+<div class="xl:w-1/3 bg-primary-container text-on-primary-container p-card-inner-padding rounded-xl">
+<h4 class="font-label-caps text-label-caps mb-4 opacity-80 uppercase tracking-widest">Logs Overview (Monthly)</h4>
+<div class="flex justify-between items-end">
+<div>
+<p class="text-[32px] font-bold leading-tight">99.8%</p>
+<p class="text-body-sm opacity-90">System Uptime</p>
+</div>
+<div class="text-right">
+<p class="text-[32px] font-bold leading-tight">1,248</p>
+<p class="text-body-sm opacity-90">Successful Jobs</p>
+</div>
+</div>
+<div class="mt-6 flex gap-1 h-2">
+<div class="bg-on-primary-container w-[95%] rounded-l-full"></div>
+<div class="bg-status-error w-[3%]"></div>
+<div class="bg-secondary-container w-[2%] rounded-r-full"></div>
+</div>
+</div>
+<!-- Filters -->
+<div class="xl:w-2/3 bg-surface-container-low p-6 rounded-xl border border-outline-variant flex flex-wrap items-end gap-4">
+<div class="flex-1 min-w-[200px]">
+<label class="block text-label-caps text-on-surface-variant mb-2">SEARCH JOB NAME</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" data-icon="search">search</span>
+<input class="w-full bg-surface border-0 border-b-2 border-outline-variant focus:border-primary focus:ring-0 pl-10 h-10 transition-colors" placeholder="e.g. OrderGeneration..." type="text"/>
+</div>
+</div>
+<div class="w-48">
+<label class="block text-label-caps text-on-surface-variant mb-2">TARGET DATE</label>
+<input class="w-full bg-surface border-0 border-b-2 border-outline-variant focus:border-primary focus:ring-0 h-10 px-3" type="date"/>
+</div>
+<div class="w-40">
+<label class="block text-label-caps text-on-surface-variant mb-2">STATUS</label>
+<select class="w-full bg-surface border-0 border-b-2 border-outline-variant focus:border-primary focus:ring-0 h-10 px-3">
+<option>All Statuses</option>
+<option>Completed</option>
+<option>Failed</option>
+<option>Running</option>
+</select>
+</div>
+<button class="bg-surface-container-highest text-on-surface-variant p-2 rounded-lg hover:bg-outline-variant transition-colors h-10 w-10 flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="filter_list">filter_list</span>
+</button>
+</div>
+</div>
+<!-- Job Execution History Table -->
+<div class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_20px_rgba(0,40,0,0.05)] overflow-hidden border border-outline-variant">
+<div class="p-6 border-b border-outline-variant bg-surface-container-low flex justify-between items-center">
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Job Execution History</h2>
+<span class="text-body-sm text-on-surface-variant">Showing last 25 executions</span>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low text-label-caps font-label-caps text-on-surface-variant border-b border-outline-variant">
+<th class="px-6 py-4 font-bold">Job Name</th>
+<th class="px-6 py-4 font-bold">Target Date</th>
+<th class="px-6 py-4 font-bold">Status</th>
+<th class="px-6 py-4 font-bold">Started At</th>
+<th class="px-6 py-4 font-bold">Finished At</th>
+<th class="px-6 py-4 font-bold text-right">Rows</th>
+<th class="px-6 py-4 font-bold text-center">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<!-- Completed Row -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary" data-icon="task_alt">task_alt</span>
+<span class="font-bold">OrderGenerationJob</span>
+</div>
+</td>
+<td class="px-6 py-4 font-mono-data text-xs">2024-10-24</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 rounded bg-status-active/10 text-status-active text-[10px] font-bold uppercase">COMPLETED</span>
+</td>
+<td class="px-6 py-4 font-mono-data text-xs">22:00:01</td>
+<td class="px-6 py-4 font-mono-data text-xs">22:05:14</td>
+<td class="px-6 py-4 text-right font-mono-data">4,281</td>
+<td class="px-6 py-4 text-center">
+<button class="text-on-surface-variant hover:text-primary transition-colors disabled:opacity-30" disabled="" title="Job succeeded, no rerun needed">
+<span class="material-symbols-outlined" data-icon="replay">replay</span>
+</button>
+</td>
+</tr>
+<!-- Failed Row -->
+<tr class="bg-error-container/10 hover:bg-error-container/20 transition-colors cursor-pointer" onclick="toggleDetails('error-row-1')">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-status-error" data-icon="error">error</span>
+<span class="font-bold">WalletRechargeBatch</span>
+</div>
+</td>
+<td class="px-6 py-4 font-mono-data text-xs">2024-10-24</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 rounded bg-status-error/10 text-status-error text-[10px] font-bold uppercase flex items-center w-fit gap-1">
+                                        FAILED
+                                        <span class="material-symbols-outlined text-[10px]" data-icon="info">info</span>
+</span>
+</td>
+<td class="px-6 py-4 font-mono-data text-xs">18:00:00</td>
+<td class="px-6 py-4 font-mono-data text-xs">18:00:12</td>
+<td class="px-6 py-4 text-right font-mono-data">142</td>
+<td class="px-6 py-4 text-center">
+<button class="bg-secondary-container text-on-secondary-container w-8 h-8 rounded-full flex items-center justify-center hover:scale-110 transition-transform active:scale-95 shadow-md" title="Rerun per BR-SCH-05">
+<span class="material-symbols-outlined text-sm" data-icon="replay">replay</span>
+</button>
+</td>
+</tr>
+<!-- Error Detail Row (Hidden by default) -->
+<tr class="hidden bg-surface-container-low" id="error-row-1">
+<td class="px-12 py-4" colspan="7">
+<div class="flex gap-4">
+<div class="w-1 bg-status-error rounded-full"></div>
+<div class="flex-1">
+<p class="text-label-caps font-bold text-status-error mb-2">ERROR DETAILS</p>
+<code class="block font-mono-data text-xs bg-surface-container-high p-4 rounded text-error leading-relaxed">
+                                                Caused by: java.net.ConnectException: Connection refused (Connection refused)
+                                                at java.net.PlainSocketImpl.socketConnect(Native Method)
+                                                at java.net.AbstractPlainSocketImpl.doConnect(AbstractPlainSocketImpl.java:350)
+                                                -- Internal Ledger API (10.0.4.12) is unreachable --
+                                                Job aborted at 18:00:12. Rows 0-142 marked as STALE.
+                                            </code>
+</div>
+</div>
+</td>
+</tr>
+<!-- Running Row -->
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary pulse-running" data-icon="sync">sync</span>
+<span class="font-bold">OrderFreezeJob</span>
+</div>
+</td>
+<td class="px-6 py-4 font-mono-data text-xs">2024-10-24</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 rounded bg-secondary-container/10 text-secondary text-[10px] font-bold uppercase flex items-center w-fit gap-1 pulse-running">
+                                        RUNNING
+                                    </span>
+</td>
+<td class="px-6 py-4 font-mono-data text-xs">19:30:00</td>
+<td class="px-6 py-4 font-mono-data text-xs opacity-30">--:--:--</td>
+<td class="px-6 py-4 text-right font-mono-data">2,782</td>
+<td class="px-6 py-4 text-center">
+<button class="text-on-surface-variant hover:text-error transition-colors" title="Abort Job">
+<span class="material-symbols-outlined" data-icon="cancel">cancel</span>
+</button>
+</td>
+</tr>
+<!-- Another Completed Row -->
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary" data-icon="task_alt">task_alt</span>
+<span class="font-bold">NightlyCleanupJob</span>
+</div>
+</td>
+<td class="px-6 py-4 font-mono-data text-xs">2024-10-23</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 rounded bg-status-active/10 text-status-active text-[10px] font-bold uppercase">COMPLETED</span>
+</td>
+<td class="px-6 py-4 font-mono-data text-xs">01:00:00</td>
+<td class="px-6 py-4 font-mono-data text-xs">01:02:44</td>
+<td class="px-6 py-4 text-right font-mono-data">12,094</td>
+<td class="px-6 py-4 text-center">
+<button class="text-on-surface-variant hover:text-primary transition-colors" title="Rerun manually">
+<span class="material-symbols-outlined" data-icon="replay">replay</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-6 bg-surface-container-low border-t border-outline-variant flex justify-between items-center">
+<div class="flex gap-2">
+<button class="p-2 border border-outline-variant rounded hover:bg-surface transition-colors disabled:opacity-30" disabled="">
+<span class="material-symbols-outlined" data-icon="chevron_left">chevron_left</span>
+</button>
+<button class="p-2 border border-outline-variant rounded hover:bg-surface transition-colors">
+<span class="material-symbols-outlined" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+<span class="text-body-sm text-on-surface-variant">Page 1 of 4</span>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-safe h-16 bg-surface dark:bg-surface-container-lowest lg:hidden shadow-lg">
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant transition-all">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="text-label-caps font-label-caps">Home</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant transition-all">
+<span class="material-symbols-outlined" data-icon="event_repeat">event_repeat</span>
+<span class="text-label-caps font-label-caps">Schedule</span>
+</button>
+<button class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1 active:scale-90 transition-transform">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+<span class="text-label-caps font-label-caps">Logs</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant transition-all">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+<span class="text-label-caps font-label-caps">Menu</span>
+</button>
+</nav>
+<script>
+        function toggleDetails(rowId) {
+            const row = document.getElementById(rowId);
+            if (row.classList.contains('hidden')) {
+                row.classList.remove('hidden');
+                row.classList.add('table-row');
+            } else {
+                row.classList.add('hidden');
+                row.classList.remove('table-row');
+            }
+        }
+
+        // Micro-interaction for Rerun buttons
+        document.querySelectorAll('button[title*="Rerun"]').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const icon = this.querySelector('.material-symbols-outlined');
+                icon.style.transition = 'transform 0.5s ease-in-out';
+                icon.style.transform = 'rotate(360deg)';
+                
+                // Simulate a trigger
+                setTimeout(() => {
+                    alert('Job rerun triggered successfully for ' + (this.closest('tr').querySelector('.font-bold').innerText));
+                    icon.style.transform = 'rotate(0deg)';
+                }, 600);
+            });
+        });
+    </script>
+</body></html>

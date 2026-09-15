@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Admin Holiday Management | FreshFlow</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Hanken+Grotesk:wght@400;500;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Load Tailwind Config -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "status-error": "#D32F2F",
+                    "error-container": "#ffdad6",
+                    "on-primary-fixed-variant": "#0c5216",
+                    "on-tertiary-fixed-variant": "#2e4f00",
+                    "surface-tint": "#2a6b2c",
+                    "outline": "#717a6d",
+                    "primary-fixed": "#acf4a4",
+                    "on-tertiary-fixed": "#0f2000",
+                    "inverse-on-surface": "#eff1ef",
+                    "on-tertiary-container": "#9dd65b",
+                    "on-secondary-fixed-variant": "#693c00",
+                    "primary-container": "#1b5e20",
+                    "inverse-surface": "#2e3130",
+                    "surface-container-highest": "#e1e3e1",
+                    "tertiary-fixed-dim": "#9ed75b",
+                    "on-surface": "#191c1b",
+                    "secondary-fixed-dim": "#ffb870",
+                    "on-secondary-fixed": "#2c1600",
+                    "wallet-credit": "#2E7D32",
+                    "on-primary-container": "#90d689",
+                    "tertiary": "#264300",
+                    "status-active": "#2E7D32",
+                    "on-error": "#ffffff",
+                    "wallet-debit": "#D32F2F",
+                    "surface-variant": "#e1e3e1",
+                    "primary-fixed-dim": "#91d78a",
+                    "on-secondary-container": "#653900",
+                    "on-primary": "#ffffff",
+                    "on-surface-variant": "#41493e",
+                    "surface-container-low": "#f2f4f2",
+                    "on-error-container": "#93000a",
+                    "on-background": "#191c1b",
+                    "status-locked": "#455A64",
+                    "status-future": "#0288D1",
+                    "surface-dim": "#d8dad9",
+                    "secondary-fixed": "#ffdcbe",
+                    "surface-container": "#eceeec",
+                    "on-secondary": "#ffffff",
+                    "primary": "#00450d",
+                    "secondary-container": "#ff9800",
+                    "tertiary-fixed": "#b9f474",
+                    "on-primary-fixed": "#002203",
+                    "surface": "#f8faf8",
+                    "error": "#ba1a1a",
+                    "on-tertiary": "#ffffff",
+                    "background": "#f8faf8",
+                    "secondary": "#8b5000",
+                    "tertiary-container": "#365c00",
+                    "surface-container-high": "#e6e9e7",
+                    "surface-bright": "#f8faf8",
+                    "inverse-primary": "#91d78a",
+                    "status-warning": "#ED6C02",
+                    "outline-variant": "#c0c9bb"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "card-inner-padding": "24px",
+                    "section-gap": "40px",
+                    "container-padding-desktop": "32px",
+                    "gutter": "16px",
+                    "base": "8px",
+                    "container-padding-mobile": "16px"
+            },
+            "fontFamily": {
+                    "body-sm": ["Hanken Grotesk"],
+                    "label-caps": ["Hanken Grotesk"],
+                    "headline-md": ["Plus Jakarta Sans"],
+                    "mono-data": ["JetBrains Mono"],
+                    "headline-lg": ["Plus Jakarta Sans"],
+                    "headline-lg-mobile": ["Plus Jakarta Sans"],
+                    "body-md": ["Hanken Grotesk"],
+                    "body-lg": ["Hanken Grotesk"],
+                    "headline-sm": ["Plus Jakarta Sans"]
+            },
+            "fontSize": {
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "mono-data": ["13px", {"lineHeight": "18px", "fontWeight": "500"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            font-family: 'Hanken Grotesk', sans-serif;
+            background-color: #f8faf8;
+            color: #191c1b;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+        }
+        .scroll-hide::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-background min-h-screen">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-container-padding-mobile md:px-container-padding-desktop h-16 bg-surface shadow-sm dark:shadow-none">
+<div class="flex items-center gap-4">
+<span class="font-headline-md text-headline-md font-bold text-primary">FreshFlow</span>
+<span class="hidden md:block bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full font-label-caps text-label-caps">ADMIN PANEL</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-primary p-2 hover:bg-surface-container-high transition-colors rounded-full" data-icon="search">search</button>
+<button class="material-symbols-outlined text-primary p-2 hover:bg-surface-container-high transition-colors rounded-full" data-icon="notifications">notifications</button>
+<div class="h-10 w-10 rounded-full bg-primary-container flex items-center justify-center overflow-hidden border-2 border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="Professional headshot of a female logistics administrator in a modern office environment, soft cinematic lighting, professional corporate photography style with a fresh green and white color palette." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA5FDXVkJcw7-1p1rk1BfQPxENfY5e6r99oyUkImvXUX04VsmxsGzrxEUolIatdgj93CgRFrvqFo_VQ5bUscvex2GfDApizl2eCNA6z4_9YGT-R1VKrTwFQiRij5p5XZsEz_JpwB1NmX_dk6Zh2_tzTig6iywZFB6mNDVlkpPzqba473M3tNHzjyqWWeb6ZqmAqDhztbukQ16Y-Cogdc31sgwtxwHUQCHQt8mAkDchIzAX-wCkB5PbR54kz4sM7h6q4SKSj0iPnOwE"/>
+</div>
+</div>
+</header>
+<!-- Sidebar (Desktop Only) -->
+<aside class="fixed left-0 top-0 h-full w-64 border-r border-outline-variant bg-surface-container-low hidden lg:flex flex-col pt-20 pb-6 px-4">
+<div class="flex flex-col gap-2 flex-grow">
+<nav class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-md text-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">local_shipping</span>
+<span class="font-body-md text-body-md">Deliveries</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-primary-container text-on-primary-container rounded-lg font-bold transition-all" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="font-body-md text-body-md">Holidays</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="font-body-md text-body-md">Wallet Logs</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">support_agent</span>
+<span class="font-body-md text-body-md">Support</span>
+</a>
+</nav>
+</div>
+<div class="pt-4 border-t border-outline-variant flex flex-col gap-1">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-md text-body-md">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-body-md text-body-md">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="lg:ml-64 pt-20 pb-24 px-container-padding-mobile md:px-container-padding-desktop">
+<!-- Header Section -->
+<section class="mb-section-gap flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface">Holiday Management</h1>
+<p class="text-on-surface-variant font-body-md text-body-md">Schedule and manage warehouse closure dates.</p>
+</div>
+<button class="flex items-center justify-center gap-2 bg-secondary-container text-on-secondary-container px-6 py-3 rounded-xl font-bold active:scale-95 transition-transform" onclick="document.getElementById('add-holiday-modal').classList.remove('hidden')">
+<span class="material-symbols-outlined">add</span>
+                Add Holiday
+            </button>
+</section>
+<!-- Critical Warning Banner -->
+<div class="mb-gutter bg-surface shadow-sm border-l-4 border-status-warning p-4 rounded-r-lg flex items-start gap-4">
+<span class="material-symbols-outlined text-status-warning mt-1">warning</span>
+<div class="flex-grow">
+<h3 class="font-bold text-on-surface">Critical Operational Deadline</h3>
+<p class="text-on-surface-variant text-body-sm">All holiday changes must be finalized before <span class="font-bold text-status-error">10:00 PM IST</span> for the subsequent delivery day. Changes made after the cutoff will not affect already generated delivery batches.</p>
+</div>
+</div>
+<!-- Dashboard Bento Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Calendar View (8 cols) -->
+<div class="lg:col-span-8 bg-surface rounded-xl shadow-sm overflow-hidden flex flex-col">
+<div class="p-6 border-b border-outline-variant flex items-center justify-between">
+<h2 class="font-headline-sm text-headline-sm">August 2024</h2>
+<div class="flex gap-2">
+<button class="p-2 hover:bg-surface-container rounded-full"><span class="material-symbols-outlined">chevron_left</span></button>
+<button class="p-2 hover:bg-surface-container rounded-full"><span class="material-symbols-outlined">chevron_right</span></button>
+</div>
+</div>
+<div class="calendar-grid bg-outline-variant/10 text-center py-3 border-b border-outline-variant">
+<div class="font-label-caps text-label-caps text-on-surface-variant">SUN</div>
+<div class="font-label-caps text-label-caps text-on-surface-variant">MON</div>
+<div class="font-label-caps text-label-caps text-on-surface-variant">TUE</div>
+<div class="font-label-caps text-label-caps text-on-surface-variant">WED</div>
+<div class="font-label-caps text-label-caps text-on-surface-variant">THU</div>
+<div class="font-label-caps text-label-caps text-on-surface-variant">FRI</div>
+<div class="font-label-caps text-label-caps text-on-surface-variant">SAT</div>
+</div>
+<div class="calendar-grid flex-grow min-h-[400px]">
+<!-- Empty slots for previous month -->
+<div class="border-r border-b border-outline-variant p-2 bg-surface-container-lowest opacity-40"></div>
+<div class="border-r border-b border-outline-variant p-2 bg-surface-container-lowest opacity-40"></div>
+<div class="border-r border-b border-outline-variant p-2 bg-surface-container-lowest opacity-40"></div>
+<div class="border-r border-b border-outline-variant p-2 bg-surface-container-lowest opacity-40"></div>
+<!-- Calendar Days -->
+<div class="border-r border-b border-outline-variant p-4 font-mono-data text-on-surface-variant">01</div>
+<div class="border-r border-b border-outline-variant p-4 font-mono-data text-on-surface-variant">02</div>
+<div class="border-r border-b border-outline-variant p-4 font-mono-data text-on-surface-variant">03</div>
+<div class="border-r border-b border-outline-variant p-4 font-mono-data text-on-surface-variant">04</div>
+<div class="border-r border-b border-outline-variant p-4 font-mono-data text-on-surface-variant">05</div>
+<div class="border-r border-b border-outline-variant p-4 font-mono-data text-on-surface-variant">06</div>
+<div class="border-r border-b border-outline-variant p-4 font-mono-data text-on-surface-variant">07</div>
+<div class="border-r border-b border-outline-variant p-4 font-mono-data text-on-surface-variant">08</div>
+<div class="border-r border-b border-outline-variant p-4 font-mono-data text-on-surface-variant">09</div>
+<div class="border-r border-b border-outline-variant p-4 font-mono-data text-on-surface-variant">10</div>
+<div class="border-r border-b border-outline-variant p-4 font-mono-data text-on-surface-variant">11</div>
+<div class="border-r border-b border-outline-variant p-4 font-mono-data text-on-surface-variant">12</div>
+<div class="border-r border-b border-outline-variant p-4 font-mono-data text-on-surface-variant">13</div>
+<div class="border-r border-b border-outline-variant p-4 font-mono-data text-on-surface-variant">14</div>
+<!-- Holiday Active Day -->
+<div class="border-r border-b border-outline-variant p-4 font-mono-data bg-primary-container/10 relative group cursor-help">
+<span class="text-primary font-bold">15</span>
+<div class="absolute inset-x-2 bottom-2 bg-primary text-white text-[10px] px-1 py-0.5 rounded truncate font-body-sm">Independence Day</div>
+</div>
+<div class="border-r border-b border-outline-variant p-4 font-mono-data text-on-surface-variant">16</div>
+<div class="border-r border-b border-outline-variant p-4 font-mono-data text-on-surface-variant">17</div>
+<div class="border-r border-b border-outline-variant p-4 font-mono-data text-on-surface-variant">18</div>
+<div class="border-r border-b border-outline-variant p-4 font-mono-data bg-primary-container/10 relative">
+<span class="text-primary font-bold">19</span>
+<div class="absolute inset-x-2 bottom-2 bg-primary text-white text-[10px] px-1 py-0.5 rounded truncate font-body-sm">Raksha Bandhan</div>
+</div>
+<div class="border-r border-b border-outline-variant p-4 font-mono-data text-on-surface-variant">20</div>
+<div class="border-r border-b border-outline-variant p-4 font-mono-data text-on-surface-variant">21</div>
+<div class="border-r border-b border-outline-variant p-4 font-mono-data text-on-surface-variant">22</div>
+<div class="border-r border-b border-outline-variant p-4 font-mono-data text-on-surface-variant">23</div>
+<div class="border-r border-b border-outline-variant p-4 font-mono-data text-on-surface-variant">24</div>
+<div class="border-r border-b border-outline-variant p-4 font-mono-data text-on-surface-variant">25</div>
+<div class="border-r border-b border-outline-variant p-4 font-mono-data bg-primary-container/10 relative">
+<span class="text-primary font-bold">26</span>
+<div class="absolute inset-x-2 bottom-2 bg-primary text-white text-[10px] px-1 py-0.5 rounded truncate font-body-sm">Janmashtami</div>
+</div>
+<div class="border-r border-b border-outline-variant p-4 font-mono-data text-on-surface-variant">27</div>
+<div class="border-r border-b border-outline-variant p-4 font-mono-data text-on-surface-variant">28</div>
+<div class="border-r border-b border-outline-variant p-4 font-mono-data text-on-surface-variant">29</div>
+<div class="border-r border-b border-outline-variant p-4 font-mono-data text-on-surface-variant">30</div>
+<div class="border-r border-b border-outline-variant p-4 font-mono-data text-on-surface-variant">31</div>
+</div>
+</div>
+<!-- List View (4 cols) -->
+<div class="lg:col-span-4 flex flex-col gap-gutter">
+<!-- Upcoming Holidays List -->
+<div class="bg-surface rounded-xl shadow-sm p-card-inner-padding h-full flex flex-col">
+<h2 class="font-headline-sm text-headline-sm mb-6">Upcoming Holidays</h2>
+<div class="space-y-4 flex-grow overflow-y-auto max-h-[500px] scroll-hide">
+<!-- Holiday Item (Future - Deletable) -->
+<div class="group flex items-center justify-between p-4 bg-surface-container-low rounded-xl border border-outline-variant/30 hover:border-primary transition-all">
+<div class="flex flex-col">
+<span class="font-bold text-on-surface">Independence Day</span>
+<span class="text-on-surface-variant font-mono-data text-[12px]">15 Aug 2024</span>
+<span class="mt-1 font-label-caps text-label-caps text-status-future">FUTURE</span>
+</div>
+<button class="p-2 text-status-error hover:bg-error-container rounded-full transition-colors opacity-0 group-hover:opacity-100">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+<div class="group flex items-center justify-between p-4 bg-surface-container-low rounded-xl border border-outline-variant/30 hover:border-primary transition-all">
+<div class="flex flex-col">
+<span class="font-bold text-on-surface">Raksha Bandhan</span>
+<span class="text-on-surface-variant font-mono-data text-[12px]">19 Aug 2024</span>
+<span class="mt-1 font-label-caps text-label-caps text-status-future">FUTURE</span>
+</div>
+<button class="p-2 text-status-error hover:bg-error-container rounded-full transition-colors opacity-0 group-hover:opacity-100">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+<!-- Holiday Item (Past - Locked) -->
+<div class="flex items-center justify-between p-4 bg-surface-container-lowest rounded-xl border border-outline-variant/20 opacity-60">
+<div class="flex flex-col">
+<span class="font-bold text-on-surface">Good Friday</span>
+<span class="text-on-surface-variant font-mono-data text-[12px]">29 Mar 2024</span>
+<span class="mt-1 font-label-caps text-label-caps text-status-locked">LOCKED</span>
+</div>
+<span class="material-symbols-outlined text-outline-variant" title="Past holidays cannot be deleted">lock</span>
+</div>
+</div>
+</div>
+<!-- Empty State (Hidden by default, shown if month is empty) -->
+<div class="hidden bg-surface rounded-xl shadow-sm p-12 flex flex-col items-center text-center justify-center border-2 border-dashed border-outline-variant">
+<div class="w-20 h-20 bg-surface-container-high rounded-full flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-outline text-4xl">event_busy</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm">No Holidays Configured</h3>
+<p class="text-on-surface-variant text-body-sm mt-2">There are no holidays scheduled for this month yet. Use the 'Add Holiday' button to configure one.</p>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-safe h-16 bg-surface shadow-lg lg:hidden">
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-caps text-label-caps">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1" href="#">
+<span class="material-symbols-outlined">event_repeat</span>
+<span class="font-label-caps text-label-caps">Calendar</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-label-caps text-label-caps">Wallet</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">menu</span>
+<span class="font-label-caps text-label-caps">Menu</span>
+</a>
+</nav>
+<!-- Modal: Add Holiday -->
+<div class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4" id="add-holiday-modal">
+<div class="bg-surface w-full max-w-md rounded-2xl shadow-xl overflow-hidden animate-in fade-in zoom-in duration-200">
+<div class="p-6 border-b border-outline-variant flex items-center justify-between">
+<h3 class="font-headline-sm text-headline-sm">Schedule Holiday</h3>
+<button class="material-symbols-outlined text-on-surface-variant" onclick="document.getElementById('add-holiday-modal').classList.add('hidden')">close</button>
+</div>
+<div class="p-6 space-y-6">
+<div>
+<label class="block font-label-caps text-label-caps text-on-surface-variant mb-2">HOLIDAY NAME</label>
+<input class="w-full bg-surface-container-lowest border-0 border-b-2 border-outline-variant focus:border-primary focus:ring-0 px-0 py-3 font-body-md text-body-md transition-all" placeholder="e.g. Warehouse Inventory Day" type="text"/>
+</div>
+<div>
+<label class="block font-label-caps text-label-caps text-on-surface-variant mb-2">HOLIDAY DATE</label>
+<input class="w-full bg-surface-container-lowest border-0 border-b-2 border-outline-variant focus:border-primary focus:ring-0 px-0 py-3 font-body-md text-body-md transition-all" type="date"/>
+<p class="mt-2 text-[11px] text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">info</span>
+                        Must be scheduled 24h prior to 10 PM generation.
+                    </p>
+</div>
+</div>
+<div class="p-6 bg-surface-container-low flex gap-3">
+<button class="flex-grow py-3 border border-outline-variant rounded-xl font-bold text-on-surface-variant active:scale-95 transition-transform" onclick="document.getElementById('add-holiday-modal').classList.add('hidden')">Cancel</button>
+<button class="flex-grow py-3 bg-primary text-on-primary rounded-xl font-bold active:scale-95 transition-transform shadow-lg">Save Holiday</button>
+</div>
+</div>
+</div>
+<script>
+        // Simple logic for the demo
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.getElementById('add-holiday-modal').classList.add('hidden');
+            }
+        });
+    </script>
+</body></html>

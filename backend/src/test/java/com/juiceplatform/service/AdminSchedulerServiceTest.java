@@ -84,10 +84,13 @@ class AdminSchedulerServiceTest extends AbstractIntegrationTest {
         OrderFreezeService.FreezeResult r1 = orderFreezeService.freezeOrdersForDate(deliveryDate);
         assertThat(r1.ordersLocked()).isEqualTo(1);
 
-        // Second freeze — idempotent
+        // Second freeze — idempotent. The order is already LOCKED, so it's no longer
+        // returned by the SCHEDULED-status query at all — both locked and duplicate
+        // counts are zero (duplicatesSkipped only counts SCHEDULED orders that already
+        // unexpectedly carry a delivery_record, a distinct edge case from a plain rerun).
         OrderFreezeService.FreezeResult r2 = orderFreezeService.freezeOrdersForDate(deliveryDate);
         assertThat(r2.ordersLocked()).isZero();
-        assertThat(r2.duplicatesSkipped()).isEqualTo(1);
+        assertThat(r2.duplicatesSkipped()).isZero();
     }
 
     // ─── Holiday behavior ────────────────────────────────────────────────────

@@ -1,0 +1,49 @@
+# Render Blueprint for the juice-platform backend.
+#
+# Deploys ONLY the Spring Boot API as a free Docker web service. The database
+# is NOT defined here — it lives on Supabase (see README.md "Deploying on
+# Render + Supabase + Vercel (Free Tier)"), and the two frontends are deployed
+# separately on Vercel (also documented there), since Render Blueprints only
+# manage services within Render itself.
+#
+# Usage: In the Render Dashboard, choose "New > Blueprint" and point it at this
+# repo. Render reads this file automatically. You will be prompted to fill in
+# every `sync: false` environment variable — those are secrets/config this
+# file intentionally does not hardcode.
+
+services:
+  - type: web
+    name: juice-platform-backend
+    runtime: docker
+    dockerfilePath: backend/Dockerfile
+    dockerContext: backend
+    plan: free
+    region: oregon
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: SPRING_DATASOURCE_URL
+        sync: false
+        # Supabase Session Pooler connection string (IPv4-reachable, supports
+        # prepared statements/DDL). Format:
+        # jdbc:postgresql://aws-0-<region>.pooler.supabase.com:5432/postgres
+      - key: SPRING_DATASOURCE_USERNAME
+        sync: false
+        # Supabase pooler username, format: postgres.<project-ref>
+      - key: SPRING_DATASOURCE_PASSWORD
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+        # Generate with: openssl rand -base64 48  (must be 32+ chars)
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: APP_CORS_ALLOWED_ORIGINS
+        sync: false
+        # Comma-separated Vercel frontend URLs, e.g.:
+        # https://juice-admin.vercel.app,https://juice-app.vercel.app
+      - key: ADMIN_BOOTSTRAP_PASSWORD
+        sync: false
+        # Optional. Leave blank to keep the seeded admin123 test password.
+      - key: ENABLE_SWAGGER
+        value: "false"

@@ -1,7 +1,12 @@
 -- V100: Seed the single admin user and credentials.
--- IMPORTANT: Replace the password_hash with a real bcrypt hash before production deployment.
 -- The hash below corresponds to the password: "admin123" (bcrypt, cost 10)
--- Generate a new hash with: htpasswd -bnBC 10 "" yourpassword | tr -d ':\n'
+-- This default is intentionally kept so the admin panel is usable immediately after a
+-- fresh deploy or local setup, for testing purposes.
+--
+-- IMPORTANT — for staging/production: do NOT edit this migration file (migrations are
+-- append-only). Instead set the ADMIN_BOOTSTRAP_PASSWORD environment variable before
+-- starting the app — AdminPasswordBootstrap.java will safely override this seeded
+-- password hash on startup. See application.properties (admin.bootstrap-password).
 
 -- Insert admin user only if phone does not already exist
 INSERT INTO users (
@@ -32,7 +37,7 @@ INSERT INTO admin_credentials (
 SELECT
     'cccccccc-dddd-eeee-ffff-000000000002',
     u.id,
-    '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',
+    '$2y$10$M4LG3dWX9FFTbwp/JXSg.uP0idpNVhtB5JJbzNhbnnLbu5hw2hpn6',
     NOW(),
     NOW()
 FROM users u

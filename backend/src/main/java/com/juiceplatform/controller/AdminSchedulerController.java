@@ -69,7 +69,7 @@ public class AdminSchedulerController {
 
         OrderFreezeService.FreezeResult result = orderFreezeService.freezeOrdersForDate(targetDate);
 
-        // Audit log — action_type: SCHEDULER_RERUN (BR-AUD-01, db-schema §3.15)
+        // Audit log — action_type: SCHEDULER_RERUN
         auditLogService.log("SCHEDULER_RERUN", "scheduler_job", "OrderFreezeJob",
                 null,
                 java.util.Map.of("targetDate", targetDate.toString(),
@@ -108,7 +108,7 @@ public class AdminSchedulerController {
         OrderGenerationService.OrderGenerationResult result =
                 orderGenerationService.generateOrdersForDate(targetDate);
 
-        // Audit log — action_type: SCHEDULER_RERUN (BR-AUD-01)
+        // Audit log — action_type: SCHEDULER_RERUN
         auditLogService.log("SCHEDULER_RERUN", "scheduler_job", "OrderGenerationJob",
                 null,
                 java.util.Map.of("targetDate", targetDate.toString(),
@@ -123,7 +123,7 @@ public class AdminSchedulerController {
                 .targetDate(targetDate)
                 .ordersGenerated(result.ordersCreated())
                 .subscriptionsActivated(activation.subscriptionsActivated())
-                .changeRequestsApplied(0)
+                .changeRequestsApplied(0) // TODO: not yet tracked by OrderGenerationService — always 0
                 .ranAt(ranAt)
                 .build();
 
@@ -148,7 +148,7 @@ public class AdminSchedulerController {
                 DeliverySheetSnapshot.GeneratedBySource.ADMIN_RERUN,
                 authenticatedUser.getUserId());
 
-        // Audit log — action_type: SCHEDULER_RERUN (BR-AUD-01)
+        // Audit log — action_type: SCHEDULER_RERUN
         auditLogService.log("SCHEDULER_RERUN", "scheduler_job", "DeliverySheetGenerationJob",
                 null,
                 java.util.Map.of("targetDate", targetDate.toString()),

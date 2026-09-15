@@ -17,8 +17,8 @@ import java.util.List;
 
 /**
  * Activates PENDING_START subscriptions whose effective start date has been reached.
- * BR-SUB-05: PENDING_START → ACTIVE transition is scheduler-driven only.
- * Tracked in scheduler_job_log (BR-SCH-03).
+ * The PENDING_START → ACTIVE transition is scheduler-driven only.
+ * Job status is tracked in scheduler_job_log.
  */
 @Service
 @RequiredArgsConstructor
@@ -32,13 +32,25 @@ public class SubscriptionActivationService {
     private final SchedulerJobLogRepository schedulerJobLogRepository;
 
     /**
-     * Activates all PENDING_START subscriptions whose start_date <= today (IST).
+     * Activates all PENDING_START subscriptions whose start_date has become eligible
+     * for the next operational delivery date (BR-ORD-07 / BR-SUB-05).
+     * <p>
+     * This job runs at 22:04 IST, one minute before OrderGenerationJob (22:05 IST),
+     * which always generates orders for TOMORROW (today + 1 day). A subscription created
+     * before today's 22:00 cutoff has start_date = tomorrow, and must already be ACTIVE
+     * by the time OrderGenerationJob runs tonight so its first order is generated for
+     * tomorrow as promised (BR-CUT-03). Comparing against "today" instead of "tomorrow"
+     * would activate it one full day late.
+     * <p>
      * Idempotent: already-ACTIVE subscriptions are not re-processed.
      * Concurrent RUNNING guard: rejects if a RUNNING entry already exists for today.
      */
     @Transactional
     public ActivationResult activateEligibleSubscriptions() {
         LocalDate today = LocalDate.now(IST);
+        // Eligibility is evaluated against tomorrow's delivery date, not today —
+        // see method Javadoc. The job_log entry itself remains keyed by "today" (run date).
+        LocalDate activationTargetDate = today.plusDays(1);
 
         // Acquire scheduler_job_log entry — rejects concurrent RUNNING, allows rerun
         SchedulerJobLog jobLog = acquireJobLog(today);
@@ -47,11 +59,12 @@ public class SubscriptionActivationService {
             return new ActivationResult(today, 0);
         }
 
-        log.info("Starting subscription activation for date: {}", today);
+        log.info("Starting subscription activation for date: {} (eligibility target: {})",
+                today, activationTargetDate);
 
         List<Subscription> pendingSubscriptions = subscriptionRepository
                 .findAllByStatusAndStartDateLessThanEqual(
-                        Subscription.SubscriptionStatus.PENDING_START, today);
+                        Subscription.SubscriptionStatus.PENDING_START, activationTargetDate);
 
         int activated = 0;
         try {

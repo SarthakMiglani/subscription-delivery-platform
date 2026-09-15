@@ -11,6 +11,7 @@ import com.juiceplatform.entity.Product;
 import com.juiceplatform.entity.ProductPriceHistory;
 import com.juiceplatform.entity.Subscription;
 import com.juiceplatform.entity.User;
+import com.juiceplatform.exception.BusinessException;
 import com.juiceplatform.exception.ProductNotFoundException;
 import com.juiceplatform.mapper.ProductMapper;
 import com.juiceplatform.repository.ProductPriceHistoryRepository;
@@ -20,6 +21,7 @@ import com.juiceplatform.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,7 +41,19 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<ProductCustomerResponse> listProductsForCustomer(Pageable pageable) {
+    public Page<ProductCustomerResponse> listProductsForCustomer(UUID customerId, Pageable pageable) {
+        // BR-ONB-02: all customer business APIs require onboardingComplete=true.
+        User customer = userRepository.findById(customerId)
+                .orElseThrow(() -> new IllegalStateException("Authenticated user not found: " + customerId));
+        if (!customer.getIsActive()) {
+            throw new BusinessException("ACCOUNT_DEACTIVATED",
+                    "Account is deactivated", HttpStatus.FORBIDDEN);
+        }
+        if (!customer.getOnboardingCompleted()) {
+            throw new BusinessException("ONBOARDING_INCOMPLETE",
+                    "Customer has not completed onboarding", HttpStatus.FORBIDDEN);
+        }
+
         return productRepository.findByIsAvailableTrueOrderBySortOrderAsc(pageable)
                 .map(ProductMapper::toProductCustomerResponse);
     }
@@ -61,7 +75,7 @@ public class ProductServiceImpl implements ProductService {
         Product product = ProductMapper.toEntity(request);
         product = productRepository.save(product);
 
-        // Audit log — action_type: PRODUCT_CREATE (BR-AUD-01)
+        // Audit log
         auditLogService.log("PRODUCT_CREATE", "product", product.getId().toString(),
                 null,
                 java.util.Map.of("name", product.getName(), "pricePerUnitPaise", product.getPricePerUnitPaise()),
@@ -91,14 +105,14 @@ public class ProductServiceImpl implements ProductService {
             priceHistory.setChangedBy(adminId);
             productPriceHistoryRepository.save(priceHistory);
 
-            // Audit log — action_type: PRODUCT_PRICE_UPDATE (BR-AUD-01)
+            // Audit log — price change
             auditLogService.log("PRODUCT_PRICE_UPDATE", "product", productId.toString(),
                     java.util.Map.of("pricePerUnitPaise", oldPrice),
                     java.util.Map.of("pricePerUnitPaise", request.getPricePerUnitPaise()),
                     adminId);
         }
 
-        // Audit log — action_type: PRODUCT_UPDATE (BR-AUD-01)
+        // Audit log
         auditLogService.log("PRODUCT_UPDATE", "product", productId.toString(),
                 null, java.util.Map.of("updatedAt", product.getUpdatedAt().toString()),
                 adminId);
@@ -120,8 +134,8 @@ public class ProductServiceImpl implements ProductService {
         product.setIsAvailable(false);
         product = productRepository.save(product);
 
-        // Auto-pause all ACTIVE and PENDING_START subscriptions for this product (BR-PRD-03).
-        // SYSTEM_PAUSED_PRODUCT_DISABLED: existing SCHEDULED orders remain unchanged (BR-PAU-05).
+        // Auto-pause all ACTIVE and PENDING_START subscriptions for this product.
+        // SYSTEM_PAUSED_PRODUCT_DISABLED: existing SCHEDULED orders remain unchanged.
         List<Subscription> toAutoPause = subscriptionRepository.findAllByProductIdAndStatusIn(
                 productId,
                 List.of(Subscription.SubscriptionStatus.ACTIVE,
@@ -132,8 +146,7 @@ public class ProductServiceImpl implements ProductService {
             sub.setPauseReason(Subscription.PauseReason.SYSTEM_PAUSED_PRODUCT_DISABLED);
             subscriptionRepository.save(sub);
 
-            // Audit log per auto-paused subscription — acting_admin is the admin who disabled
-            // the product (db-schema §9 inconsistency resolution note).
+            // Audit log per auto-paused subscription
             auditLogService.log(
                     "PRODUCT_DISABLE",
                     "subscription",
@@ -147,15 +160,14 @@ public class ProductServiceImpl implements ProductService {
             );
         }
 
-        // Audit log for the product disable itself (BR-AUD-01)
+        // Audit log for the product disable
         auditLogService.log("PRODUCT_DISABLE", "product", productId.toString(),
                 java.util.Map.of("isAvailable", true),
                 java.util.Map.of("isAvailable", false,
                         "autoPausedSubscriptionCount", toAutoPause.size()),
                 adminId);
 
-        // Best-effort notifications after transaction — BR-NOT-01/02/03.
-        // Notifications are sent outside the transaction boundary; failures never roll back state.
+        // Best-effort notifications after transaction — failures never roll back state.
         final Product finalProduct = product;
         final int pausedCount = toAutoPause.size();
         for (Subscription sub : toAutoPause) {
@@ -184,9 +196,9 @@ public class ProductServiceImpl implements ProductService {
         product.setIsAvailable(true);
         product = productRepository.save(product);
 
-        // NOTE: Previously auto-paused subscriptions are NOT automatically resumed (BR-PRD-04)
+        // NOTE: Previously auto-paused subscriptions are NOT automatically resumed on re-enable
 
-        // Audit log — action_type: PRODUCT_ENABLE (BR-AUD-01)
+        // Audit log
         auditLogService.log("PRODUCT_ENABLE", "product", productId.toString(),
                 java.util.Map.of("isAvailable", false),
                 java.util.Map.of("isAvailable", true),

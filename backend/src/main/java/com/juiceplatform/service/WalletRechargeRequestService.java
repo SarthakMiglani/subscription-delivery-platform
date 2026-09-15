@@ -18,13 +18,9 @@ import java.util.UUID;
 
 /**
  * Handles wallet recharge requests with database-backed rate limiting.
- *
- * Per API spec §6.3:
- * - Stateless from a business perspective: no wallet mutation, no audit log (BR-NOT-02)
- * - Rate-limited: one request per customer per hour → 429
- * - Rate limit is database-backed (persistent across restarts and instances)
- *
- * Per BR-NOT-01: notification is best-effort and non-blocking.
+ * Stateless from a business perspective: no wallet mutation, no audit log.
+ * Rate-limited: one request per customer per hour → 429.
+ * Notification is best-effort and non-blocking.
  */
 @Service
 @RequiredArgsConstructor
@@ -40,14 +36,14 @@ public class WalletRechargeRequestService {
 
     /**
      * Processes a wallet recharge request.
-     * Rate-limited to one request per customer per hour (API spec §6.3).
+     * Rate-limited to one request per customer per hour.
      * Uses database-backed rate limiting for persistence across restarts.
      */
     @Transactional
     public RechargeRequestResponse requestRecharge(UUID customerId, RechargeRequestBody body) {
         OffsetDateTime now = OffsetDateTime.now(IST);
 
-        // Database-backed rate limit check (API spec §6.3: at most one request per hour)
+        // Database-backed rate limit check: at most one request per hour
         rechargeRequestLogRepository.findById(customerId).ifPresent(existing -> {
             OffsetDateTime windowStart = now.minusHours(RATE_LIMIT_WINDOW_HOURS);
             if (existing.getLastRequestedAt().isAfter(windowStart)) {
@@ -68,8 +64,7 @@ public class WalletRechargeRequestService {
 
         long currentBalance = walletService.getCurrentBalance(customerId);
 
-        // Notify admin — best-effort, non-blocking (BR-NOT-01)
-        // No audit log, no wallet ledger entry (BR-NOT-02)
+        // Notify admin — best-effort, non-blocking; no audit log, no wallet ledger entry
         notificationService.notifyAdminWalletRechargeRequested(
                 customerId, customer.getName(), body.getNotes(), currentBalance);
 

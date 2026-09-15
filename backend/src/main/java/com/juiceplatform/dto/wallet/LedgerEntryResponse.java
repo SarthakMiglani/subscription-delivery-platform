@@ -16,5 +16,6 @@ public class LedgerEntryResponse {
     private long amountPaise;
     private long balanceAfterPaise;
     private String description;
+    private UUID orderId;
     private OffsetDateTime createdAt;
 }

@@ -19,7 +19,7 @@ import java.util.UUID;
 
 /**
  * Append-only financial ledger. Rows are NEVER updated or deleted.
- * This is the authoritative source of financial truth (BR-WAL-02, BR-WAL-03).
+ * This is the authoritative source of financial truth.
  */
 @Entity
 @Table(name = "wallet_ledger")
@@ -76,7 +76,7 @@ public class WalletLedger {
     }
 
     public enum EntryType {
-        CREDIT, DEBIT, REFUND
+        CREDIT, DEBIT, REFUND, ADJUSTMENT
     }
 
     public enum SourceType {
