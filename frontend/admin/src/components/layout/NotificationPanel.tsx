@@ -68,7 +68,7 @@ export function NotificationPanel({ onClose }: NotificationPanelProps) {
   return (
     <div
       ref={panelRef}
-      className="panel-enter absolute right-0 top-full mt-2 w-[22rem] bg-surface-container-lowest rounded-2xl shadow-popover border border-outline-variant z-50 overflow-hidden"
+      className="panel-enter absolute right-0 top-full mt-2 w-[22rem] max-w-[calc(100vw-2rem)] bg-surface-container-lowest rounded-2xl shadow-popover border border-outline-variant z-50 overflow-hidden"
     >
       <div className="flex items-center justify-between px-4 py-3 border-b border-outline-variant">
         <div className="flex items-center gap-2">

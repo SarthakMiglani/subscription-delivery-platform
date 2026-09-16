@@ -3,6 +3,14 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    /* Defensive guard: a layout bug in any single component (e.g. a
+       flex row of unshrinkable elements) should never be able to make
+       the whole page horizontally scrollable. Elements that need their
+       own horizontal scroll (tables, chip rows) opt in explicitly via
+       overflow-x-auto on their own wrapper, which is unaffected by this. */
+    overflow-x: hidden;
+  }
   body {
     font-family: 'Hanken Grotesk', sans-serif;
     background-color: #fbf6ea;

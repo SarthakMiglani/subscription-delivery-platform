@@ -39,11 +39,17 @@ export const Button = forwardRef<HTMLButtonElement, Props>(function Button(
     <button
       ref={ref}
       disabled={disabled || loading}
-      className={`focus-ring inline-flex items-center justify-center font-semibold transition-all duration-150 disabled:opacity-45 disabled:pointer-events-none active:scale-[0.98] ${VARIANTS[variant]} ${SIZES[size]} ${fullWidth ? 'w-full' : ''} ${className}`}
+      // min-w-0 is deliberate: without it, a button placed next to sibling
+      // fullWidth buttons in a flex row can force the row (and any grid/card
+      // containing it) wider than its container, since flex/grid items
+      // default to an automatic minimum size based on their unshrinkable
+      // content. This lets the button shrink and its label ellipsize instead
+      // of blowing out the layout.
+      className={`focus-ring inline-flex items-center justify-center min-w-0 font-semibold transition-all duration-150 disabled:opacity-45 disabled:pointer-events-none active:scale-[0.98] whitespace-nowrap ${VARIANTS[variant]} ${SIZES[size]} ${fullWidth ? 'w-full' : ''} ${className}`}
       {...rest}
     >
-      {loading ? <Loader2 className="animate-spin" size={size === 'sm' ? 15 : 17} /> : icon}
-      {children}
+      {loading ? <Loader2 className="animate-spin shrink-0" size={size === 'sm' ? 15 : 17} /> : icon}
+      <span className="truncate">{children}</span>
     </button>
   )
 })

@@ -113,11 +113,13 @@ export function ProductsPage() {
                     {formatPaiseCompact(p.pricePerUnitPaise)}
                     <span className="text-on-surface-variant text-xs font-normal">/unit</span>
                   </p>
-                  <div className="flex gap-2 mt-3 pt-3 border-t border-outline-variant/70">
-                    <Button size="sm" variant="outline" fullWidth onClick={() => openEdit(p)}>Edit</Button>
-                    <Button size="sm" variant="outline" fullWidth icon={<Wheat size={13} />} className="!text-primary !border-primary/40" onClick={() => openRecipe(p)}>
-                      Recipe
-                    </Button>
+                  <div className="flex flex-col gap-2 mt-3 pt-3 border-t border-outline-variant/70">
+                    <div className="flex gap-2">
+                      <Button size="sm" variant="outline" fullWidth onClick={() => openEdit(p)}>Edit</Button>
+                      <Button size="sm" variant="outline" fullWidth icon={<Wheat size={13} />} className="!text-primary !border-primary/40" onClick={() => openRecipe(p)}>
+                        Recipe
+                      </Button>
+                    </div>
                     {p.isAvailable ? (
                       <Button size="sm" variant="danger" fullWidth onClick={() => disableProduct.mutate(p.id)}>Disable</Button>
                     ) : (
