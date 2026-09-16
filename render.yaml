@@ -20,6 +20,14 @@ services:
     plan: free
     region: oregon
     healthCheckPath: /api/v1/health
+    # Without this, Render rebuilds+redeploys the backend on EVERY push to
+    # main, including frontend-only commits — causing an unnecessary cold
+    # restart (Render's free tier has no "warm swap", so the service is
+    # briefly unavailable during the redeploy) each time frontend/** changes.
+    buildFilter:
+      paths:
+        - backend/**
+        - render.yaml
     envVars:
       - key: SPRING_PROFILES_ACTIVE
         value: prod
