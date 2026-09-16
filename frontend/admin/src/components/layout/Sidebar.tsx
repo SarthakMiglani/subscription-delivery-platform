@@ -1,25 +1,30 @@
 import { NavLink, useNavigate } from 'react-router-dom'
+import {
+  LayoutDashboard, Truck, Users, PackageSearch, Wheat, Repeat, Clock, CalendarOff,
+  ScrollText, LogOut, Droplets,
+} from 'lucide-react'
 import { useAdminAuthStore } from '../../store/authStore'
 import { apiPost } from '../../lib/api'
 
 const NAV_ITEMS = [
-  { to: '/dashboard', icon: 'dashboard', label: 'Dashboard' },
-  { to: '/delivery', icon: 'local_shipping', label: 'Delivery' },
-  { to: '/customers', icon: 'group', label: 'Customers' },
-  { to: '/products', icon: 'inventory_2', label: 'Products' },
-  { to: '/ingredients', icon: 'nutrition', label: 'Ingredients' },
-  { to: '/subscriptions', icon: 'repeat', label: 'Subscriptions' },
-  { to: '/scheduler', icon: 'schedule', label: 'Scheduler' },
-  { to: '/holidays', icon: 'event_busy', label: 'Holidays' },
-  { to: '/audit-logs', icon: 'manage_search', label: 'Audit Log' },
+  { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+  { to: '/delivery', icon: Truck, label: 'Delivery' },
+  { to: '/customers', icon: Users, label: 'Customers' },
+  { to: '/products', icon: PackageSearch, label: 'Products' },
+  { to: '/ingredients', icon: Wheat, label: 'Ingredients' },
+  { to: '/subscriptions', icon: Repeat, label: 'Subscriptions' },
+  { to: '/scheduler', icon: Clock, label: 'Scheduler' },
+  { to: '/holidays', icon: CalendarOff, label: 'Holidays' },
+  { to: '/audit-logs', icon: ScrollText, label: 'Audit Log' },
 ]
 
 interface SidebarProps {
-  /** Called when a nav item or logout is tapped — used to close the mobile drawer */
   onNavClick?: () => void
   /**
-   * 'fixed' (default) — desktop usage, positions itself with `position: fixed`
-   * 'fill'            — drawer usage, fills its already-fixed parent instead
+   * 'fixed' — desktop usage: a floating rounded panel inset from the
+   *           viewport edge (detached, card-like), not an edge-to-edge rail.
+   * 'fill'  — mobile drawer usage: fills its fixed parent edge-to-edge since
+   *           the drawer itself already reads as a distinct floating sheet.
    */
   variant?: 'fixed' | 'fill'
 }
@@ -29,8 +34,6 @@ export function Sidebar({ onNavClick, variant = 'fixed' }: SidebarProps) {
   const logout = useAdminAuthStore((s) => s.logout)
 
   function handleLogout() {
-    // Revoke the refresh token server-side before clearing local state. Best-effort —
-    // if this fails (e.g. offline), still proceed with the local logout.
     const { refreshToken } = useAdminAuthStore.getState()
     if (refreshToken) {
       apiPost('/auth/logout', { refreshToken }).catch(() => {})
@@ -40,55 +43,59 @@ export function Sidebar({ onNavClick, variant = 'fixed' }: SidebarProps) {
     navigate('/login')
   }
 
-  const cls =
+  const outerCls =
     variant === 'fixed'
-      ? 'fixed top-0 left-0 h-full w-60 bg-primary-container flex flex-col z-30'
-      : 'h-full w-60 bg-primary-container flex flex-col'
+      ? 'fixed top-4 left-4 bottom-4 w-60 z-30'
+      : 'h-full w-64'
+
+  const panelCls = variant === 'fixed' ? 'rounded-[1.75rem] shadow-popover h-full' : 'h-full'
 
   return (
-    <aside className={cls}>
-      <div className="p-6 border-b border-on-primary-container/20">
-        <div className="flex items-center gap-2">
-          <span className="material-symbols-outlined text-on-primary-container text-3xl filled">water_drop</span>
-          <div>
-            <p className="font-jakarta font-bold text-on-primary-container text-lg leading-tight">FreshFlow</p>
-            <p className="text-on-primary-container/70 text-xs">Admin Panel</p>
+    <aside className={outerCls}>
+      <div className={`bg-primary flex flex-col ${panelCls}`}>
+        <div className="px-5 py-6">
+          <div className="flex items-center gap-2.5">
+            <div className="w-10 h-10 rounded-2xl bg-on-primary/10 flex items-center justify-center shrink-0">
+              <Droplets size={19} className="text-inverse-primary" strokeWidth={1.75} />
+            </div>
+            <div>
+              <p className="font-jakarta font-semibold text-on-primary text-[16px] leading-tight">FreshFlow</p>
+              <p className="text-on-primary/55 text-[10.5px] tracking-wide uppercase">Admin Panel</p>
+            </div>
           </div>
         </div>
-      </div>
 
-      <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
-        {NAV_ITEMS.map(({ to, icon, label }) => (
-          <NavLink
-            key={to}
-            to={to}
-            onClick={onNavClick}
-            className={({ isActive }) =>
-              `flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-sm font-medium ${
-                isActive
-                  ? 'bg-primary text-on-primary'
-                  : 'text-on-primary-container hover:bg-on-primary-container/10'
-              }`
-            }
+        <nav className="flex-1 py-2 px-3 space-y-1 overflow-y-auto">
+          {NAV_ITEMS.map(({ to, icon: Icon, label }) => (
+            <NavLink
+              key={to}
+              to={to}
+              onClick={onNavClick}
+              className={({ isActive }) =>
+                `focus-ring flex items-center gap-3 px-3.5 py-2.5 rounded-2xl transition-colors text-sm font-medium ${
+                  isActive ? 'bg-on-primary text-primary shadow-card' : 'text-on-primary/65 hover:bg-on-primary/[0.10] hover:text-on-primary/90'
+                }`
+              }
+            >
+              {({ isActive }) => (
+                <>
+                  <Icon size={17} strokeWidth={isActive ? 2.1 : 1.75} />
+                  {label}
+                </>
+              )}
+            </NavLink>
+          ))}
+        </nav>
+
+        <div className="p-3">
+          <button
+            onClick={handleLogout}
+            className="focus-ring flex items-center gap-3 w-full px-3.5 py-2.5 rounded-2xl text-on-primary/65 hover:bg-on-primary/[0.10] hover:text-on-primary/90 text-sm font-medium transition-colors"
           >
-            {({ isActive }) => (
-              <>
-                <span className={`material-symbols-outlined text-[20px] ${isActive ? 'filled' : ''}`}>{icon}</span>
-                {label}
-              </>
-            )}
-          </NavLink>
-        ))}
-      </nav>
-
-      <div className="p-3 border-t border-on-primary-container/20">
-        <button
-          onClick={handleLogout}
-          className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-on-primary-container hover:bg-on-primary-container/10 text-sm font-medium transition-colors"
-        >
-          <span className="material-symbols-outlined text-[20px]">logout</span>
-          Sign Out
-        </button>
+            <LogOut size={17} strokeWidth={1.75} />
+            Sign Out
+          </button>
+        </div>
       </div>
     </aside>
   )

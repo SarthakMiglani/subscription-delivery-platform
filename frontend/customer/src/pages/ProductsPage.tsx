@@ -1,20 +1,22 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { CheckCircle2, Minus, Plus, Clock, Droplet } from 'lucide-react'
 import { TopBar } from '../components/layout/TopBar'
 import { PageWrapper } from '../components/layout/PageWrapper'
-import { Spinner } from '../components/ui/Spinner'
 import { ErrorMessage } from '../components/ui/ErrorMessage'
 import { Modal } from '../components/ui/Modal'
-import { apiGet, apiPost, apiGetPaged, getApiError } from '../lib/api'
+import { Button } from '../components/ui/Button'
+import { useToast } from '../components/ui/Toast'
+import { apiGetPaged, apiPost, getApiError } from '../lib/api'
 import { formatPaiseCompact, getCutoffMessage } from '../lib/utils'
 import type { Product, Subscription } from '../types'
 
 export function ProductsPage() {
   const qc = useQueryClient()
+  const { show } = useToast()
   const [subscribingTo, setSubscribingTo] = useState<Product | null>(null)
   const [quantity, setQuantity] = useState(1)
-  const [toast, setToast] = useState('')
-  const [toastError, setToastError] = useState('')
+  const [modalError, setModalError] = useState('')
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['products'],
@@ -27,72 +29,75 @@ export function ProductsPage() {
   })
 
   const subscribe = useMutation({
-    mutationFn: (vars: { productId: string; quantity: number }) =>
-      apiPost('/subscriptions', vars),
+    mutationFn: (vars: { productId: string; quantity: number }) => apiPost('/subscriptions', vars),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['subscriptions'] })
       qc.invalidateQueries({ queryKey: ['profile'] })
       setSubscribingTo(null)
-      setToast('Subscription created!')
-      setTimeout(() => setToast(''), 3000)
+      show('Subscription created!')
     },
-    onError: (e) => setToastError(getApiError(e)),
+    onError: (e) => setModalError(getApiError(e)),
   })
 
   const activeSubs = new Set(
     (mySubs.data?.items ?? [])
-      .filter(s => ['ACTIVE', 'PAUSED', 'PENDING_START'].includes(s.status))
-      .map(s => s.productId)
+      .filter((s) => ['ACTIVE', 'PAUSED', 'PENDING_START'].includes(s.status))
+      .map((s) => s.productId)
   )
 
   return (
     <>
-      <TopBar title="Products" />
+      <TopBar title="Shop" />
       <PageWrapper>
-        <div className="py-4">
+        <div className="pt-2 pb-2">
           <p className="text-on-surface-variant text-sm mb-4">Subscribe to daily juice deliveries</p>
 
-          {isLoading && <div className="flex justify-center py-16"><Spinner size={32} /></div>}
+          {isLoading && (
+            <div className="grid grid-cols-2 gap-3.5">
+              {[0, 1, 2, 3].map((i) => <div key={i} className="h-52 skeleton rounded-[1.75rem]" />)}
+            </div>
+          )}
           {error && <ErrorMessage message="Failed to load products" onRetry={refetch} />}
 
-          {toast && (
-            <div className="mb-4 p-3 bg-green-50 border-l-4 border-status-active rounded-r-lg text-status-active text-sm font-medium">{toast}</div>
-          )}
-
-          <div className="space-y-3">
-            {(data?.items ?? []).map(product => {
+          <div className="grid grid-cols-2 gap-3.5">
+            {(data?.items ?? []).map((product, i) => {
               const isSubscribed = activeSubs.has(product.id)
               return (
-                <div key={product.id} className="bg-white rounded-xl border border-outline-variant overflow-hidden">
-                  {product.imageUrl && (
-                    <img src={product.imageUrl} alt={product.name} className="w-full h-36 object-cover" />
-                  )}
-                  <div className="p-4">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <h3 className="font-jakarta font-semibold text-on-surface">{product.name}</h3>
-                        <p className="text-on-surface-variant text-sm mt-0.5">{product.description}</p>
-                        <p className="text-on-surface-variant text-xs mt-1">{product.unitLabel}</p>
+                <div
+                  key={product.id}
+                  style={{ '--i': i } as React.CSSProperties}
+                  className="stagger-item bg-surface-container-lowest rounded-[1.75rem] shadow-card overflow-hidden flex flex-col"
+                >
+                  <div className="relative h-28 bg-tertiary-container">
+                    {product.imageUrl ? (
+                      <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <Droplet size={28} className="text-tertiary" strokeWidth={1.5} />
                       </div>
-                      <div className="text-right ml-4">
-                        <p className="font-mono font-bold text-on-surface text-lg">{formatPaiseCompact(product.pricePerUnitPaise)}</p>
-                        <p className="text-on-surface-variant text-xs">per unit/day</p>
-                      </div>
-                    </div>
-                    <div className="mt-3">
-                      {isSubscribed ? (
-                        <span className="inline-flex items-center gap-1 text-status-active text-xs font-semibold">
-                          <span className="material-symbols-outlined text-[14px] filled">check_circle</span>
-                          Subscribed
-                        </span>
-                      ) : (
-                        <button
-                          onClick={() => { setSubscribingTo(product); setQuantity(1); setToastError('') }}
-                          className="w-full bg-primary text-on-primary font-semibold py-2.5 rounded-lg text-sm"
-                        >
-                          Subscribe Daily
-                        </button>
-                      )}
+                    )}
+                    <button
+                      onClick={() => {
+                        if (isSubscribed) return
+                        setSubscribingTo(product)
+                        setQuantity(1)
+                        setModalError('')
+                      }}
+                      aria-label={isSubscribed ? 'Already subscribed' : `Subscribe to ${product.name}`}
+                      disabled={isSubscribed}
+                      className={`focus-ring absolute top-2.5 right-2.5 w-8 h-8 rounded-full flex items-center justify-center shadow-card transition-transform active:scale-90 ${
+                        isSubscribed ? 'bg-primary text-on-primary' : 'bg-surface-container-lowest text-primary hover:scale-105'
+                      }`}
+                    >
+                      {isSubscribed ? <CheckCircle2 size={16} /> : <Plus size={16} />}
+                    </button>
+                  </div>
+                  <div className="p-3.5 flex-1 flex flex-col">
+                    <h3 className="font-jakarta font-semibold text-on-surface text-sm leading-snug">{product.name}</h3>
+                    <p className="text-on-surface-variant text-xs mt-1 line-clamp-2 flex-1">{product.description}</p>
+                    <div className="flex items-center justify-between mt-2.5">
+                      <p className="font-mono font-bold text-on-surface text-sm">{formatPaiseCompact(product.pricePerUnitPaise)}</p>
+                      <p className="text-on-surface-variant text-[10px] uppercase tracking-wide">{product.unitLabel}</p>
                     </div>
                   </div>
                 </div>
@@ -106,35 +111,48 @@ export function ProductsPage() {
         {subscribingTo && (
           <div>
             <p className="text-on-surface font-medium mb-1">{subscribingTo.name}</p>
-            <p className="text-on-surface-variant text-sm mb-4">{formatPaiseCompact(subscribingTo.pricePerUnitPaise)} per unit/day</p>
+            <p className="text-on-surface-variant text-sm mb-5">{formatPaiseCompact(subscribingTo.pricePerUnitPaise)} per unit/day</p>
 
-            <div className="mb-4">
-              <label className="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-2">Daily Quantity</label>
-              <div className="flex items-center gap-4">
-                <button onClick={() => setQuantity(q => Math.max(1, q - 1))} className="w-9 h-9 rounded-full border border-outline-variant flex items-center justify-center text-on-surface">−</button>
+            <div className="mb-5">
+              <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2.5">Daily quantity</label>
+              <div className="flex items-center gap-5">
+                <button
+                  onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                  aria-label="Decrease quantity"
+                  className="focus-ring w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface hover:bg-surface-container-high active:scale-95 transition-all"
+                >
+                  <Minus size={16} />
+                </button>
                 <span className="font-mono font-bold text-on-surface text-xl w-6 text-center">{quantity}</span>
-                <button onClick={() => setQuantity(q => q + 1)} className="w-9 h-9 rounded-full border border-outline-variant flex items-center justify-center text-on-surface">+</button>
+                <button
+                  onClick={() => setQuantity((q) => q + 1)}
+                  aria-label="Increase quantity"
+                  className="focus-ring w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface hover:bg-surface-container-high active:scale-95 transition-all"
+                >
+                  <Plus size={16} />
+                </button>
               </div>
             </div>
 
-            <div className="mb-4 p-3 bg-surface-container-low rounded-lg">
-              <p className="text-xs text-on-surface-variant font-bold uppercase tracking-wider">⏰ {getCutoffMessage()}</p>
+            <div className="mb-5 p-3 bg-surface-container-low rounded-xl flex items-center gap-2">
+              <Clock size={15} className="text-on-surface-variant shrink-0" />
+              <p className="text-xs text-on-surface-variant font-semibold">{getCutoffMessage()}</p>
             </div>
 
-            <p className="text-on-surface-variant text-sm mb-4">
-              Daily cost: <span className="font-bold text-on-surface">{formatPaiseCompact(subscribingTo.pricePerUnitPaise * quantity)}</span>
+            <p className="text-on-surface-variant text-sm mb-5">
+              Daily cost: <span className="font-bold text-on-surface font-mono">{formatPaiseCompact(subscribingTo.pricePerUnitPaise * quantity)}</span>
             </p>
 
-            {toastError && <p className="text-error text-sm mb-3">{toastError}</p>}
+            {modalError && <p className="text-error text-sm mb-3">{modalError}</p>}
 
-            <button
+            <Button
+              fullWidth
+              size="lg"
+              loading={subscribe.isPending}
               onClick={() => subscribe.mutate({ productId: subscribingTo.id, quantity })}
-              disabled={subscribe.isPending}
-              className="w-full bg-primary text-on-primary font-semibold py-3 rounded-xl text-sm flex items-center justify-center gap-2 disabled:opacity-60"
             >
-              {subscribe.isPending && <Spinner size={16} />}
-              Confirm Subscription
-            </button>
+              Confirm subscription
+            </Button>
           </div>
         )}
       </Modal>

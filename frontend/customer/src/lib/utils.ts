@@ -118,18 +118,19 @@ export function statusLabel(status: string): string {
 }
 
 /**
- * Status badge color classes
+ * Status badge color classes — all derived from the custom design-token
+ * palette (no raw Tailwind grays/greens) so badges always track the theme.
  */
 export function statusColors(status: string): string {
   const map: Record<string, string> = {
-    ACTIVE: 'bg-green-100 text-status-active',
-    DELIVERED: 'bg-green-100 text-status-active',
-    PENDING_START: 'bg-blue-100 text-status-future',
-    SCHEDULED: 'bg-blue-100 text-status-future',
-    PAUSED: 'bg-orange-100 text-status-warning',
-    LOCKED: 'bg-slate-100 text-status-locked',
-    CANCELLED: 'bg-red-100 text-status-error',
-    SKIPPED: 'bg-orange-100 text-status-warning',
+    ACTIVE: 'bg-primary-container text-status-active',
+    DELIVERED: 'bg-primary-container text-status-active',
+    PENDING_START: 'bg-[#dce9f7] text-status-future',
+    SCHEDULED: 'bg-[#dce9f7] text-status-future',
+    PAUSED: 'bg-secondary-container text-status-warning',
+    LOCKED: 'bg-surface-container-high text-status-locked',
+    CANCELLED: 'bg-error-container text-status-error',
+    SKIPPED: 'bg-secondary-container text-status-warning',
   }
-  return map[status] || 'bg-gray-100 text-gray-600'
+  return map[status] || 'bg-surface-container text-on-surface-variant'
 }

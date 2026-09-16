@@ -1,6 +1,10 @@
 import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
+import type { LucideIcon } from 'lucide-react'
+import { Users, Truck, Lock, ArrowUpRight, ChevronRight, Clock, Wallet, PackagePlus, ReceiptText } from 'lucide-react'
 import { PageHeader } from '../components/ui/PageHeader'
+import { Card } from '../components/ui/Card'
+import { StatusBadge } from '../components/ui/StatusBadge'
 import { apiGetPaged } from '../lib/api'
 import { todayIST, formatDateTime } from '../lib/utils'
 import type { AdminCustomerListItem, SchedulerJobLog, AdminOrderListItem } from '../types'
@@ -8,49 +12,61 @@ import type { AdminCustomerListItem, SchedulerJobLog, AdminOrderListItem } from 
 interface StatCardProps {
   label: string
   value: string | number
-  icon: string
-  trend?: string
+  icon: LucideIcon
+  hero?: boolean
   onClick?: () => void
 }
 
-function StatCard({ label, value, icon, trend, onClick }: StatCardProps) {
-  return (
-    <div
-      onClick={onClick}
-      className={`bg-white rounded-2xl p-5 border border-outline-variant group transition-all duration-200 ${
-        onClick
-          ? 'cursor-pointer hover:border-primary hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0'
-          : ''
-      }`}
-    >
-      <div className="flex items-start justify-between mb-4">
-        <div className="p-2.5 rounded-xl bg-primary/8 group-hover:bg-primary/12 transition-colors">
-          <span className="material-symbols-outlined text-primary text-xl">{icon}</span>
+function StatCard({ label, value, icon: Icon, hero, onClick }: StatCardProps) {
+  if (hero) {
+    return (
+      <button
+        onClick={onClick}
+        className="focus-ring text-left bg-primary rounded-[1.5rem] p-5 shadow-card relative overflow-hidden transition-transform hover:-translate-y-0.5"
+      >
+        <div className="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-on-primary/[0.07] pointer-events-none" />
+        <div className="relative z-10">
+          <div className="flex items-center justify-between mb-5">
+            <div className="w-10 h-10 rounded-2xl bg-on-primary/10 flex items-center justify-center">
+              <Icon size={19} className="text-on-primary" strokeWidth={1.75} />
+            </div>
+            <ArrowUpRight size={16} className="text-on-primary/60" />
+          </div>
+          <p className="font-jakarta font-semibold text-on-primary text-3xl leading-none">{value}</p>
+          <p className="text-on-primary/70 text-sm mt-1.5">{label}</p>
         </div>
-        {onClick && (
-          <span className="material-symbols-outlined text-outline-variant group-hover:text-primary text-base transition-colors">
-            arrow_forward
-          </span>
-        )}
+      </button>
+    )
+  }
+  return (
+    <button onClick={onClick} className="focus-ring text-left bg-surface-container-lowest rounded-[1.5rem] p-5 shadow-card transition-transform hover:-translate-y-0.5 group">
+      <div className="flex items-center justify-between mb-5">
+        <div className="w-10 h-10 rounded-2xl bg-primary-container flex items-center justify-center">
+          <Icon size={19} className="text-primary" strokeWidth={1.75} />
+        </div>
+        <ArrowUpRight size={16} className="text-outline-variant group-hover:text-primary transition-colors" />
       </div>
-      <p className="font-jakarta font-bold text-on-surface text-3xl leading-none">{value}</p>
+      <p className="font-jakarta font-semibold text-on-surface text-3xl leading-none">{value}</p>
       <p className="text-on-surface-variant text-sm mt-1.5">{label}</p>
-      {trend && <p className="text-xs text-status-active mt-1">{trend}</p>}
+    </button>
+  )
+}
+
+function StatCardSkeleton({ hero }: { hero?: boolean }) {
+  return (
+    <div className={`rounded-[1.5rem] p-5 shadow-card ${hero ? 'bg-primary/10' : 'bg-surface-container-lowest'}`}>
+      <div className="w-10 h-10 skeleton rounded-2xl mb-5" />
+      <div className="h-8 skeleton rounded w-16" />
+      <div className="h-3.5 skeleton rounded w-28 mt-2" />
     </div>
   )
 }
 
-function StatCardSkeleton() {
-  return (
-    <div className="bg-white rounded-2xl p-5 border border-outline-variant">
-      <div className="flex items-start justify-between mb-4">
-        <div className="w-10 h-10 bg-surface-container rounded-xl animate-pulse" />
-      </div>
-      <div className="h-8 bg-surface-container rounded w-16 animate-pulse" />
-      <div className="h-3.5 bg-surface-container rounded w-28 mt-2 animate-pulse" />
-    </div>
-  )
-}
+const QUICK_TASKS = [
+  { icon: Wallet, label: 'Credit Wallet', path: '/customers' },
+  { icon: PackagePlus, label: 'Add Product', path: '/products' },
+  { icon: ReceiptText, label: 'Delivery Sheet', path: '/delivery' },
+]
 
 export function DashboardPage() {
   const navigate = useNavigate()
@@ -79,108 +95,83 @@ export function DashboardPage() {
   const anyLoading = customers.isLoading || todayOrders.isLoading || lockedOrders.isLoading
 
   return (
-    <div className="page-enter">
-      <PageHeader title="Dashboard" subtitle={`Today — ${today}`} actions={
-        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-primary/8 rounded-xl">
-          <span className="material-symbols-outlined text-primary text-base">schedule</span>
-          <span className="text-xs font-bold text-primary uppercase tracking-wide">Next Cutoff</span>
-          <span className="text-xs font-semibold text-on-surface-variant ml-0.5">10:00 PM IST</span>
-        </div>
-      } />
+    <div>
+      <PageHeader
+        title="Dashboard"
+        subtitle={`Today — ${today}`}
+        actions={
+          <div className="flex items-center gap-1.5 px-3.5 py-2 bg-tertiary-container rounded-full">
+            <Clock size={14} className="text-tertiary" />
+            <span className="text-xs font-bold text-tertiary uppercase tracking-wide">Next Cutoff</span>
+            <span className="text-xs font-semibold text-on-tertiary-container ml-0.5">10:00 PM IST</span>
+          </div>
+        }
+      />
 
       <div className="p-4 sm:p-6">
-        {/* Stat cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6 sm:mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
           {anyLoading ? (
-            [1, 2, 3].map(i => <StatCardSkeleton key={i} />)
+            [1, 2, 3].map((i) => <StatCardSkeleton key={i} hero={i === 1} />)
           ) : (
             <>
-              <StatCard
-                label="Total Customers"
-                value={customers.data?.meta.total ?? '—'}
-                icon="group"
-                onClick={() => navigate('/customers')}
-              />
-              <StatCard
-                label="Today's Deliveries"
-                value={todayOrders.data?.meta.total ?? '—'}
-                icon="local_shipping"
-                onClick={() => navigate('/delivery')}
-              />
-              <StatCard
-                label="Locked Orders"
-                value={lockedOrders.data?.meta.total ?? '—'}
-                icon="lock"
-                onClick={() => navigate('/delivery')}
-              />
+              <StatCard hero label="Total Customers" value={customers.data?.meta.total ?? '—'} icon={Users} onClick={() => navigate('/customers')} />
+              <StatCard label="Today's Deliveries" value={todayOrders.data?.meta.total ?? '—'} icon={Truck} onClick={() => navigate('/delivery')} />
+              <StatCard label="Locked Orders" value={lockedOrders.data?.meta.total ?? '—'} icon={Lock} onClick={() => navigate('/delivery')} />
             </>
           )}
         </div>
 
-        {/* Quick Tasks */}
-        <div className="mb-6">
-          <h2 className="font-jakarta font-semibold text-on-surface text-sm uppercase tracking-wider mb-3 text-on-surface-variant">Quick Tasks</h2>
+        <div className="mb-8">
+          <h2 className="font-jakarta font-semibold text-xs uppercase tracking-wider mb-3 text-on-surface-variant">Quick Tasks</h2>
           <div className="grid grid-cols-3 gap-3">
-            {[
-              { icon: 'account_balance_wallet', label: 'Credit Wallet', path: '/customers' },
-              { icon: 'add_box', label: 'Add Product', path: '/products' },
-              { icon: 'receipt_long', label: 'Delivery Sheet', path: '/delivery' },
-            ].map(task => (
+            {QUICK_TASKS.map((task) => (
               <button
                 key={task.path}
                 onClick={() => navigate(task.path)}
-                className="bg-white border border-outline-variant rounded-xl p-3 sm:p-4 flex flex-col items-center gap-1.5 hover:border-primary hover:shadow-sm transition-all group"
+                className="focus-ring bg-surface-container-lowest rounded-[1.5rem] shadow-card p-3 sm:p-4 flex flex-col items-center gap-2 hover:shadow-card-hover hover:-translate-y-0.5 transition-all group"
               >
-                <span className="material-symbols-outlined text-primary text-2xl group-hover:scale-110 transition-transform">{task.icon}</span>
+                <div className="w-9 h-9 rounded-full bg-secondary-container flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <task.icon size={17} className="text-secondary" strokeWidth={1.75} />
+                </div>
                 <span className="text-xs font-medium text-on-surface-variant text-center leading-tight">{task.label}</span>
               </button>
             ))}
           </div>
         </div>
 
-        {/* Recent jobs */}
-        <div className="bg-white rounded-2xl border border-outline-variant overflow-hidden">
-          <div className="px-5 sm:px-6 py-4 border-b border-outline-variant flex items-center justify-between">
+        <Card padded={false} className="overflow-hidden">
+          <div className="px-5 sm:px-6 py-4 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-primary text-base">schedule</span>
+              <Clock size={16} className="text-primary" />
               <h2 className="font-jakarta font-semibold text-on-surface">Recent Scheduler Jobs</h2>
             </div>
-            <button
-              onClick={() => navigate('/scheduler')}
-              className="text-primary text-sm font-medium flex items-center gap-0.5 hover:underline"
-            >
+            <button onClick={() => navigate('/scheduler')} className="focus-ring text-primary text-sm font-semibold flex items-center gap-0.5 hover:underline rounded">
               View all
-              <span className="material-symbols-outlined text-[14px]">chevron_right</span>
+              <ChevronRight size={14} />
             </button>
           </div>
 
           {recentJobs.isLoading ? (
-            <div className="divide-y divide-outline-variant">
-              {[1, 2, 3, 4, 5].map(i => (
+            <div className="divide-y divide-outline-variant/60">
+              {[1, 2, 3, 4, 5].map((i) => (
                 <div key={i} className="px-5 sm:px-6 py-3.5 flex items-center justify-between gap-3">
                   <div className="space-y-1.5">
-                    <div className="h-4 bg-surface-container rounded w-40 animate-pulse" />
-                    <div className="h-3 bg-surface-container rounded w-28 animate-pulse" />
+                    <div className="h-4 skeleton rounded w-40" />
+                    <div className="h-3 skeleton rounded w-28" />
                   </div>
-                  <div className="h-5 bg-surface-container rounded-full w-20 animate-pulse" />
+                  <div className="h-5 skeleton rounded-full w-20" />
                 </div>
               ))}
             </div>
           ) : (
-            <div className="divide-y divide-outline-variant">
-              {(recentJobs.data?.items ?? []).map(job => (
+            <div className="divide-y divide-outline-variant/60">
+              {(recentJobs.data?.items ?? []).map((job) => (
                 <div key={job.id} className="px-5 sm:px-6 py-3.5 flex items-center justify-between gap-3 hover:bg-surface-container-low/60 transition-colors">
                   <div>
                     <p className="text-on-surface text-sm font-medium">{job.jobName}</p>
                     <p className="text-on-surface-variant text-xs mt-0.5">{formatDateTime(job.ranAt)}</p>
                   </div>
-                  <span className={`px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${
-                    job.status === 'COMPLETED' ? 'bg-green-100 text-status-active' :
-                    job.status === 'RUNNING'   ? 'bg-blue-100  text-status-future' :
-                    'bg-red-100 text-status-error'
-                  }`}>
-                    {job.status}
-                  </span>
+                  <StatusBadge status={job.status} />
                 </div>
               ))}
               {(recentJobs.data?.items ?? []).length === 0 && (
@@ -188,7 +179,7 @@ export function DashboardPage() {
               )}
             </div>
           )}
-        </div>
+        </Card>
       </div>
     </div>
   )

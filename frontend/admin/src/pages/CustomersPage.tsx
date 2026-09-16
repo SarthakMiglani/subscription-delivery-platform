@@ -1,11 +1,26 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
+import { Search, ChevronRight } from 'lucide-react'
 import { PageHeader } from '../components/ui/PageHeader'
 import { Pagination } from '../components/ui/Pagination'
+import { Card } from '../components/ui/Card'
+import { Button } from '../components/ui/Button'
 import { apiGetPaged } from '../lib/api'
 import { formatPaiseCompact } from '../lib/utils'
 import type { AdminCustomerListItem } from '../types'
+
+function ActiveBadge({ isActive }: { isActive: boolean }) {
+  return (
+    <span
+      className={`inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider ${
+        isActive ? 'bg-primary-container text-status-active' : 'bg-error-container text-status-error'
+      }`}
+    >
+      {isActive ? 'Active' : 'Inactive'}
+    </span>
+  )
+}
 
 export function CustomersPage() {
   const navigate = useNavigate()
@@ -15,11 +30,12 @@ export function CustomersPage() {
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin-customers', search, page],
-    queryFn: () => apiGetPaged<AdminCustomerListItem>('/admin/customers', {
-      ...(search ? { search } : {}),
-      page,
-      size: 20,
-    }),
+    queryFn: () =>
+      apiGetPaged<AdminCustomerListItem>('/admin/customers', {
+        ...(search ? { search } : {}),
+        page,
+        size: 20,
+      }),
   })
 
   const customers = data?.items ?? []
@@ -32,23 +48,44 @@ export function CustomersPage() {
         {/* Search */}
         <div className="flex gap-2 mb-5">
           <div className="flex-1 relative">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-xl">search</span>
+            <Search size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant" />
             <input
               value={searchInput}
-              onChange={e => setSearchInput(e.target.value)}
-              onKeyDown={e => { if (e.key === 'Enter') { setSearch(searchInput); setPage(0) } }}
+              onChange={(e) => setSearchInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  setSearch(searchInput)
+                  setPage(0)
+                }
+              }}
               placeholder="Search by name, phone, email…"
-              className="w-full pl-10 pr-4 py-2.5 border border-outline-variant rounded-xl text-sm bg-white focus:outline-none focus:border-primary"
+              className="focus-ring w-full pl-10 pr-4 h-10 border border-outline-variant rounded-xl text-sm bg-surface-container-lowest focus:border-primary transition-colors"
             />
           </div>
-          <button onClick={() => { setSearch(searchInput); setPage(0) }}
-            className="px-4 py-2.5 bg-primary text-on-primary text-sm font-medium rounded-xl">Search</button>
-          {search && <button onClick={() => { setSearch(''); setSearchInput(''); setPage(0) }}
-            className="px-3 text-on-surface-variant text-sm underline">Clear</button>}
+          <Button
+            onClick={() => {
+              setSearch(searchInput)
+              setPage(0)
+            }}
+          >
+            Search
+          </Button>
+          {search && (
+            <button
+              onClick={() => {
+                setSearch('')
+                setSearchInput('')
+                setPage(0)
+              }}
+              className="focus-ring px-3 text-on-surface-variant text-sm font-medium rounded hover:text-on-surface"
+            >
+              Clear
+            </button>
+          )}
         </div>
 
-        <div className="bg-white rounded-xl border border-outline-variant overflow-hidden">
-          {/* Desktop table — scrollable */}
+        <Card padded={false} className="overflow-hidden">
+          {/* Desktop table */}
           <div className="overflow-x-auto">
             <table className="hidden md:table min-w-[600px] w-full text-sm">
               <thead className="bg-surface-container-low">
@@ -62,22 +99,28 @@ export function CustomersPage() {
               </thead>
               <tbody className="divide-y divide-outline-variant">
                 {isLoading ? (
-                  [1,2,3,4,5,6].map(i => (
+                  [1, 2, 3, 4, 5, 6].map((i) => (
                     <tr key={i}>
                       <td className="px-4 py-3">
-                        <div className="h-4 bg-surface-container rounded w-32 animate-pulse mb-1.5" />
-                        <div className="h-3 bg-surface-container rounded w-44 animate-pulse" />
+                        <div className="h-4 skeleton rounded w-32 mb-1.5" />
+                        <div className="h-3 skeleton rounded w-44" />
                       </td>
-                      <td className="px-4 py-3"><div className="h-3 bg-surface-container rounded w-24 animate-pulse" /></td>
-                      <td className="px-4 py-3"><div className="h-4 bg-surface-container rounded w-16 animate-pulse ml-auto" /></td>
-                      <td className="px-4 py-3"><div className="h-5 bg-surface-container rounded-full w-14 animate-pulse mx-auto" /></td>
-                      <td className="px-4 py-3"><div className="h-3 bg-surface-container rounded w-6 animate-pulse ml-auto" /></td>
+                      <td className="px-4 py-3"><div className="h-3 skeleton rounded w-24" /></td>
+                      <td className="px-4 py-3"><div className="h-4 skeleton rounded w-16 ml-auto" /></td>
+                      <td className="px-4 py-3"><div className="h-5 skeleton rounded-full w-14 mx-auto" /></td>
+                      <td className="px-4 py-3"><div className="h-3 skeleton rounded w-6 ml-auto" /></td>
                     </tr>
                   ))
                 ) : (
-                  customers.map(c => (
-                    <tr key={c.id} onClick={() => navigate(`/customers/${c.id}`)}
-                      className="cursor-pointer hover:bg-surface-container-low/50 transition-colors">
+                  customers.map((c) => (
+                    <tr
+                      key={c.id}
+                      onClick={() => navigate(`/customers/${c.id}`)}
+                      tabIndex={0}
+                      role="button"
+                      onKeyDown={(e) => { if (e.key === 'Enter') navigate(`/customers/${c.id}`) }}
+                      className="focus-ring cursor-pointer hover:bg-surface-container-low/50 transition-colors"
+                    >
                       <td className="px-4 py-3">
                         <p className="font-medium text-on-surface">{c.name}</p>
                         <p className="text-on-surface-variant text-xs">{c.email}</p>
@@ -85,9 +128,7 @@ export function CustomersPage() {
                       <td className="px-4 py-3 text-on-surface-variant">{c.phone}</td>
                       <td className="px-4 py-3 text-right font-mono font-bold text-on-surface">{formatPaiseCompact(c.walletBalancePaise)}</td>
                       <td className="px-4 py-3 text-center">
-                        <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${c.isActive ? 'bg-green-100 text-status-active' : 'bg-red-100 text-status-error'}`}>
-                          {c.isActive ? 'Active' : 'Inactive'}
-                        </span>
+                        <ActiveBadge isActive={c.isActive} />
                       </td>
                       <td className="px-4 py-3 text-right text-on-surface">{c.activeSubscriptionCount}</td>
                     </tr>
@@ -100,22 +141,25 @@ export function CustomersPage() {
           {/* Mobile card list */}
           {isLoading ? (
             <div className="md:hidden divide-y divide-outline-variant">
-              {[1,2,3,4,5].map(i => (
+              {[1, 2, 3, 4, 5].map((i) => (
                 <div key={i} className="flex items-center justify-between px-4 py-3.5">
                   <div className="space-y-1.5 flex-1">
-                    <div className="h-4 bg-surface-container rounded w-32 animate-pulse" />
-                    <div className="h-3 bg-surface-container rounded w-20 animate-pulse" />
+                    <div className="h-4 skeleton rounded w-32" />
+                    <div className="h-3 skeleton rounded w-20" />
                   </div>
-                  <div className="h-5 bg-surface-container rounded-full w-14 animate-pulse" />
+                  <div className="h-5 skeleton rounded-full w-14" />
                 </div>
               ))}
             </div>
           ) : (
             <>
               <div className="md:hidden divide-y divide-outline-variant">
-                {customers.map(c => (
-                  <div key={c.id} onClick={() => navigate(`/customers/${c.id}`)}
-                    className="flex items-center justify-between px-4 py-3 cursor-pointer active:bg-surface-container-low/50">
+                {customers.map((c) => (
+                  <button
+                    key={c.id}
+                    onClick={() => navigate(`/customers/${c.id}`)}
+                    className="focus-ring w-full text-left flex items-center justify-between px-4 py-3 active:bg-surface-container-low/50"
+                  >
                     <div className="min-w-0 flex-1">
                       <p className="font-medium text-on-surface truncate">{c.name}</p>
                       <p className="text-on-surface-variant text-xs">{c.phone}</p>
@@ -123,19 +167,17 @@ export function CustomersPage() {
                     <div className="flex items-center gap-3 ml-3 shrink-0">
                       <div className="text-right">
                         <p className="font-mono font-bold text-on-surface text-sm">{formatPaiseCompact(c.walletBalancePaise)}</p>
-                        <span className={`px-1.5 py-0.5 rounded-full text-xs font-bold ${c.isActive ? 'bg-green-100 text-status-active' : 'bg-red-100 text-status-error'}`}>
-                          {c.isActive ? 'Active' : 'Inactive'}
-                        </span>
+                        <ActiveBadge isActive={c.isActive} />
                       </div>
-                      <span className="material-symbols-outlined text-on-surface-variant text-[18px]">chevron_right</span>
+                      <ChevronRight size={16} className="text-on-surface-variant" />
                     </div>
-                  </div>
+                  </button>
                 ))}
               </div>
               <Pagination page={page} total={total} size={20} onChange={setPage} />
             </>
           )}
-        </div>
+        </Card>
       </div>
     </div>
   )

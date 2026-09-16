@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { CheckCircle2, Pencil } from 'lucide-react'
 import { TopBar } from '../components/layout/TopBar'
 import { PageWrapper } from '../components/layout/PageWrapper'
-import { Spinner } from '../components/ui/Spinner'
+import { Card } from '../components/ui/Card'
+import { Button } from '../components/ui/Button'
+import { TextField, TextAreaField } from '../components/ui/TextField'
 import { apiGet, apiPost, apiPut, getApiError } from '../lib/api'
 import { useAuthStore } from '../store/authStore'
 import type { CustomerProfile } from '../types'
@@ -48,7 +51,7 @@ export function ProfilePage() {
 
   function set(field: keyof AddressForm) {
     return (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-      setForm(f => ({ ...f, [field]: e.target.value }))
+      setForm((f) => ({ ...f, [field]: e.target.value }))
   }
 
   const updateAddress = useMutation({
@@ -71,8 +74,7 @@ export function ProfilePage() {
   })
 
   const updateProfile = useMutation({
-    mutationFn: () =>
-      apiPut('/customer/profile', { name: nameInput }),
+    mutationFn: () => apiPut('/customer/profile', { name: nameInput }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['profile'] })
       setEditingName(false)
@@ -91,22 +93,17 @@ export function ProfilePage() {
   }
 
   const p = profile.data
-  const inputCls =
-    'w-full border border-outline-variant rounded-lg px-4 py-3 text-on-surface bg-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-sm'
-  const labelCls = 'block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5'
 
   return (
     <>
       <TopBar title="Profile" showBack />
       <PageWrapper>
-        {/* Account info (read-only) */}
-        <div className="mt-4 bg-white rounded-xl border border-outline-variant p-5 mb-5">
+        {/* Account info */}
+        <Card className="mt-4 mb-5">
           <h2 className="font-jakarta font-semibold text-on-surface mb-4">Account</h2>
           {profile.isLoading ? (
             <div className="space-y-3">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="h-5 bg-surface-container rounded animate-pulse" />
-              ))}
+              {[1, 2, 3].map((i) => <div key={i} className="h-5 skeleton rounded" />)}
             </div>
           ) : p ? (
             <div className="space-y-3 text-sm">
@@ -117,21 +114,18 @@ export function ProfilePage() {
                     <input
                       type="text"
                       value={nameInput}
-                      onChange={e => setNameInput(e.target.value)}
-                      className="border border-outline-variant rounded px-2 py-1 text-sm focus:outline-none focus:border-primary"
+                      onChange={(e) => setNameInput(e.target.value)}
+                      className="focus-ring bg-surface-container rounded-lg px-2.5 py-1.5 text-sm outline-none focus:bg-surface-container-high"
                       autoFocus
                     />
                     <button
                       onClick={() => updateProfile.mutate()}
                       disabled={updateProfile.isPending || !nameInput.trim()}
-                      className="text-primary font-medium disabled:opacity-50"
+                      className="focus-ring text-primary font-semibold text-xs disabled:opacity-50 rounded px-1"
                     >
                       Save
                     </button>
-                    <button
-                      onClick={() => setEditingName(false)}
-                      className="text-on-surface-variant hover:text-on-surface"
-                    >
+                    <button onClick={() => setEditingName(false)} className="focus-ring text-on-surface-variant hover:text-on-surface text-xs rounded px-1">
                       Cancel
                     </button>
                   </div>
@@ -143,9 +137,10 @@ export function ProfilePage() {
                         setNameInput(p.name)
                         setEditingName(true)
                       }}
-                      className="text-primary text-xs hover:underline"
+                      aria-label="Edit name"
+                      className="focus-ring text-primary p-1 rounded hover:bg-primary-container/50"
                     >
-                      Edit
+                      <Pencil size={13} />
                     </button>
                   </div>
                 )}
@@ -160,92 +155,48 @@ export function ProfilePage() {
               </div>
             </div>
           ) : null}
-          <div className="mt-4 pt-4 border-t border-outline-variant">
-            <button
+          <div className="mt-4 pt-4 border-t border-outline-variant/70">
+            <Button
+              fullWidth
+              variant="danger"
               onClick={() => {
-                // Revoke the refresh token server-side before clearing local state.
-                // Best-effort — if this fails (e.g. offline), still proceed with local logout.
                 const { refreshToken } = useAuthStore.getState()
                 if (refreshToken) {
                   apiPost('/auth/logout', { refreshToken }).catch(() => {})
                 }
                 logout()
               }}
-              className="w-full py-2.5 border border-status-error text-status-error text-sm font-medium rounded-lg hover:bg-red-50 transition-colors"
             >
-              Sign Out
-            </button>
+              Sign out
+            </Button>
           </div>
-        </div>
+        </Card>
 
-        {/* Delivery address edit */}
-        <div className="bg-white rounded-xl border border-outline-variant p-5 mb-6">
-          <h2 className="font-jakarta font-semibold text-on-surface mb-4">Delivery Address</h2>
+        {/* Delivery address */}
+        <Card className="mb-6">
+          <h2 className="font-jakarta font-semibold text-on-surface mb-4">Delivery address</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className={labelCls}>
-                Street Address <span className="text-error">*</span>
-              </label>
-              <input value={form.line1} onChange={set('line1')} placeholder="42 MG Road" className={inputCls} />
-            </div>
-            <div>
-              <label className={labelCls}>Apartment / Flat (optional)</label>
-              <input value={form.line2} onChange={set('line2')} placeholder="Apt 3B" className={inputCls} />
-            </div>
+            <TextField label="Street address" required value={form.line1} onChange={set('line1')} placeholder="42 MG Road" />
+            <TextField label="Apartment / flat (optional)" value={form.line2} onChange={set('line2')} placeholder="Apt 3B" />
             <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className={labelCls}>
-                  City <span className="text-error">*</span>
-                </label>
-                <input value={form.city} onChange={set('city')} placeholder="Bengaluru" className={inputCls} />
-              </div>
-              <div>
-                <label className={labelCls}>
-                  Pincode <span className="text-error">*</span>
-                </label>
-                <input
-                  value={form.pincode}
-                  onChange={set('pincode')}
-                  placeholder="560001"
-                  maxLength={6}
-                  className={inputCls}
-                />
-              </div>
+              <TextField label="City" required value={form.city} onChange={set('city')} placeholder="Bengaluru" />
+              <TextField label="Pincode" required value={form.pincode} onChange={set('pincode')} placeholder="560001" maxLength={6} />
             </div>
-            <div>
-              <label className={labelCls}>
-                State <span className="text-error">*</span>
-              </label>
-              <input value={form.state} onChange={set('state')} placeholder="Karnataka" className={inputCls} />
-            </div>
-            <div>
-              <label className={labelCls}>Delivery Notes (optional)</label>
-              <textarea
-                value={form.deliveryNotes}
-                onChange={set('deliveryNotes')}
-                placeholder="Leave at the door"
-                rows={2}
-                className={`${inputCls} resize-none`}
-              />
-            </div>
+            <TextField label="State" required value={form.state} onChange={set('state')} placeholder="Karnataka" />
+            <TextAreaField label="Delivery notes (optional)" value={form.deliveryNotes} onChange={set('deliveryNotes')} placeholder="Leave at the door" rows={2} />
 
             {saveErr && <p className="text-error text-sm">{saveErr}</p>}
             {saveOk && (
-              <p className="text-status-active text-sm font-medium flex items-center gap-1">
-                <span className="material-symbols-outlined text-[16px]">check_circle</span> Address updated!
+              <p className="text-status-active text-sm font-medium flex items-center gap-1.5">
+                <CheckCircle2 size={16} /> Address updated!
               </p>
             )}
 
-            <button
-              type="submit"
-              disabled={updateAddress.isPending}
-              className="w-full bg-primary text-on-primary font-semibold py-3.5 rounded-xl text-sm flex items-center justify-center gap-2 disabled:opacity-60"
-            >
-              {updateAddress.isPending && <Spinner size={18} />}
-              Save Address
-            </button>
+            <Button type="submit" fullWidth size="lg" loading={updateAddress.isPending}>
+              Save address
+            </Button>
           </form>
-        </div>
+        </Card>
       </PageWrapper>
     </>
   )

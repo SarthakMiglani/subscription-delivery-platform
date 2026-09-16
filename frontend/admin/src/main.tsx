@@ -6,6 +6,7 @@ import App from './App'
 import './index.css'
 import { api } from './lib/api'
 import { setupMockInterceptor } from './lib/mockInterceptor'
+import { ToastProvider } from './components/ui/Toast'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const isMock = (import.meta as any).env?.VITE_MOCK === 'true'
@@ -27,9 +28,11 @@ const queryClient = new QueryClient({
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
+      <ToastProvider>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </ToastProvider>
     </QueryClientProvider>
   </React.StrictMode>,
 )
