@@ -44,15 +44,15 @@ export function Modal({ open, onClose, title, children, size = 'md' }: Props) {
   const widths = { sm: 'max-w-sm', md: 'max-w-lg', lg: 'max-w-2xl' }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="modal-backdrop absolute inset-0 bg-inverse-surface/45 backdrop-blur-sm" onClick={onClose} />
+    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-4 sm:p-6">
+      <div className="modal-backdrop fixed inset-0 bg-inverse-surface/45 backdrop-blur-sm" onClick={onClose} />
       <div
         ref={panelRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby={title ? 'admin-modal-title' : undefined}
         tabIndex={-1}
-        className={`modal-panel relative w-full mx-2 sm:mx-0 ${widths[size]} bg-surface-container-lowest rounded-2xl shadow-popover max-h-[90vh] overflow-y-auto outline-none`}
+        className={`modal-panel relative w-full my-auto mx-2 sm:mx-0 ${widths[size]} bg-surface-container-lowest rounded-2xl shadow-popover outline-none`}
       >
         {title && (
           <div className="flex items-center justify-between px-6 py-4 border-b border-outline-variant">

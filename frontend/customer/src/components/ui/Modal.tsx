@@ -44,15 +44,15 @@ export function Modal({ open, onClose, title, children }: Props) {
   if (!open) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
-      <div className="modal-backdrop absolute inset-0 bg-inverse-surface/50 backdrop-blur-sm" onClick={onClose} />
+    <div className="fixed inset-0 z-50 flex items-end sm:items-start sm:justify-center sm:overflow-y-auto sm:p-6">
+      <div className="modal-backdrop fixed inset-0 bg-inverse-surface/50 backdrop-blur-sm" onClick={onClose} />
       <div
         ref={panelRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby={title ? 'modal-title' : undefined}
         tabIndex={-1}
-        className="modal-panel relative w-full sm:max-w-md bg-surface-container-lowest rounded-t-3xl sm:rounded-2xl shadow-popover p-6 pb-8 sm:pb-6 max-h-[90vh] overflow-y-auto outline-none"
+        className="modal-panel relative w-full sm:max-w-md sm:my-auto bg-surface-container-lowest rounded-t-3xl sm:rounded-2xl shadow-popover p-6 pb-8 sm:pb-6 max-h-[90vh] overflow-y-auto outline-none"
       >
         <div className="sm:hidden w-10 h-1 bg-outline-variant rounded-full mx-auto mb-4" />
         {title && (
