@@ -10,12 +10,14 @@ import com.juiceplatform.entity.DeliveryRecord;
 import com.juiceplatform.entity.DeliverySheetSnapshot;
 import com.juiceplatform.entity.Order;
 import com.juiceplatform.entity.Product;
+import com.juiceplatform.entity.SchedulerJobLog;
 import com.juiceplatform.entity.User;
 import com.juiceplatform.exception.BusinessException;
 import com.juiceplatform.repository.DeliveryRecordRepository;
 import com.juiceplatform.repository.DeliverySheetSnapshotRepository;
 import com.juiceplatform.repository.OrderRepository;
 import com.juiceplatform.repository.ProductRepository;
+import com.juiceplatform.repository.SchedulerJobLogRepository;
 import com.juiceplatform.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -31,6 +33,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -54,6 +57,10 @@ public class DeliverySheetService {
     private final UserRepository userRepository;
     private final ObjectMapper objectMapper;
     private final IngredientService ingredientService;
+    private final SchedulerJobLogRepository schedulerJobLogRepository;
+
+    /** Job name constant — matches DeliverySheetScheduler.JOB_NAME. */
+    public static final String JOB_NAME = "DeliverySheetGenerationJob";
 
     /**
      * Generates (or regenerates) the delivery sheet snapshot for the given date.
@@ -70,33 +77,74 @@ public class DeliverySheetService {
                                                    UUID adminId) {
         log.info("DeliverySheetGenerationJob starting for delivery date: {} (source: {})", deliveryDate, source);
 
-        // Build the delivery sheet data from LOCKED orders with PENDING delivery_records
-        DeliverySheetResponse sheetData = buildSheetData(deliveryDate);
-
-        // Serialize to JSON for storage
-        String snapshotJson;
-        try {
-            snapshotJson = objectMapper.writeValueAsString(sheetData);
-        } catch (JsonProcessingException e) {
-            throw new IllegalStateException("Failed to serialize delivery sheet snapshot", e);
+        // Acquire scheduler_job_log entry — rejects concurrent RUNNING, allows rerun of COMPLETED/FAILED
+        SchedulerJobLog jobLog = acquireJobLog(deliveryDate);
+        if (jobLog == null) {
+            log.warn("DeliverySheetGenerationJob rejected for {} — another instance is RUNNING", deliveryDate);
+            // Return existing snapshot if present, otherwise an empty placeholder
+            return snapshotRepository.findByDeliveryDate(deliveryDate)
+                    .map(s -> {
+                        try {
+                            return objectMapper.readValue(s.getSnapshotJson(), DeliverySheetResponse.class);
+                        } catch (JsonProcessingException e) {
+                            throw new IllegalStateException("Failed to deserialize existing snapshot", e);
+                        }
+                    })
+                    .orElse(DeliverySheetResponse.builder()
+                            .deliveryDate(deliveryDate)
+                            .generatedAt(OffsetDateTime.now(IST))
+                            .orders(List.of())
+                            .juiceSummary(List.of())
+                            .ingredientSummary(List.of())
+                            .productsWithoutRecipe(List.of())
+                            .build());
         }
 
-        // Replace existing snapshot if present (DELETE + INSERT on rerun)
-        snapshotRepository.findByDeliveryDate(deliveryDate)
-                .ifPresent(snapshotRepository::delete);
-        snapshotRepository.flush();
+        try {
+            // Build the delivery sheet data from LOCKED orders with PENDING delivery_records
+            DeliverySheetResponse sheetData = buildSheetData(deliveryDate);
 
-        DeliverySheetSnapshot snapshot = new DeliverySheetSnapshot();
-        snapshot.setDeliveryDate(deliveryDate);
-        snapshot.setGeneratedAt(OffsetDateTime.now(IST));
-        snapshot.setGeneratedBySource(source);
-        snapshot.setGeneratedByUserId(adminId);
-        snapshot.setSnapshotJson(snapshotJson);
-        snapshotRepository.save(snapshot);
+            // Serialize to JSON for storage
+            String snapshotJson;
+            try {
+                snapshotJson = objectMapper.writeValueAsString(sheetData);
+            } catch (JsonProcessingException e) {
+                throw new IllegalStateException("Failed to serialize delivery sheet snapshot", e);
+            }
 
-        log.info("DeliverySheetGenerationJob completed for {}: {} orders in sheet", deliveryDate, sheetData.getOrders().size());
+            // Replace existing snapshot if present (DELETE + INSERT on rerun)
+            snapshotRepository.findByDeliveryDate(deliveryDate)
+                    .ifPresent(snapshotRepository::delete);
+            snapshotRepository.flush();
 
-        return sheetData;
+            DeliverySheetSnapshot snapshot = new DeliverySheetSnapshot();
+            snapshot.setDeliveryDate(deliveryDate);
+            snapshot.setGeneratedAt(OffsetDateTime.now(IST));
+            snapshot.setGeneratedBySource(source);
+            snapshot.setGeneratedByUserId(adminId);
+            snapshot.setSnapshotJson(snapshotJson);
+            snapshotRepository.save(snapshot);
+
+            // Mark job COMPLETED
+            jobLog.setStatus(SchedulerJobLog.JobStatus.COMPLETED);
+            jobLog.setFinishedAt(OffsetDateTime.now(IST));
+            jobLog.setRowsProcessed(sheetData.getOrders().size());
+            schedulerJobLogRepository.save(jobLog);
+
+            log.info("DeliverySheetGenerationJob completed for {}: {} orders in sheet", deliveryDate, sheetData.getOrders().size());
+
+            return sheetData;
+
+        } catch (Exception e) {
+            // Mark job FAILED
+            jobLog.setStatus(SchedulerJobLog.JobStatus.FAILED);
+            jobLog.setFinishedAt(OffsetDateTime.now(IST));
+            jobLog.setErrorMessage(e.getMessage());
+            schedulerJobLogRepository.save(jobLog);
+
+            log.error("DeliverySheetGenerationJob failed for {}: {}", deliveryDate, e.getMessage(), e);
+            throw e;
+        }
     }
 
     /**
@@ -222,5 +270,33 @@ public class DeliverySheetService {
         if (order.getDeliveryCity() != null) sb.append(", ").append(order.getDeliveryCity());
         if (order.getDeliveryPincode() != null) sb.append(" ").append(order.getDeliveryPincode());
         return sb.toString();
+    }
+
+    /**
+     * Acquires a scheduler_job_log entry for this job run.
+     * Returns null if a RUNNING entry already exists (concurrent guard).
+     * Deletes and recreates if COMPLETED or FAILED (allows rerun).
+     */
+    private SchedulerJobLog acquireJobLog(LocalDate deliveryDate) {
+        try {
+            schedulerJobLogRepository.findByJobNameAndJobDate(JOB_NAME, deliveryDate)
+                    .ifPresent(existing -> {
+                        if (existing.getStatus() == SchedulerJobLog.JobStatus.RUNNING) {
+                            throw new IllegalStateException(
+                                    "DeliverySheetGenerationJob is already RUNNING for " + deliveryDate);
+                        }
+                        // COMPLETED or FAILED → delete to allow rerun
+                        schedulerJobLogRepository.delete(existing);
+                        schedulerJobLogRepository.flush();
+                    });
+        } catch (IllegalStateException e) {
+            return null;
+        }
+
+        SchedulerJobLog jobLog = new SchedulerJobLog();
+        jobLog.setJobName(JOB_NAME);
+        jobLog.setJobDate(deliveryDate);
+        jobLog.setStatus(SchedulerJobLog.JobStatus.RUNNING);
+        return schedulerJobLogRepository.save(jobLog);
     }
 }

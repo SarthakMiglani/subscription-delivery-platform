@@ -27,8 +27,8 @@ public class DeliverySheetScheduler {
     private final DeliverySheetService deliverySheetService;
     private final NotificationService notificationService;
 
-    // Job name constant for use in recovery and notifications
-    static final String JOB_NAME = "DeliverySheetGenerationJob";
+    // Job name constant — canonical definition is on DeliverySheetService
+    static final String JOB_NAME = DeliverySheetService.JOB_NAME;
 
     @Scheduled(cron = "${scheduler.delivery-sheet.cron:0 10 22 * * *}", zone = "Asia/Kolkata")
     public void runDeliverySheetGeneration() {
