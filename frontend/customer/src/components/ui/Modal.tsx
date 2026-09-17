@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
 
 interface Props {
@@ -44,31 +45,40 @@ export function Modal({ open, onClose, title, children }: Props) {
   if (!open) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-start sm:justify-center sm:overflow-y-auto sm:p-6">
-      <div className="modal-backdrop fixed inset-0 bg-inverse-surface/50 backdrop-blur-sm" onClick={onClose} />
-      <div
-        ref={panelRef}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={title ? 'modal-title' : undefined}
-        tabIndex={-1}
-        className="modal-panel relative w-full sm:max-w-md sm:my-auto bg-surface-container-lowest rounded-t-3xl sm:rounded-2xl shadow-popover p-6 pb-8 sm:pb-6 max-h-[90vh] overflow-y-auto outline-none"
-      >
-        <div className="sm:hidden w-10 h-1 bg-outline-variant rounded-full mx-auto mb-4" />
-        {title && (
-          <div className="flex items-center justify-between mb-5">
-            <h2 id="modal-title" className="font-jakarta font-semibold text-on-surface text-lg">{title}</h2>
-            <button
-              onClick={onClose}
-              aria-label="Close"
-              className="focus-ring text-on-surface-variant hover:text-on-surface p-1.5 rounded-lg hover:bg-surface-container-low transition-colors"
-            >
-              <X size={20} />
-            </button>
-          </div>
-        )}
-        {children}
-      </div>
-    </div>
+    // Portal renders at document.body — escapes any animation containing blocks.
+    createPortal(
+      <div className="fixed inset-0 z-[60] flex items-end sm:items-center sm:justify-center">
+        {/* Backdrop */}
+        <div className="modal-backdrop absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
+        {/* Panel — flex column; drag handle + title never scroll away */}
+        <div
+          ref={panelRef}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby={title ? 'modal-title' : undefined}
+          tabIndex={-1}
+          className="modal-panel relative w-full sm:max-w-md bg-surface-container-lowest rounded-t-3xl sm:rounded-2xl shadow-popover flex flex-col outline-none"
+          style={{ maxHeight: 'calc(100vh - 2rem)' }}
+        >
+          {/* Bottom-sheet drag indicator — mobile only */}
+          <div className="sm:hidden w-10 h-1 bg-outline-variant rounded-full mx-auto mt-3 mb-1 shrink-0" />
+          {title && (
+            <div className="flex items-center justify-between px-6 py-4 shrink-0">
+              <h2 id="modal-title" className="font-jakarta font-semibold text-on-surface text-lg">{title}</h2>
+              <button
+                onClick={onClose}
+                aria-label="Close"
+                className="focus-ring text-on-surface-variant hover:text-on-surface p-1.5 rounded-lg hover:bg-surface-container-low transition-colors"
+              >
+                <X size={20} />
+              </button>
+            </div>
+          )}
+          {/* Scrollable content area */}
+          <div className="px-6 pb-8 sm:pb-6 overflow-y-auto">{children}</div>
+        </div>
+      </div>,
+      document.body
+    )
   )
 }
