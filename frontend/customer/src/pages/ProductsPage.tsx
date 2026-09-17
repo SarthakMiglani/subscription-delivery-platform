@@ -74,7 +74,7 @@ export function ProductsPage() {
                       <img
                         src={product.imageUrl}
                         alt={product.name}
-                        className="absolute inset-0 w-full h-full object-cover"
+                        className="absolute inset-0 w-full h-full object-contain p-3"
                         onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
                       />
                     ) : (
