@@ -6,7 +6,7 @@ interface Props {
 
 export function PageWrapper({ children, className = '', noPad }: Props) {
   return (
-    <main className={`page-enter max-w-lg mx-auto pb-32 min-h-dvh ${noPad ? '' : 'px-4'} ${className}`}>
+    <main className={`page-enter max-w-lg mx-auto pb-36 min-h-dvh ${noPad ? '' : 'px-4'} ${className}`}>
       {children}
     </main>
   )
