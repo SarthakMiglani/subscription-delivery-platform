@@ -68,9 +68,15 @@ export function ProductsPage() {
                   style={{ '--i': i } as React.CSSProperties}
                   className="stagger-item bg-surface-container-lowest rounded-[1.75rem] shadow-card overflow-hidden flex flex-col"
                 >
-                  <div className="relative h-28 bg-tertiary-container">
+                  {/* Image zone — overflow-hidden clips image to card's top rounded corners */}
+                  <div className="relative h-32 bg-tertiary-container overflow-hidden rounded-t-[1.75rem]">
                     {product.imageUrl ? (
-                      <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
+                      <img
+                        src={product.imageUrl}
+                        alt={product.name}
+                        className="absolute inset-0 w-full h-full object-cover"
+                        onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
+                      />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
                         <Droplet size={28} className="text-tertiary" strokeWidth={1.5} />

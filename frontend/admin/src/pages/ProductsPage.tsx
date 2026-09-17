@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Plus, Wheat, Trash2 } from 'lucide-react'
+import { Plus, Wheat, Trash2, Droplets } from 'lucide-react'
 import { PageHeader } from '../components/ui/PageHeader'
 import { Modal } from '../components/ui/Modal'
 import { Spinner } from '../components/ui/Spinner'
@@ -99,7 +99,21 @@ export function ProductsPage() {
                 style={{ '--i': i } as React.CSSProperties}
                 className={`stagger-item overflow-hidden ${p.isAvailable ? '' : '!border-status-error/30 opacity-70'}`}
               >
-                {p.imageUrl && <img src={p.imageUrl} alt={p.name} className="w-full h-32 object-cover" />}
+                {/* Image zone — always rendered, clipped to card corners */}
+                <div className="relative w-full h-36 overflow-hidden rounded-t-[1.5rem] bg-primary-container/40">
+                  {p.imageUrl ? (
+                    <img
+                      src={p.imageUrl}
+                      alt={p.name}
+                      className="absolute inset-0 w-full h-full object-cover"
+                      onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <Droplets size={32} className="text-primary/30" strokeWidth={1.5} />
+                    </div>
+                  )}
+                </div>
                 <div className="p-4">
                   <div className="flex items-start justify-between mb-2">
                     <h3 className="font-jakarta font-semibold text-on-surface">{p.name}</h3>
