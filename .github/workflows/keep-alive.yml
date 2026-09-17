@@ -2,9 +2,9 @@ name: Keep-Alive Ping
 
 # Pings the deployed backend's health endpoint on a schedule.
 #
-# Two free-tier hosting quirks this exists to work around:
+# WHY THIS EXISTS — two free-tier hosting quirks:
 #   1. Render's free web service spins down after 15 minutes with no inbound
-#      HTTP traffic, and takes ~1 minute to wake back up on the next request.
+#      HTTP traffic, and takes ~50 seconds to wake back up on the next request.
 #      This app runs its nightly order-generation/freeze/delivery-sheet jobs as
 #      in-process @Scheduled cron (BR-CUT-01 requires an exact 22:00 IST wall-
 #      clock cutoff) — if the instance is asleep at that moment, the job simply
@@ -14,24 +14,39 @@ name: Keep-Alive Ping
 #      activity. /api/v1/health runs a real (trivial) DB query specifically so
 #      this ping also counts as activity there.
 #
-# This is a workaround, not a guarantee — Render does not officially support
-# "always-on free tier via external pinger", and could change spin-down
-# behavior at any time. If nightly jobs are ever found to have not run
-# (check GET /admin/scheduler/history in the admin dashboard), that's a signal
-# to move the backend to a paid Render plan or a persistent-VM alternative
-# (see README.md "Known limitations of the free-tier deployment").
+# WARNING — GITHUB ACTIONS SCHEDULER IS UNRELIABLE:
+#   GitHub Actions scheduled workflows are "best-effort" — they are NOT
+#   guaranteed to fire at the exact cron time. Under high platform load,
+#   schedules can be delayed by minutes or even HOURS (confirmed gap of 4h44m
+#   observed in production run history on 2026-09-17). This means this workflow
+#   ALONE is not a reliable keep-alive.
 #
-# Setup: add a repository variable named BACKEND_HEALTH_URL (Settings ->
-# Secrets and variables -> Actions -> Variables) set to your deployed
-# backend's health endpoint, e.g.:
-#   https://juice-platform-backend.onrender.com/api/v1/health
+# RECOMMENDED: Use UptimeRobot (free) as the PRIMARY pinger:
+#   1. Go to https://uptimerobot.com and create a free account.
+#   2. Add a new monitor: HTTP(s) type.
+#   3. URL: https://juice-platform-backend.onrender.com/api/v1/health
+#   4. Monitoring interval: 5 minutes (well under Render's 15-min window).
+#   UptimeRobot also sends email alerts if the backend goes down.
+#   This workflow is a BACKUP to UptimeRobot, not the primary mechanism.
+#
+# IMPORTANT: set the BACKEND_HEALTH_URL repository variable:
+#   Settings → Secrets and variables → Actions → Variables
+#   BACKEND_HEALTH_URL = https://juice-platform-backend.onrender.com/api/v1/health
+#
+# If nightly jobs are ever found to have not run, check:
+#   GET /admin/scheduler/history in the admin dashboard.
 
 on:
   schedule:
-    # Every 10 minutes — comfortably under Render's 15-minute spin-down window
-    # even accounting for GitHub Actions' schedule jitter (which can delay a
-    # cron trigger by several minutes, especially at times of high platform load).
-    - cron: '*/10 * * * *'
+    # Run at multiple offsets within the hour to reduce the chance that all
+    # scheduled slots are missed by GitHub's jitter. Having 4 triggers per
+    # hour (at :05, :20, :35, :50) means even if GitHub delays a slot by
+    # 10-15 min, another slot fires before the 15-min Render spin-down window.
+    # NOTE: avoid :00 (peak contention on GitHub's scheduler).
+    - cron: '5 * * * *'
+    - cron: '20 * * * *'
+    - cron: '35 * * * *'
+    - cron: '50 * * * *'
   workflow_dispatch: {}
 
 jobs:
@@ -43,6 +58,20 @@ jobs:
           if [ -z "${{ vars.BACKEND_HEALTH_URL }}" ]; then
             echo "BACKEND_HEALTH_URL repository variable is not set — skipping ping."
             echo "Set it under Settings > Secrets and variables > Actions > Variables."
+            echo "Value should be: https://juice-platform-backend.onrender.com/api/v1/health"
             exit 0
           fi
-          curl -sf --max-time 30 "${{ vars.BACKEND_HEALTH_URL }}" && echo "" || echo "Ping failed (backend may be cold-starting or down)."
+          echo "Pinging: ${{ vars.BACKEND_HEALTH_URL }}"
+          # --max-time 60: allow up to 60s for a cold-start response.
+          # -sf: silent + fail on HTTP errors (4xx/5xx).
+          # The || true at the end prevents the step from failing on ping error
+          # (a failed ping is expected during a cold start, not a workflow error).
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 60 "${{ vars.BACKEND_HEALTH_URL }}" || echo "000")
+          echo "Response code: $HTTP_CODE"
+          if [ "$HTTP_CODE" = "200" ]; then
+            echo "✅ Backend is up and healthy."
+          elif [ "$HTTP_CODE" = "000" ]; then
+            echo "⚠️  Ping timed out or connection refused — backend may be cold-starting."
+          else
+            echo "⚠️  Unexpected HTTP $HTTP_CODE — backend may be restarting or degraded."
+          fi
